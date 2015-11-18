@@ -5,7 +5,7 @@
 #define PART_PARSER_H
 #include <fstream>
 #include <memory>
-#include "PartScanner.h"
+#include "Scanners.h"
 #include "ASTNodes.h"
 
 class PartParser {

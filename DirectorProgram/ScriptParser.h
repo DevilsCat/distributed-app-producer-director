@@ -5,7 +5,7 @@
 #define SCRIPT_PARSER_H
 
 #include <memory>
-#include "ScriptScanner.h"
+#include "Scanners.h"
 
 class ScriptParser {
 public:

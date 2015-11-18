@@ -13,9 +13,57 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Resource Files\files">
+      <UniqueIdentifier>{ac444018-0372-4756-a668-aee8a5b4c732}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
+    <Text Include="files\Guildenstern_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\hamlet_act_ii_scene_1a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\hamlet_act_ii_scene_1b.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\hamlet_act_ii_scene_2a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\hamlet_ii_1a_config.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\hamlet_ii_1b_config.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\hamlet_ii_2a_config.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\King_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\Ophelia_hamlet_ii_1b.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\partial_hamlet_act_ii_script.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\Polonius_hamlet_ii_1a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\Polonius_hamlet_ii_1b.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\Queen_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\Reynaldo_hamlet_ii_1a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
+    <Text Include="files\Rosencrantz_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files</Filter>
+    </Text>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -42,9 +90,6 @@
     <ClInclude Include="PartParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PartScanner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Play.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -60,13 +105,7 @@
     <ClInclude Include="ProgramException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Scanner.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ScriptParser.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ScriptScanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="synchronized_list.h">
@@ -79,6 +118,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ASTNodes.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Scanners.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -98,9 +140,6 @@
     <ClCompile Include="PartParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PartScanner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Play.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -113,13 +152,7 @@
     <ClCompile Include="ProgramException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Scanner.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ScriptParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ScriptScanner.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
@@ -129,6 +162,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ASTNodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Scanners.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
