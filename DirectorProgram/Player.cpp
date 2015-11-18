@@ -10,14 +10,16 @@
 
 Player::~Player() {}
 
-Player::Player(Play& p) :
-	p_(&p) 
+Player::Player() :
+	p_(nullptr) 
 {
     // Since we want to let Player to work forever as long as it is created
     // We Activate this Player (Active Object) at constructor (and this is the
     // only once activation.)
     Activate();
 }
+
+void Player::SetPlay(Play* p) { p_ = p; }
 
 void Player::Read(std::ifstream &in) {
 	play_map_.clear();

@@ -12,25 +12,15 @@
 #include <vector>
 #include <memory>
 #include "ASTNodes.h"
-#include "ScriptParser.h"
-#include "Visitor.h"
+#include "Visitors.h"
 
-class Director : public Visitor {    
-    enum VisitOps {
-        kSKIM, kCUE
-    };
+class Director {
+    friend class DirectorSkimVisitor;
+    friend class DirectorCueVisitor;
 public:
-	//
-	// Director constructor -- lab 2
-	//
-	Director(std::string const &script_file_string, unsigned int minimum_players);
+    Director(std::vector<std::string> scripts_filename, unsigned minimum_players);
 
-	//
-	// Director constructor -- lab 2
-	// 
-	Director(std::string const &script_file_string);
-
-    virtual ~Director() override;
+    ~Director();
 
 	//
 	// Cue()
@@ -38,44 +28,19 @@ public:
 	// character, and a scene fragment number, to a Player, and with the information they contain 
 	// run the Player's read and act methods to perform that part within the play.
     //
-	void Cue();
+	void Cue(unsigned play_idx);
 
     //
     // WaitForAllPartsDone()
     //
     int WaitForAllPartsDone();
 
-    //
-    // Visit()
-    // Visits the SceneAST node, and stores each scene name
-    //
-    virtual void Visit(SceneAST* node) override;
-
-    //
-    // Visit()
-    // Visit the FragmentAST node, and stores the maximum number of part children
-    //
-    virtual void Visit(FragmentAST* node) override;
-
-    virtual void Visit(PartAST* node) override;
-
 private:
-    //
-    // Different Script tree visiting mode.
-    //
-    void SkimVisitScene(SceneAST *);
-    void SkimVisitFrag(FragmentAST *);
-    void CueVisitScene(SceneAST *);
-    void CueVisitFrag(FragmentAST *);
-    void CueVisitPart(PartAST *);
-
     //
     // Select()
     // Selects a player to assign the role.
     //
     std::shared_ptr<Player> Select();
-
-    VisitOps visit_ops_t;
 
     // A string for the name of a script file
     std::string script_file_string_;
@@ -89,16 +54,15 @@ private:
     // a container that holds the titles of the scenes (the same as in Play class)
     std::vector<std::string> scene_titles_;
 
-    // a smart pointer that hold dynamicall allocated Play when this object is contructed.
-    std::shared_ptr<Play> play_ptr_;
+    // a container of pointers that hold dynamicall allocated Play when this object is contructed.
+    std::shared_ptr<Play> play_;
+    std::vector<std::shared_ptr<Play>> plays_;
 
     // a container to store the recruited Players
     std::vector<std::shared_ptr<Player>> players_;
 
-    // a script object to store the whole script tree
-    std::shared_ptr<ScriptAST> script_ptr_;
-
-    ScriptParser parser_;
+    // a container of script objects to store the whole script tree
+    std::vector<std::shared_ptr<ScriptAST>> scripts_;
 
     unsigned int frag_counter;
 

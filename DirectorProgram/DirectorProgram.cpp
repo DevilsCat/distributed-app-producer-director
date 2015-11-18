@@ -3,77 +3,78 @@
 
 #include "stdafx.h"
 #include "Director.h"
-
-#include <iostream>
-#include <sstream>
-
 #include "utils.h"
+#include <iostream>
 
-#define ARG_NUM                     4
+#define MIN_ARG_NUM                 5
 #define PROGRAM_POS                 0
-#define SCRIPT_POS                  1
-#define PLAYER_NUM_POS              2
-#define OVERRIDE_POS                3
+#define PORT_NUM_POS                1
+#define IP_ADDR_POS                 2
+#define MIN_THREAD_POS              3
+#define FIRST_SCRIPT_FILE_POS       4
 #define UNINITIALIZED_PLAYER_NUM    -1
 
-bool HasPlayerNumArg(int const &argc);
+void PrintUsage(char** argv) {
+    std::cout << "usage: " << argv[PROGRAM_POS] << "<port> <ip_address> <min_threads> <script_file>+" << std::endl;
+}
 
 int main(int argc, char* argv[])
 {
-    //test_play_player();
-    // argc validation
-    if (argc > ARG_NUM || argc <= SCRIPT_POS) {
-        std::cout << "usage: " << argv[PROGRAM_POS] << " <script_file_name> " << "[<minimum number of players>]" << std::endl;
+    // arguments validation
+    if (argc < MIN_ARG_NUM ||
+            !is_number(argv[PORT_NUM_POS]) ||
+            !is_ip_addr(argv[IP_ADDR_POS]) ||
+            !is_number(argv[MIN_THREAD_POS])) {
+        PrintUsage(argv);
         return EXIT_FAILURE;
     }
 
-    // Get script file name
-    const std::string script_file_name = argv[SCRIPT_POS];
-
-    // Check if user set it to override
-    if (argc == ARG_NUM) {
-        const std::string override_str = argv[OVERRIDE_POS];
-        // Get the flag from input arguments, and store it in global vraiable override_flag.
-        SetOverrideFlagFromArg(override_str);
+    // validate all possible filename position
+    for (int i = FIRST_SCRIPT_FILE_POS; i < argc; ++i) {
+        if (!is_filename(argv[i])) {
+            PrintUsage(argv);
+            return EXIT_FAILURE;
+        }
     }
 
-    // Get the path information from input arguments, and store in global variables path_string
-    SetPathFromArg(script_file_name);
-
-    // Get minimum player number if exist
-    unsigned int minimum_player_num = UNINITIALIZED_PLAYER_NUM;
-    if (HasPlayerNumArg(argc)) {
-        std::stringstream iss(argv[PLAYER_NUM_POS]);
-        iss >> minimum_player_num;
-    }
+    // Get arguments
+    int port_num = to_number(argv[PORT_NUM_POS]);
+    std::string addr_str(argv[IP_ADDR_POS]);
+    int min_num_threads = to_number(argv[MIN_THREAD_POS]);
+    std::vector<std::string> script_filenames;
+    for (int i = FIRST_SCRIPT_FILE_POS; i < argc; ++i)
+        script_filenames.push_back(argv[i]);
 
     // Construct a Director pointer so that it can point to different Director's constructor
     Director *director = nullptr;
     try {
-        if (minimum_player_num == UNINITIALIZED_PLAYER_NUM) { // player number doesn't set, use default
-            director = new Director(script_file_name);
-        }
-        else {
-            director = new Director(script_file_name, minimum_player_num);
-        }
-    }
-    catch (std::exception &e) {
+        director = new Director(script_filenames, min_num_threads);
+    } catch (std::exception &e) {
         std::cout << e.what() << std::endl;
         if (director != nullptr) delete director;
         return EXIT_FAILURE;
     }
 
     // Do some other stuffs
-    director->Cue();  // Since its HS/HA, director need only cue once.
+
+    // Test Director behavior.
+    director->Cue(0);
 
     int error_code = director->WaitForAllPartsDone();
+
+    director->Cue(1);  // Since its HS/HA, director need only cue once.
+
+    error_code |= director->WaitForAllPartsDone();
+
+    director->Cue(0);
+
+    error_code |= director->WaitForAllPartsDone();
+
+    director->Cue(1);
+
+    error_code |= director->WaitForAllPartsDone();
 
     delete director;
 
     return error_code;
 }
-
-bool HasPlayerNumArg(int const &argc) {
-    return argc == ARG_NUM;
-}
-

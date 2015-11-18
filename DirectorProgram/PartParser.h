@@ -10,7 +10,7 @@
 
 class PartParser {
 public:
-	PartParser(std::ifstream&);
+	PartParser(std::ifstream&, const std::string& path);
 
 	void Parse();
 	
@@ -22,11 +22,9 @@ private:
 	std::shared_ptr<PartAST> ParsePart();
 
     std::vector<std::shared_ptr<PartAST>> part_ptrs_;
-
     std::vector<std::shared_ptr<PartAST>>::iterator it_;
-
     std::ifstream ifs_;
-
+    std::string path_;
     PartScanner part_scanner_;
 };
 

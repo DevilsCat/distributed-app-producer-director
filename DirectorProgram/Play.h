@@ -25,7 +25,8 @@ public:
     // Play constructor -- lab 2 
     // Takes and stores a reference to a container of strings, initialize the container iterator
     //
-    Play(const std::vector<std::string> &scene_title_strings);
+    Play(const std::vector<std::string> &scene_title_strings,
+         const std::vector<unsigned>& required_pnum_v);
 
     //
     // Recite()
@@ -73,11 +74,9 @@ public:
     void Exit();
 
     //
-    // SetNumPlayersForFrag()
-    // Takes the fragment index and required numbers of players, store into
-    // internal data structure.
-    //
-    void SetNumPlayersForFrag(unsigned int frag_i, unsigned int pnum_i);
+    // Reset()
+    // Resets this play in order to play again.
+    void Reset();
 
 private:
     //

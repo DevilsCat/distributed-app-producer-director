@@ -13,9 +13,9 @@ public:
 
 	void Parse();
 
-    std::shared_ptr<ScriptAST> script_ptr();
+    std::shared_ptr<ScriptAST> script_ptr() const;
 
-	void PrintScript(); // Only For test.
+	void PrintScript() const; // Only For test.
 
 private:
     // Concrete Parsing function base on BNF.
@@ -23,12 +23,10 @@ private:
 	std::shared_ptr<SceneAST> ParseScene();
 	std::shared_ptr<FragmentAST> ParseFragement();
 
+    std::string path_;
     std::shared_ptr<ScriptAST> script_ptr_;
-
     std::string filename_;
-
     std::ifstream ifs_;
-
     ScriptScanner scanner_;
 };
 

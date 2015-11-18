@@ -9,8 +9,9 @@
 #include "InterruptFlag.h"
 #include "ProgramException.h"
 
-Play::Play(const std::vector<std::string>& scene_titles) :
-    line_counter_(1), frag_counter_(1), on_stage_(0), required_pnum_v_(scene_titles.size())
+Play::Play(const std::vector<std::string>& scene_titles,
+           const std::vector<unsigned>& required_pnum_v) :
+    line_counter_(1), frag_counter_(1), on_stage_(0), required_pnum_v_(required_pnum_v)
 {
 	// Initialize the iterator (scene_title_iterator_) point to the beginning of that container
     scene_titles_ = scene_titles;
@@ -113,11 +114,11 @@ void Play::Exit() {
 
 }
 
-// No mutual exclusion for this method, since Director makes sure that
-// before dispatching the Role Task for one fragement, this method has already been
-// called.
-void Play::SetNumPlayersForFrag(unsigned frag_i, unsigned pnum_i) {
-    required_pnum_v_[frag_i] = pnum_i;
+void Play::Reset() {
+    line_counter_ = 1; 
+    frag_counter_ = 1;
+    on_stage_     = 0;
+    scene_title_iterator_ = scene_titles_.begin();
 }
 
 void Play::MoveToNextFrag() {

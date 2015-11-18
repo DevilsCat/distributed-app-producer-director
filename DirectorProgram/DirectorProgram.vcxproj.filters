@@ -16,53 +16,56 @@
     <Filter Include="Resource Files\files">
       <UniqueIdentifier>{ac444018-0372-4756-a668-aee8a5b4c732}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Resource Files\files\hamlet">
+      <UniqueIdentifier>{2e86bbc2-4c20-4c3b-a437-9f2774ad770f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
-    <Text Include="files\Guildenstern_hamlet_ii_2a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\Guildenstern_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\hamlet_act_ii_scene_1a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\hamlet_act_ii_scene_1a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\hamlet_act_ii_scene_1b.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\hamlet_act_ii_scene_1b.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\hamlet_act_ii_scene_2a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\hamlet_act_ii_scene_2a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\hamlet_ii_1a_config.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\hamlet_ii_1a_config.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\hamlet_ii_1b_config.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\hamlet_ii_1b_config.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\hamlet_ii_2a_config.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\hamlet_ii_2a_config.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\King_hamlet_ii_2a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\King_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\Ophelia_hamlet_ii_1b.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\Ophelia_hamlet_ii_1b.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\partial_hamlet_act_ii_script.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\partial_hamlet_act_ii_script.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\Polonius_hamlet_ii_1a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\Polonius_hamlet_ii_1a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\Polonius_hamlet_ii_1b.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\Polonius_hamlet_ii_1b.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\Queen_hamlet_ii_2a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\Queen_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\Reynaldo_hamlet_ii_1a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\Reynaldo_hamlet_ii_1a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
-    <Text Include="files\Rosencrantz_hamlet_ii_2a.txt">
-      <Filter>Resource Files\files</Filter>
+    <Text Include="files\hamlet\Rosencrantz_hamlet_ii_2a.txt">
+      <Filter>Resource Files\files\hamlet</Filter>
     </Text>
   </ItemGroup>
   <ItemGroup>
@@ -99,9 +102,6 @@
     <ClInclude Include="Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PrintVisitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ProgramException.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -114,13 +114,13 @@
     <ClInclude Include="utils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Visitor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ASTNodes.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Scanners.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Visitors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -146,9 +146,6 @@
     <ClCompile Include="Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PrintVisitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ProgramException.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -158,13 +155,13 @@
     <ClCompile Include="utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Visitor.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ASTNodes.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Scanners.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Visitors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

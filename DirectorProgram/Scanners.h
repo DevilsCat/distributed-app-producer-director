@@ -9,7 +9,7 @@
 
 class Scanner {
 public:
-	Scanner(std::ifstream& ifs);
+	Scanner(std::ifstream& ifs, std::string path = std::string());
 
 	virtual ~Scanner();
 
@@ -22,8 +22,8 @@ public:
 protected:
 	virtual bool operator>> (std::shared_ptr<NodeAST>& node_ptr) = 0;
 
+    std::string path_;
     std::ifstream& ifs_;
-
     std::shared_ptr<NodeAST> ptr_;
 };
 
@@ -43,7 +43,7 @@ private:
 // class PartScanner
 class PartScanner : public Scanner {
 public:
-    PartScanner(std::ifstream& ifs);
+    PartScanner(std::ifstream& ifs, std::string& path);
 
 private:
     virtual bool operator>> (std::shared_ptr<NodeAST>&) override;

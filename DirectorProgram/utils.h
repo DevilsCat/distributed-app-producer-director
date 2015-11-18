@@ -8,25 +8,9 @@
 #include <fstream>
 #include <string>
 
-// Stores where the input file is (derived from configure file)
-extern std::string path_string;
-
-// Stores if the user set it to override.
-extern bool override_flag;
-
 //
-// SetPathFromArg()
-// This function set the path for all inputfiles given the input configure file path
-// and store the path into global variable path_string.
-//
-void SetPathFromArg(std::string const &arg);
-
-//
-// SetOverrideFlagFromArg()
-// This function sets the override flag given the input arguments, and store into
-// a global flag.
-//
-void SetOverrideFlagFromArg(std::string const &arg);
+// GetFilePath()
+std::string GetFilePath(const std::string& str);
 
 //
 // ParseFile()
@@ -56,4 +40,16 @@ int ParseFile(std::ifstream& in, Container& c, void(*func) (unsigned int idx, st
 }
 
 std::string pad_whitespace(unsigned int n);
+
+unsigned to_number(char* num_str);
+
+unsigned to_number(const std::string& num_str);
+
+bool is_number(char* s);
+
+bool is_number(const std::string& s);
+
+bool is_ip_addr(char* s);
+
+bool is_filename(char* s);
 #endif

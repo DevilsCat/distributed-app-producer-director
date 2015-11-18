@@ -30,7 +30,12 @@ public:
 	// Public constructor
 	// Only keeps track of a reference to the Play in which it is performing
 	//
-	Player(Play& p);
+	Player();
+
+    //
+    // SetPlay()
+    //
+    void SetPlay(Play* p);
 
 	//
 	// Read()

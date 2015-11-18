@@ -5,8 +5,8 @@
 #include "PartParser.h"
 #include "ProgramException.h"
 
-PartParser::PartParser(std::ifstream& ifs) :
-    ifs_(std::move(ifs)), part_scanner_(ifs_) 
+PartParser::PartParser(std::ifstream& ifs, const std::string& path) :
+    ifs_(move(ifs)), path_(path), part_scanner_(ifs_, path_)
 {
     if (!ifs_.is_open()) {
         throw ProgramException("part file open failed.", ProgramException::ExceptionType(errno));

@@ -5,8 +5,8 @@
 #include "Scanners.h"
 #include "utils.h"
 
-Scanner::Scanner(std::ifstream& ifs) :
-    ifs_(ifs)
+Scanner::Scanner(std::ifstream& ifs, std::string path) :
+    path_(path), ifs_(ifs)
 {}
 
 Scanner::~Scanner() {}
@@ -29,9 +29,9 @@ std::shared_ptr<NodeAST> Scanner::pop() {
 
 // class ScriptScanner
 ScriptScanner::ScriptScanner(std::ifstream& ifs) :
-Scanner(ifs),
-SCENE_RE("\\[scene\\] (.*)"),
-FRAG_RE("(.+)\\.txt")
+    Scanner(ifs),
+    SCENE_RE("\\[scene\\] (.*)"),
+    FRAG_RE("(.+)\\.txt")
 {
     if (ifs_.is_open() && !ifs_.eof()) { // store the first container pointer.
         *this >> ptr_;
@@ -67,8 +67,8 @@ bool ScriptScanner::operator>> (std::shared_ptr<NodeAST>& container_ptr) {
 }
 
 // PartScanner
-PartScanner::PartScanner(std::ifstream& ifs) :
-Scanner(ifs), CONFIG_RE("^(.+) (.+\\.txt)$")
+PartScanner::PartScanner(std::ifstream& ifs, std::string& path) :
+Scanner(ifs, path), CONFIG_RE("^(.+) (.+\\.txt)$")
 {
     if (ifs_.is_open() && !ifs_.eof()) {
         *this >> ptr_;
@@ -91,7 +91,7 @@ bool PartScanner::operator>>(std::shared_ptr<NodeAST>& container_ptr) {
 
     if (std::regex_search(line, match, CONFIG_RE) && match.size() == 3) {
         std::string character_name = match.str(1);
-        container_ptr = std::make_shared<PartAST>(character_name, std::string(path_string + match.str(2)));
+        container_ptr = std::make_shared<PartAST>(character_name, std::string(path_ + match.str(2)));
     }
     else {
         container_ptr = std::make_shared<UnknownNodeAST>();

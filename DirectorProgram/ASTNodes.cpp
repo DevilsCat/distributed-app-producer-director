@@ -1,6 +1,6 @@
 ﻿#include "stdafx.h"
 #include "ASTNodes.h"
-#include "Visitor.h"
+#include "Visitors.h"
 
 NodeAST::~NodeAST()
 {}
@@ -22,16 +22,16 @@ ScriptAST::ScriptAST(std::string& s) : NodeAST(SCRIPT, s) {}
 
 void ScriptAST::accept(Visitor& v) {
     v.Visit(this);
-
     std::vector<std::shared_ptr<NodeAST>>::const_iterator it = Children_.begin();
     for (; it != Children_.end(); ++it) {
         std::dynamic_pointer_cast<SceneAST>(*it)->accept(v);
     }
+    v.OnPostVisit(this);
 }
 
 // SceneAST
 SceneAST::SceneAST(std::string& s) :
-NodeAST(SCENE, s)
+    NodeAST(SCENE, s)
 {}
 
 void SceneAST::accept(Visitor& v) {
@@ -40,11 +40,12 @@ void SceneAST::accept(Visitor& v) {
     for (; it != Children_.end(); ++it) {
         std::dynamic_pointer_cast<FragmentAST>(*it)->accept(v);
     }
+    v.OnPostVisit(this);
 }
 
 // FragmentAST
 FragmentAST::FragmentAST(std::string& s) :
-NodeAST(FRAGEMENT, s)
+    NodeAST(FRAGEMENT, s)
 {}
 
 void FragmentAST::accept(Visitor& v) {
@@ -53,26 +54,29 @@ void FragmentAST::accept(Visitor& v) {
     for (; it != Children_.end(); ++it) {
         std::dynamic_pointer_cast<PartAST>(*it)->accept(v);
     }
+    v.OnPostVisit(this);
 }
 
 // PartAST
 PartAST::PartAST(std::string& name, std::string& dialog_filename) :
-NodeAST(PART, name), dialog_filename_(dialog_filename)
+    NodeAST(PART, name), dialog_filename_(dialog_filename)
 {}
 
 void PartAST::accept(Visitor& v) {
     v.Visit(this);
+    v.OnPostVisit(this);
 }
 
 // UnknownNodeAST
 UnknownNodeAST::UnknownNodeAST() :
-NodeAST()
+    NodeAST()
 {}
 
 UnknownNodeAST::UnknownNodeAST(std::string& s) :
-NodeAST(UNKNOWN, s)
+    NodeAST(UNKNOWN, s)
 {}
 
 void UnknownNodeAST::accept(Visitor& v) {
     v.Visit(this);
+    v.OnPostVisit(this);
 }

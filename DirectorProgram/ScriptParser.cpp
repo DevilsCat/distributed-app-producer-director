@@ -5,7 +5,7 @@
 #include "ScriptParser.h"
 #include "PartParser.h"
 #include "utils.h"
-#include "PrintVisitor.h"
+#include "Visitors.h"
 #include "ProgramException.h"
 
 ScriptParser::ScriptParser(std::string& s) :
@@ -15,6 +15,8 @@ ScriptParser::ScriptParser(std::string& s) :
     if (!ifs_.is_open()) {
         throw ProgramException("script file open failed.", ProgramException::ExceptionType(errno));
     }
+    // set path from given filename
+    path_ = GetFilePath(s);
 }
 
 void ScriptParser::Parse() {
@@ -22,11 +24,11 @@ void ScriptParser::Parse() {
     ifs_.close();
 }
 
-std::shared_ptr<ScriptAST> ScriptParser::script_ptr() {
+std::shared_ptr<ScriptAST> ScriptParser::script_ptr() const {
     return script_ptr_;
 }
 
-void ScriptParser::PrintScript() {
+void ScriptParser::PrintScript() const {
     PrintVisitor p;
     script_ptr_->accept(p);
 }
@@ -63,9 +65,9 @@ std::shared_ptr<FragmentAST> ScriptParser::ParseFragement() {
 
     std::shared_ptr<FragmentAST> frag_ptr = std::dynamic_pointer_cast<FragmentAST>(scanner_.pop());
 
-    std::ifstream part_ifs(path_string + frag_ptr->string_);
+    std::ifstream part_ifs(path_ + frag_ptr->string_);
 
-    PartParser p(part_ifs);
+    PartParser p(part_ifs, path_);
 
     p.Parse(); // parse the config file
 

@@ -79,21 +79,21 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="files\Guildenstern_hamlet_ii_2a.txt" />
-    <Text Include="files\hamlet_act_ii_scene_1a.txt" />
-    <Text Include="files\hamlet_act_ii_scene_1b.txt" />
-    <Text Include="files\hamlet_act_ii_scene_2a.txt" />
-    <Text Include="files\hamlet_ii_1a_config.txt" />
-    <Text Include="files\hamlet_ii_1b_config.txt" />
-    <Text Include="files\hamlet_ii_2a_config.txt" />
-    <Text Include="files\King_hamlet_ii_2a.txt" />
-    <Text Include="files\Ophelia_hamlet_ii_1b.txt" />
-    <Text Include="files\partial_hamlet_act_ii_script.txt" />
-    <Text Include="files\Polonius_hamlet_ii_1a.txt" />
-    <Text Include="files\Polonius_hamlet_ii_1b.txt" />
-    <Text Include="files\Queen_hamlet_ii_2a.txt" />
-    <Text Include="files\Reynaldo_hamlet_ii_1a.txt" />
-    <Text Include="files\Rosencrantz_hamlet_ii_2a.txt" />
+    <Text Include="files\hamlet\Guildenstern_hamlet_ii_2a.txt" />
+    <Text Include="files\hamlet\hamlet_act_ii_scene_1a.txt" />
+    <Text Include="files\hamlet\hamlet_act_ii_scene_1b.txt" />
+    <Text Include="files\hamlet\hamlet_act_ii_scene_2a.txt" />
+    <Text Include="files\hamlet\hamlet_ii_1a_config.txt" />
+    <Text Include="files\hamlet\hamlet_ii_1b_config.txt" />
+    <Text Include="files\hamlet\hamlet_ii_2a_config.txt" />
+    <Text Include="files\hamlet\King_hamlet_ii_2a.txt" />
+    <Text Include="files\hamlet\Ophelia_hamlet_ii_1b.txt" />
+    <Text Include="files\hamlet\partial_hamlet_act_ii_script.txt" />
+    <Text Include="files\hamlet\Polonius_hamlet_ii_1a.txt" />
+    <Text Include="files\hamlet\Polonius_hamlet_ii_1b.txt" />
+    <Text Include="files\hamlet\Queen_hamlet_ii_2a.txt" />
+    <Text Include="files\hamlet\Reynaldo_hamlet_ii_1a.txt" />
+    <Text Include="files\hamlet\Rosencrantz_hamlet_ii_2a.txt" />
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
@@ -107,7 +107,6 @@
     <ClInclude Include="Play.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="play_t.h" />
-    <ClInclude Include="PrintVisitor.h" />
     <ClInclude Include="ProgramException.h" />
     <ClInclude Include="Scanners.h" />
     <ClInclude Include="ScriptParser.h" />
@@ -115,7 +114,7 @@
     <ClInclude Include="synchronized_list.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="utils.h" />
-    <ClInclude Include="Visitor.h" />
+    <ClInclude Include="Visitors.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ASTNodes.cpp" />
@@ -125,7 +124,6 @@
     <ClCompile Include="PartParser.cpp" />
     <ClCompile Include="Play.cpp" />
     <ClCompile Include="Player.cpp" />
-    <ClCompile Include="PrintVisitor.cpp" />
     <ClCompile Include="ProgramException.cpp" />
     <ClCompile Include="Scanners.cpp" />
     <ClCompile Include="ScriptParser.cpp" />
@@ -134,7 +132,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="utils.cpp" />
-    <ClCompile Include="Visitor.cpp" />
+    <ClCompile Include="Visitors.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
