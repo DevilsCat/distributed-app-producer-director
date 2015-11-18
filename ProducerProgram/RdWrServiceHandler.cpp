@@ -2,13 +2,17 @@
 #include "RdWrServiceHandler.h"
 #include <ace/OS.h>
 
+RdWrServiceHandler::RdWrServiceHandler(): producer_(*Producer::instance()) {}
+
+RdWrServiceHandler::RdWrServiceHandler(Producer& producer) : producer_(producer) {}
+
 RdWrServiceHandler::~RdWrServiceHandler() {
     ACE_DEBUG((LM_INFO, "[%x]RdWrServiceHandler: Connection Destroyed.\n", this));
     if (ACE_Handler::handle() != ACE_INVALID_HANDLE)
         ACE_OS::closesocket(ACE_Handler::handle());
 
     // Remove this handler from producer handlers container.
-    Producer::instance()->RemoveHandler(this);
+    producer_.RemoveHandler(this);
 }
 
 void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_block) {
@@ -23,7 +27,7 @@ void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_
     }
 
     // FIXME @Proactor thread?, add this handler to producer.
-    Producer::instance()->AddHandler(this);
+    producer_.AddHandler(this);
 
     InvokeNewRead();
 }

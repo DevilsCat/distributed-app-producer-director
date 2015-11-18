@@ -10,7 +10,7 @@
 #include <thread>
 #include <ace/Asynch_Acceptor.h>
 #include <ace/Proactor.h>
-#include "RdWrServiceHandler.h"
+#include "DirectorAsynchAcceptor.h"
 
 int main(int argc, char* argv[])
 {
@@ -28,7 +28,7 @@ int main(int argc, char* argv[])
 
     //Config the aio_acceptor
     ACE_INET_Addr addr(1234, ACE_LOCALHOST);
-    ACE_Asynch_Acceptor<RdWrServiceHandler> aio_acceptor;
+    DirectorAsynchAcceptor aio_acceptor;
     if (aio_acceptor.open(addr) != 0) {
         ACE_ERROR_RETURN((LM_ERROR, ACE_TEXT("%p\n"),
             ACE_TEXT("acceptor open")), 1);

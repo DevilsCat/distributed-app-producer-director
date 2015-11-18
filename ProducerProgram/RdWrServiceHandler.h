@@ -7,6 +7,9 @@
 
 class RdWrServiceHandler : public ACE_Service_Handler {
 public:
+    RdWrServiceHandler();
+    explicit RdWrServiceHandler(Producer& producer);
+
     ~RdWrServiceHandler();
 
     virtual void open(ACE_HANDLE new_handle, ACE_Message_Block& message_block) override;
@@ -21,7 +24,7 @@ private:
 
     ACE_Asynch_Read_Stream reader_;
     ACE_Asynch_Write_Stream writer_;
-
+    Producer& producer_;
 };
 
 #endif

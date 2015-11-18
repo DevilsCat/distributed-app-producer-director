@@ -85,6 +85,7 @@
     <ClInclude Include="CommandEventHandler.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Commands.h" />
+    <ClInclude Include="DirectorAsynchAcceptor.h" />
     <ClInclude Include="RdWrServiceHandler.h" />
     <ClInclude Include="StdInputHandler.h" />
     <ClInclude Include="Producer.h" />
@@ -96,6 +97,7 @@
   <ItemGroup>
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Commands.cpp" />
+    <ClCompile Include="DirectorAsynchAcceptor.cpp" />
     <ClCompile Include="RdWrServiceHandler.cpp" />
     <ClCompile Include="StdInputHandler.cpp" />
     <ClCompile Include="Producer.cpp" />

@@ -48,6 +48,9 @@
     <ClInclude Include="RdWrServiceHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DirectorAsynchAcceptor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -70,6 +73,9 @@
     </ClCompile>
     <ClCompile Include="RdWrServiceHandler.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DirectorAsynchAcceptor.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
