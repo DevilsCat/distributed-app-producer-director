@@ -82,15 +82,48 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Active_Object.h" />
+    <ClInclude Include="ASTNodes.h" />
+    <ClInclude Include="Director.h" />
+    <ClInclude Include="InterruptFlag.h" />
+    <ClInclude Include="InterruptibleThread.h" />
+    <ClInclude Include="Message.h" />
+    <ClInclude Include="PartParser.h" />
+    <ClInclude Include="PartScanner.h" />
+    <ClInclude Include="Play.h" />
+    <ClInclude Include="Player.h" />
+    <ClInclude Include="play_t.h" />
+    <ClInclude Include="PrintVisitor.h" />
+    <ClInclude Include="ProgramException.h" />
+    <ClInclude Include="Scanner.h" />
+    <ClInclude Include="ScriptParser.h" />
+    <ClInclude Include="ScriptScanner.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="synchronized_list.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="utils.h" />
+    <ClInclude Include="Visitor.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ASTNodes.cpp" />
+    <ClCompile Include="Director.cpp" />
     <ClCompile Include="DirectorProgram.cpp" />
+    <ClCompile Include="InterruptFlag.cpp" />
+    <ClCompile Include="PartParser.cpp" />
+    <ClCompile Include="PartScanner.cpp" />
+    <ClCompile Include="Play.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="PrintVisitor.cpp" />
+    <ClCompile Include="ProgramException.cpp" />
+    <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="ScriptParser.cpp" />
+    <ClCompile Include="ScriptScanner.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="utils.cpp" />
+    <ClCompile Include="Visitor.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
