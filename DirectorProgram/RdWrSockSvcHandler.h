@@ -3,6 +3,7 @@
 #include <ace/Svc_Handler.h>
 #include <ace/SOCK_Stream.h>
 #include "Director.h"
+#include "SignalEventHandler.h"
 
 class RdWrSockSvcHandler : public ACE_Svc_Handler<ACE_SOCK_STREAM, ACE_NULL_SYNCH>   {
 public:
@@ -18,7 +19,8 @@ public:
 
     virtual int open(void* acceptor_or_connector) override {
         ACE_DEBUG((LM_INFO, "[%x]RdWrSockSvcHandler Connection Established\n", this));
-        ACE_Reactor::instance()->register_handler(this, READ_MASK | WRITE_MASK);
+        ACE_Reactor::instance()->register_handler(this, READ_MASK);
+        ACE_Reactor::instance()->register_handler(SIGINT, new SignalEventHandler);
         return 0;
     }
 
@@ -37,10 +39,6 @@ public:
                 ACE_Reactor::instance()->end_event_loop();
             }
         }
-        return 0;
-    }
-
-    virtual int handle_output(ACE_HANDLE fd) override {
         return 0;
     }
 

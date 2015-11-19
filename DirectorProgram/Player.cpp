@@ -39,7 +39,7 @@ void Player::Act(const std::string& name, const unsigned& frag_number) {
 
 	std::map<play_t::number_t, play_t::dialog_t>::iterator it = play_map_.begin();
 	for (; it != play_map_.end(); ++it) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
+        std::this_thread::sleep_for(std::chrono::milliseconds(20));  // make program running slowly for debugging.
 		p_->Recite(it, frag_number);
 	}
 
@@ -91,14 +91,15 @@ void Player::Service(std::shared_ptr<Message<bool>> msg_ptr) {
 }
 
 void Player::Exit() {
+    if (!IsActive()) return;  // No need to invoke exit, since the background thread is inactive.
+
+    InterruptService();  // be interrupted when it's in progress
+    
     std::shared_ptr<Message<bool>> msg = Message<bool>::MakeMessage(EXIT);
     std::future<bool> uf = msg->GetFuture();
     enqueue(*msg);
-    uf.get();
-}
 
-void Player::InterruptCurrentPlay() {
-    InterruptService();
+    uf.get();  // Block and wait until it quit.
 }
 
 void Player::ReadLine(unsigned int idx, std::string &line, Player& p) {

@@ -26,31 +26,17 @@ public:
     //
     // Director stops current play that performs in background
     //
-    void Stop() {
-        if (available_state_) return;
-        player_futures_.clear();
-        for_each(players_.begin(), players_.end(), std::mem_fn(&Player::InterruptCurrentPlay));
-        for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Exit));
-    }
+    void Stop();
 
-    void Start(unsigned idx) {
-        if (!available_state_) return;
-        for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Activate));
-        Cue(idx);
-    }
+    void Start(unsigned idx);
 
-	//
+    //
 	// Cue()
 	// Repeatedly hand off the name of a character and the name of a part definition file for that
 	// character, and a scene fragment number, to a Player, and with the information they contain 
 	// run the Player's read and act methods to perform that part within the play.
     //
 	void Cue(unsigned play_idx);
-
-    //
-    // WaitForAllPartsDone()
-    //
-    int WaitForAllPartsDone();
 
     virtual int handle_timeout(const ACE_Time_Value& current_time, const void* act) override;
     virtual int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
@@ -67,10 +53,10 @@ private:
     std::string script_file_string_;
 
     // A numeric for the minimum number of players to construct.
-    size_t minimum_players_;
+    size_t min_nplayers_;
 
     // A numeric for the maximum number of players to construct.
-    size_t maximum_players_;
+    size_t max_nplayers_;
 
     // a container that holds the titles of the scenes (the same as in Play class)
     std::vector<std::string> scene_titles_;
@@ -84,9 +70,7 @@ private:
     // a container of script objects to store the whole script tree
     std::vector<std::shared_ptr<ScriptAST>> scripts_;
 
-    unsigned int frag_counter;
-
-    unsigned int player_idx_;
+    unsigned int select_idx_;
 
     std::vector<std::future<bool>> player_futures_;
 

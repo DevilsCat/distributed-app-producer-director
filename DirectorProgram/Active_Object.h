@@ -60,6 +60,11 @@ public:
         }
     }
 
+    bool IsActive() const {
+        std::lock_guard<std::mutex> lk(mut);
+        return active_f_;
+    }
+
     //
     // InterruptService()
     // Allows invocator to interrupt the currently Service.
@@ -126,7 +131,7 @@ private:
     bool active_f_;
 
     /* extra part: a mutex for actvie_f_ */
-    std::mutex mut;
+    mutable std::mutex mut;
 
     // Stores a pointer for a on-handling message.
     std::shared_ptr<Message<T>> msg_ptr_;

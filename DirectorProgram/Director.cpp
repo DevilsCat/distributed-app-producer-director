@@ -10,11 +10,9 @@
 
 #define MAX(X,Y)    ((X) > (Y) ? (X) : (Y))
 #undef GetExceptionCode
-Director::Director(std::vector<std::string> script_filenames, unsigned minimum_players) :
-    minimum_players_(minimum_players),
-    maximum_players_(0),
-    frag_counter(0),
-    player_idx_(0),
+
+Director::Director(std::vector<std::string> script_filenames, unsigned min_nplayers) :
+    min_nplayers_(min_nplayers), max_nplayers_(0), select_idx_(0), 
     svc_handler_(nullptr)
 {
     // parse all files by given filenames
@@ -25,36 +23,35 @@ Director::Director(std::vector<std::string> script_filenames, unsigned minimum_p
     }
     
     // Traverse all parsed scripts to Generate Play and maximum players needed.
-    for (size_t i = 0; i < scripts_.size(); ++i) {
-        DirectorSkimVisitor visitor(scripts_[i]);
-        scripts_[i]->accept(visitor);
+    for (std::shared_ptr<ScriptAST> script : scripts_) {
+        DirectorSkimVisitor visitor(script);  // After this visit, visitor will get all scene titles 
+        script->accept(visitor);              // and number of players needed in each fragment.
         plays_.push_back(
             std::make_shared<Play>(visitor.scene_titles(), visitor.frag_nplayers())
         );
-        maximum_players_ = MAX(maximum_players_, visitor.max_nplayers());
-    }
+        max_nplayers_ = MAX(max_nplayers_, visitor.max_nplayers());  // Record the maximum number of
+    }                                                                // players needed in all scripts
 
-    size_t num = MAX(minimum_players_, maximum_players_);
-    for (size_t i = 0; i < num; ++i) {
+    // Generate maximum numbers of players.
+    size_t greater = MAX(min_nplayers_, max_nplayers_);
+    for (size_t i = 0; i < greater; ++i) {
         players_.push_back(std::make_shared<Player>());
     }
 }
 
 Director::~Director() {
     Stop();
-    //try {
-    //    // wait all parts to be finished, interrupts
-    //    // threads if any exception is thrown.
-    //    WaitForAllPartsDone();
-    //}
-    //catch (ProgramException&) {
-    //    // Invocate an interruption to those waiting threads.
-    //    for_each(players_.begin(), players_.end(), std::mem_fn(&Player::InterruptCurrentPlay));
-    //}
+}
 
-    //// Invocate a terminating signal to those "idle" waiting threads.
-    //for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Exit));
+void Director::Stop() {
+    player_futures_.clear();
+    for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Exit));
+}
 
+void Director::Start(unsigned idx) {
+    if (!available_state_) return;  // Not available means a play is on progress.
+    for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Activate));
+    Cue(idx);
 }
 
 void Director::Cue(unsigned play_idx) {
@@ -67,29 +64,7 @@ void Director::Cue(unsigned play_idx) {
 
     DirectorCueVisitor visitor(*this);
     scripts_[play_idx]->accept(visitor);
-}
 
-int Director::WaitForAllPartsDone() {
-    const unsigned kWaitTimeMilliseconds = 100;
-    // wait for every player done.
-    try {
-        while (!player_futures_.empty()) {
-            for (auto it = player_futures_.begin(); it != player_futures_.end(); ++it) {
-                std::future_status status;
-                status = it->wait_for(std::chrono::milliseconds(kWaitTimeMilliseconds));
-                if (status == std::future_status::ready) { // one task ready.
-                    it->get(); // might cause a runtime exception.
-                    player_futures_.erase(it);
-                    break;
-                }
-            }
-        }
-    } catch (ProgramException& e) {
-        // Invocate an interruption to those waiting threads.
-        for_each(players_.begin(), players_.end(), std::mem_fn(&Player::InterruptCurrentPlay));
-        return e.GetExceptionCode();
-    }
-    return 0;
 }
 
 int Director::handle_timeout(const ACE_Time_Value& current_time, const void* act) {
@@ -99,11 +74,9 @@ int Director::handle_timeout(const ACE_Time_Value& current_time, const void* act
     inavailable_str += '\n';
     if (player_futures_.empty()) {
         if (available_state_ == false) {
-            Stop();
             available_state_ = true;
             svc_handler_->peer().send_n(available_str.c_str(), available_str.size());
         }
-        //ACE_DEBUG((LM_INFO, "Director Available\n"));
         return 0;
     }
 
@@ -129,6 +102,8 @@ int Director::handle_timeout(const ACE_Time_Value& current_time, const void* act
         Stop();
     }
     
+    if (player_futures_.empty())  Stop();  // if normally finished, destroy all other threads.
+
     return 0;
 }
 
@@ -142,5 +117,5 @@ void Director::SetSvcHandler(RdWrSockSvcHandler* svc_handler) {
 }
 
 std::shared_ptr<Player> Director::Select() {
-    return players_[player_idx_++ % players_.size()];
+    return players_[select_idx_++ % players_.size()];
 }

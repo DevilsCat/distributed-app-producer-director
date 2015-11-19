@@ -41,7 +41,7 @@ bool is_number(const std::string& s) {
 }
 
 bool is_ip_addr(char* s) {
-    std::regex reg("\\d{1,3}(\\.\\d{1,3}){3}");
+    std::regex reg("\\d{1,3}(\\.\\d{1,3}){3}|localhost");
     return regex_match(std::string(s), reg);
 }
 

@@ -47,7 +47,7 @@ int main(int argc, char* argv[])
             if (command != nullptr)
                 CommandQueue::instance()->push(command);  // Queue up the command so that ACE_Reactor
                                                           // handler can handle it.
-            if (command->cmd_type == Command::kQuit)
+            if (command && command->cmd_type == Command::kQuit)
                 break;
         }
         catch (std::runtime_error& e) {

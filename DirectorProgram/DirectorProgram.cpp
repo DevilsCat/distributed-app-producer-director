@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
         director,
         nullptr,
         ACE_Time_Value(),
-        ACE_Time_Value(1, 0)
+        ACE_Time_Value(0, 10000)
     );
 
     ACE_INET_Addr addr(1234, ACE_LOCALHOST);
@@ -78,34 +78,6 @@ int main(int argc, char* argv[])
     }
 
     ACE_Reactor::instance()->run_event_loop();
-    // Test Director behavior.
-    /*director->Start(0);
-
-    std::this_thread::sleep_for(std::chrono::milliseconds(50));
-
-    director->Stop();
-
-    director->Start(0);
-
-    director->WaitForAllPartsDone();
-
-    director->Start(1);
-
-    director->WaitForAllPartsDone();*/
-
-    //int error_code = director->WaitForAllPartsDone();
-
-    //director->Start(1);  // Since its HS/HA, director need only cue once.
-
-    //error_code |= director->WaitForAllPartsDone();
-
-    //director->Start(0);
-
-    //error_code |= director->WaitForAllPartsDone();
-
-    //director->Start(1);
-
-    //error_code |= director->WaitForAllPartsDone();
 
     return 0;
 }

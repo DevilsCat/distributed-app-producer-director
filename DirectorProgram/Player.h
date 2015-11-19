@@ -65,15 +65,10 @@ public:
 
 	//
 	// Exit()
-	// Sends a termination Message to the background thread and wait for it exits.
+	// Sends a termination Message to the background thread and wait for it exits. Interrupted current
+    // Service if force flag is true, otherwise, exit after the message queue received this Message.
 	//
 	void Exit();
-
-    //
-    // InterruptCurrentPlay()
-    // Interrupts the current play that background Player is acting on.
-    //
-    void InterruptCurrentPlay();
 
 	//
 	// empty()
