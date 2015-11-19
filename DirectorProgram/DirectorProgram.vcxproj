@@ -41,6 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(Configuration)\tmp\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -108,6 +109,7 @@
     <ClInclude Include="Player.h" />
     <ClInclude Include="play_t.h" />
     <ClInclude Include="ProgramException.h" />
+    <ClInclude Include="RdWrSockSvcHandler.h" />
     <ClInclude Include="Scanners.h" />
     <ClInclude Include="ScriptParser.h" />
     <ClInclude Include="stdafx.h" />
@@ -125,6 +127,7 @@
     <ClCompile Include="Play.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProgramException.cpp" />
+    <ClCompile Include="RdWrSockSvcHandler.cpp" />
     <ClCompile Include="Scanners.cpp" />
     <ClCompile Include="ScriptParser.cpp" />
     <ClCompile Include="stdafx.cpp">

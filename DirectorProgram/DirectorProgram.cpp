@@ -5,6 +5,10 @@
 #include "Director.h"
 #include "utils.h"
 #include <iostream>
+#include <ace/Reactor.h>
+#include "RdWrSockSvcHandler.h"
+#include <ace/Connector.h>
+#include <ace/SOCK_Connector.h>
 
 #define MIN_ARG_NUM                 5
 #define PROGRAM_POS                 0
@@ -56,9 +60,26 @@ int main(int argc, char* argv[])
     }
 
     // Do some other stuffs
+    ACE_Reactor::instance()->schedule_timer (
+        director,
+        nullptr,
+        ACE_Time_Value(),
+        ACE_Time_Value(1, 0)
+    );
 
+    ACE_INET_Addr addr(1234, ACE_LOCALHOST);
+
+    ACE_Connector<RdWrSockSvcHandler, ACE_SOCK_Connector> connector;
+
+    RdWrSockSvcHandler* svc_handler = new RdWrSockSvcHandler(director);
+    director->SetSvcHandler(svc_handler);
+    if (connector.connect(svc_handler, addr) == -1) {
+        ACE_ERROR((LM_ERROR, "Connection Failed"));
+    }
+
+    ACE_Reactor::instance()->run_event_loop();
     // Test Director behavior.
-    director->Start(0);
+    /*director->Start(0);
 
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
@@ -70,7 +91,7 @@ int main(int argc, char* argv[])
 
     director->Start(1);
 
-    director->WaitForAllPartsDone();
+    director->WaitForAllPartsDone();*/
 
     //int error_code = director->WaitForAllPartsDone();
 
@@ -85,8 +106,6 @@ int main(int argc, char* argv[])
     //director->Start(1);
 
     //error_code |= director->WaitForAllPartsDone();
-
-    delete director;
 
     return 0;
 }

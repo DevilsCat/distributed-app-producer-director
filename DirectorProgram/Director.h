@@ -13,8 +13,9 @@
 #include <memory>
 #include "ASTNodes.h"
 #include "Visitors.h"
+#include <ace/Event_Handler.h>
 
-class Director {
+class Director : public ACE_Event_Handler {
     friend class DirectorSkimVisitor;
     friend class DirectorCueVisitor;
 public:
@@ -26,12 +27,14 @@ public:
     // Director stops current play that performs in background
     //
     void Stop() {
+        if (available_state_) return;
         player_futures_.clear();
         for_each(players_.begin(), players_.end(), std::mem_fn(&Player::InterruptCurrentPlay));
         for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Exit));
     }
 
     void Start(unsigned idx) {
+        if (!available_state_) return;
         for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Activate));
         Cue(idx);
     }
@@ -49,6 +52,10 @@ public:
     //
     int WaitForAllPartsDone();
 
+    virtual int handle_timeout(const ACE_Time_Value& current_time, const void* act) override;
+    virtual int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
+
+    void SetSvcHandler(class RdWrSockSvcHandler*);
 private:
     //
     // Select()
@@ -82,6 +89,10 @@ private:
     unsigned int player_idx_;
 
     std::vector<std::future<bool>> player_futures_;
+
+    RdWrSockSvcHandler* svc_handler_;
+
+    bool available_state_ = true;
 };
 
 #endif

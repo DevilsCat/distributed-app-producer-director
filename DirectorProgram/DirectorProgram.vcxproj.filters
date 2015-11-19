@@ -123,6 +123,9 @@
     <ClInclude Include="Visitors.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="RdWrSockSvcHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -162,6 +165,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Visitors.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RdWrSockSvcHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

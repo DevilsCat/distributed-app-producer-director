@@ -12,12 +12,7 @@ Player::~Player() {}
 
 Player::Player() :
 	p_(nullptr) 
-{
-    // Since we want to let Player to work forever as long as it is created
-    // We Activate this Player (Active Object) at constructor (and this is the
-    // only once activation.)
-    Activate();
-}
+{}
 
 void Player::SetPlay(Play* p) { p_ = p; }
 
@@ -44,6 +39,7 @@ void Player::Act(const std::string& name, const unsigned& frag_number) {
 
 	std::map<play_t::number_t, play_t::dialog_t>::iterator it = play_map_.begin();
 	for (; it != play_map_.end(); ++it) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
 		p_->Recite(it, frag_number);
 	}
 

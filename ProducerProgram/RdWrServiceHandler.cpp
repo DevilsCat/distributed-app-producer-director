@@ -39,13 +39,14 @@ void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result
         delete this;
     } else {
         ACE_DEBUG((LM_INFO, "%c", *mb.rd_ptr()));
-        if (this->writer_.write(mb, mb.length()) != 0) {  //write failed
-            ACE_ERROR((LM_ERROR, ACE_TEXT("%p\n"),
-                ACE_TEXT("RdWrServiceHandler starting write")));
-            mb.release();
-        } else {
-            InvokeNewRead();
-        }
+        InvokeNewRead();
+        //if (this->writer_.write(mb, mb.length()) != 0) {  //write failed
+        //    ACE_ERROR((LM_ERROR, ACE_TEXT("%p\n"),
+        //        ACE_TEXT("RdWrServiceHandler starting write")));
+        //    mb.release();
+        //} else {
+        //    InvokeNewRead();
+        //}
     }
 }
 
