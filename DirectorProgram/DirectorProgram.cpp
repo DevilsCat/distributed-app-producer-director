@@ -58,23 +58,35 @@ int main(int argc, char* argv[])
     // Do some other stuffs
 
     // Test Director behavior.
-    director->Cue(0);
+    director->Start(0);
 
-    int error_code = director->WaitForAllPartsDone();
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
 
-    director->Cue(1);  // Since its HS/HA, director need only cue once.
+    director->Stop();
 
-    error_code |= director->WaitForAllPartsDone();
+    director->Start(0);
 
-    director->Cue(0);
+    director->WaitForAllPartsDone();
 
-    error_code |= director->WaitForAllPartsDone();
+    director->Start(1);
 
-    director->Cue(1);
+    director->WaitForAllPartsDone();
 
-    error_code |= director->WaitForAllPartsDone();
+    //int error_code = director->WaitForAllPartsDone();
+
+    //director->Start(1);  // Since its HS/HA, director need only cue once.
+
+    //error_code |= director->WaitForAllPartsDone();
+
+    //director->Start(0);
+
+    //error_code |= director->WaitForAllPartsDone();
+
+    //director->Start(1);
+
+    //error_code |= director->WaitForAllPartsDone();
 
     delete director;
 
-    return error_code;
+    return 0;
 }

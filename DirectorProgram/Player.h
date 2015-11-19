@@ -10,7 +10,7 @@
 #include "Message.h"
 #include <future>
 
-class Player: ActiveObject<bool> {
+class Player: public ActiveObject<bool> {
     //
     // enum MessageType
     // Used to Declare the protocal of Message used between Invocator (Director Thread)

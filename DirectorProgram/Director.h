@@ -22,6 +22,20 @@ public:
 
     ~Director();
 
+    //
+    // Director stops current play that performs in background
+    //
+    void Stop() {
+        player_futures_.clear();
+        for_each(players_.begin(), players_.end(), std::mem_fn(&Player::InterruptCurrentPlay));
+        for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Exit));
+    }
+
+    void Start(unsigned idx) {
+        for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Activate));
+        Cue(idx);
+    }
+
 	//
 	// Cue()
 	// Repeatedly hand off the name of a character and the name of a part definition file for that
@@ -55,7 +69,6 @@ private:
     std::vector<std::string> scene_titles_;
 
     // a container of pointers that hold dynamicall allocated Play when this object is contructed.
-    std::shared_ptr<Play> play_;
     std::vector<std::shared_ptr<Play>> plays_;
 
     // a container to store the recruited Players

@@ -38,6 +38,7 @@ public:
 	void shut_down() {
 		std::lock_guard<std::mutex> lk(mut);
 		shutdown_f_ = true;
+        list_.clear();
 		cond_consume.notify_all();
 		cond_provide.notify_all();
 	}
