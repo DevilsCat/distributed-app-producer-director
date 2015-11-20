@@ -3,6 +3,7 @@
 #include "Utils.h"
 #include <string>
 #include <vector>
+#include <conio.h>
 
 StdInputHandler* StdInputHandler::handler_ = nullptr;
 
@@ -24,7 +25,12 @@ StdInputHandler::~StdInputHandler() {
 
 std::string StdInputHandler::GetLine() const {
     std::string line;
-    std::getline(std_cin_, line);
+    int ch;
+    do {
+        ch = _getch();
+        if (ch != '\r')  line += char(ch);
+        else             break;
+    } while (true);
     return line;
 }
 
