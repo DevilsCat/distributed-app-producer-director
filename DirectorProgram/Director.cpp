@@ -22,7 +22,7 @@ Director::Director(std::vector<std::string> script_filenames, unsigned min_nplay
         scripts_.push_back(parser.script_ptr());
     }
     
-    size_t max_nplayers = 0;
+    size_t max_nplayers = 0;  // Stores maximum numbers that needed in all plays.
     // Traverse all parsed scripts to Generate Play and maximum players needed.
     for (std::shared_ptr<ScriptAST> script : scripts_) {
         DirectorSkimVisitor visitor(script);  // After this visit, visitor will get all scene titles 
@@ -45,7 +45,7 @@ Director::Director(std::vector<std::string> script_filenames, unsigned min_nplay
 }
 
 Director::~Director() {
-    Stop();
+    Stop();  // Guard this objects, stops all the background player anyway.
 }
 
 void Director::Stop() {
@@ -85,6 +85,10 @@ void Director::SetSvcHandler(RdWrSockSvcHandler* svc_handler) {
     svc_handler_ = svc_handler;
 }
 
+void Director::set_play_idx(unsigned idx) {
+    play_idx_ = idx;
+}
+
 std::shared_ptr<Player> Director::Select() {
     return players_[select_idx_++ % players_.size()];
 }
@@ -102,7 +106,7 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnIdleState(I
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStartState(InputCode) {
     ACE_DEBUG((LM_INFO, "OnStartState -> ok\n"));
-    Start(0);
+    Start(play_idx_);
     return kOk;
 }
 

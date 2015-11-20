@@ -49,6 +49,8 @@ public:
 
     void SetSvcHandler(class RdWrSockSvcHandler*);
 
+    void set_play_idx(unsigned idx);
+
 protected:
     virtual void on_machine_setup() override;
 private:
@@ -81,6 +83,8 @@ private:
 
     // an index used in thread (player) selection machanism.
     unsigned select_idx_;
+
+    unsigned play_idx_;
 
     std::vector<std::future<bool>> player_futures_;
 

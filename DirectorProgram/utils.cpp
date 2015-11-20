@@ -49,3 +49,11 @@ bool is_filename(char* s) {
     std::regex reg(".+\\.txt");
     return regex_match(std::string(s), reg);
 }
+
+std::vector<std::string> tokenize(const std::string& line) {
+    std::istringstream iss(line);
+    return std::vector<std::string> {
+        std::istream_iterator<std::string> {iss},
+        std::istream_iterator<std::string> {}
+    };
+}

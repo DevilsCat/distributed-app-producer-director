@@ -132,6 +132,9 @@
     <ClInclude Include="GenericFiniteStateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SockMsgHandler.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -175,6 +178,9 @@
     </ClCompile>
     <ClCompile Include="RdWrSockSvcHandler.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="SockMsgHandler.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

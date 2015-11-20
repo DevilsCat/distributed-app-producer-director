@@ -35,7 +35,7 @@ void Producer::Start(const unsigned& num) {
     // Select handler by given index.
     // Call send method in the handler to send message to that Director.
     if (handlers_.size() <= num){ return; }  //FIXME do we want to handle this using exception
-    std::string msg("start");
+    std::string msg("start 0");
     handlers_[num]->InvokeSend(msg);
 }
 

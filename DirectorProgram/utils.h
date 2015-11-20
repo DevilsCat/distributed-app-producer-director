@@ -7,6 +7,8 @@
 #include "stdafx.h"
 #include <fstream>
 #include <string>
+#include <vector>
+#include <sstream>
 
 //
 // GetFilePath()
@@ -52,4 +54,6 @@ bool is_number(const std::string& s);
 bool is_ip_addr(char* s);
 
 bool is_filename(char* s);
+
+std::vector<std::string> tokenize(const std::string& line);
 #endif
