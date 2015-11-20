@@ -12,6 +12,7 @@
 #undef GetExceptionCode
 
 Director::Director(std::vector<std::string> script_filenames, unsigned min_nplayers) :
+    GenericFiniteStateMachine<StateCode, InputCode>(kEntry),
     min_nplayers_(min_nplayers), max_nplayers_(0), select_idx_(0), 
     svc_handler_(nullptr)
 {
@@ -37,6 +38,10 @@ Director::Director(std::vector<std::string> script_filenames, unsigned min_nplay
     for (size_t i = 0; i < greater; ++i) {
         players_.push_back(std::make_shared<Player>());
     }
+
+    // Setup Finite State Machine
+    GenericFiniteStateMachine<StateCode, InputCode>::setup();
+    run(inTimeout);
 }
 
 Director::~Director() {
@@ -68,42 +73,7 @@ void Director::Cue(unsigned play_idx) {
 }
 
 int Director::handle_timeout(const ACE_Time_Value& current_time, const void* act) {
-    std::string available_str("Available");
-    available_str += '\n';
-    std::string inavailable_str("Inavailable");
-    inavailable_str += '\n';
-    if (player_futures_.empty()) {
-        if (available_state_ == false) {
-            available_state_ = true;
-            svc_handler_->peer().send_n(available_str.c_str(), available_str.size());
-        }
-        return 0;
-    }
-
-    if (available_state_ == true) {
-        available_state_ = false;
-        svc_handler_->peer().send_n(inavailable_str.c_str(), inavailable_str.size());
-    }
-    
-    const unsigned kWaitTimeMilliseconds = 1;
-    std::vector<std::future<bool>>::iterator it = player_futures_.begin();
-    try {
-        while(it != player_futures_.end()) {
-            std::future_status status = it->wait_for(std::chrono::milliseconds(kWaitTimeMilliseconds));
-            if (status == std::future_status::ready) { // one task ready
-                it->get();
-                it = player_futures_.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    } catch (ProgramException& e) {
-        ACE_DEBUG((LM_INFO, "%s", e.what()));
-        Stop();
-    }
-    
-    if (player_futures_.empty())  Stop();  // if normally finished, destroy all other threads.
-
+    run(inTimeout);
     return 0;
 }
 
@@ -118,4 +88,83 @@ void Director::SetSvcHandler(RdWrSockSvcHandler* svc_handler) {
 
 std::shared_ptr<Player> Director::Select() {
     return players_[select_idx_++ % players_.size()];
+}
+
+GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnEntryState(InputCode input) {
+    ACE_DEBUG((LM_INFO, "OnEntryState:%d -> ok\n", input));
+    return kOk;
+}
+
+GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnIdleState(InputCode input) {
+    if (input == inQuit)  return kFail;
+    if (input == inStart) return kOk;
+    return kRepeat;
+}
+
+GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStartState(InputCode) {
+    ACE_DEBUG((LM_INFO, "OnStartState -> ok\n"));
+    Start(0);
+    return kOk;
+}
+
+GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnProgressState(InputCode input) {
+    const unsigned kWaitTimeMilliseconds = 1;
+    std::vector<std::future<bool>>::iterator it = player_futures_.begin();
+    try {
+        while(it != player_futures_.end()) {
+            std::future_status status = it->wait_for(std::chrono::milliseconds(kWaitTimeMilliseconds));
+            if (status == std::future_status::ready) { // one task ready
+                it->get();
+                it = player_futures_.erase(it);
+            } else {
+                ++it;
+            }
+        }
+    } catch (ProgramException& e) {
+        ACE_DEBUG((LM_INFO, "%s", e.what()));
+        return kOk;
+    }
+    
+    if (player_futures_.empty() || input == inStop)
+        return kOk;
+    if (input == inQuit)
+        return kFail;
+    return kRepeat;
+}
+
+GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStopState(InputCode input) {
+    ACE_DEBUG((LM_INFO, "OnStopState -> ok\n"));
+    Stop();
+    return kOk;
+}
+
+GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnQuitState(InputCode input) {
+    ACE_DEBUG((LM_INFO, "OnQuitState -> ok\n"));
+    Stop();
+    ACE_Reactor::instance()->end_event_loop();
+    return kOk;
+}
+
+void Director::on_machine_setup() {
+    ACE_DEBUG((LM_INFO, "On State Machine Setup\n"));
+
+    // Add state working functions
+    add_state_function(kEntry, std::bind(&Director::OnEntryState, this, std::placeholders::_1));
+    add_state_function(kIdle, std::bind(&Director::OnIdleState, this, std::placeholders::_1));
+    add_state_function(kStart, std::bind(&Director::OnStartState, this, std::placeholders::_1));
+    add_state_function(kProgress, std::bind(&Director::OnProgressState, this, std::placeholders::_1));
+    add_state_function(kStop, std::bind(&Director::OnStopState, this, std::placeholders::_1));
+    add_state_function(kQuit, std::bind(&Director::OnQuitState, this, std::placeholders::_1));
+
+    // Add transition rules
+    add_transition(kEntry, kOk, kIdle);
+    add_transition(kEntry, kFail, kQuit);
+    add_transition(kIdle, kOk, kStart);
+    add_transition(kIdle, kFail, kQuit);
+    add_transition(kIdle, kRepeat, kIdle);
+    add_transition(kStart, kOk, kProgress);
+    add_transition(kProgress, kOk, kStop);
+    add_transition(kProgress, kFail, kQuit);
+    add_transition(kProgress, kRepeat, kProgress);
+    add_transition(kStop, kOk, kIdle);
 }

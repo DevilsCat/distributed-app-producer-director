@@ -101,6 +101,7 @@
     <ClInclude Include="Active_Object.h" />
     <ClInclude Include="ASTNodes.h" />
     <ClInclude Include="Director.h" />
+    <ClInclude Include="GenericFiniteStateMachine.h" />
     <ClInclude Include="InterruptFlag.h" />
     <ClInclude Include="InterruptibleThread.h" />
     <ClInclude Include="Message.h" />

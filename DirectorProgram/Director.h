@@ -14,8 +14,14 @@
 #include "ASTNodes.h"
 #include "Visitors.h"
 #include <ace/Event_Handler.h>
+#include "GenericFiniteStateMachine.h"
 
-class Director : public ACE_Event_Handler {
+enum StateCode { kEntry, kIdle, kStart, kProgress, kStop, kQuit };
+enum InputCode { inTimeout, inStart, inStop, inQuit };
+
+class Director : 
+        public ACE_Event_Handler, 
+        public GenericFiniteStateMachine<StateCode, InputCode> {
     friend class DirectorSkimVisitor;
     friend class DirectorCueVisitor;
 public:
@@ -42,6 +48,9 @@ public:
     virtual int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
     void SetSvcHandler(class RdWrSockSvcHandler*);
+
+protected:
+    virtual void on_machine_setup() override;
 private:
     //
     // Select()
@@ -49,6 +58,15 @@ private:
     //
     std::shared_ptr<Player> Select();
 
+    //
+    // "Do-work" function in finite state machine
+    RetCode OnEntryState(InputCode);
+    RetCode OnIdleState(InputCode);
+    RetCode OnStartState(InputCode);
+    RetCode OnProgressState(InputCode);
+    RetCode OnStopState(InputCode);
+    RetCode OnQuitState(InputCode);
+    
     // A string for the name of a script file
     std::string script_file_string_;
 

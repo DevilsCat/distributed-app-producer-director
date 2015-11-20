@@ -32,11 +32,11 @@ public:
             std::string str(buf);
             ACE_DEBUG((LM_INFO, "%s\n", str.c_str()));
             if (str == "start")
-                director_->Start(0);
+                director_->run(inStart);
             else if (str == "stop")
-                director_->Stop();
+                director_->run(inStop);
             else if (str == "quit") {
-                ACE_Reactor::instance()->end_event_loop();
+                director_->run(inQuit);
             }
         }
         return 0;
