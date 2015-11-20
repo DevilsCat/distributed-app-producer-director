@@ -22,6 +22,13 @@ public:
         ACE_DEBUG((LM_INFO, "[%x]RdWrSockSvcHandler Connection Established\n", this));
         ACE_Reactor::instance()->register_handler(this, READ_MASK);
         ACE_Reactor::instance()->register_handler(SIGINT, new SignalEventHandler);
+        ACE_Reactor::instance()->schedule_timer(  // director can now run the state machine
+            director_,
+            nullptr,
+            ACE_Time_Value(),
+            ACE_Time_Value(0, 10000)  // FIXME should not hard code.
+        );
+        SockMsgHandler::instance()->set_feedback_proxy(this);
         return 0;
     }
 

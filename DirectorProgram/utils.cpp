@@ -15,6 +15,15 @@ std::string GetFilePath(const std::string& str) {
     return tmp_path + slash_string;
 }
 
+std::string GetFileName(const std::string& str) {
+    char drive[_MAX_DRIVE];
+    char dir[_MAX_DIR];
+    char fname[_MAX_FNAME];
+    char ext[_MAX_EXT];
+    _splitpath_s(str.c_str(), drive, dir, fname, ext);
+    return std::string(fname);
+}
+
 std::string pad_whitespace(unsigned n) {
 	std::string s;
 	for (unsigned i = 0; i < 2 * n; ++i) {

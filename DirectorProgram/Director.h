@@ -45,9 +45,8 @@ public:
 	void Cue(unsigned play_idx);
 
     virtual int handle_timeout(const ACE_Time_Value& current_time, const void* act) override;
-    virtual int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
-    void SetSvcHandler(class RdWrSockSvcHandler*);
+    virtual int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
     void set_play_idx(unsigned idx);
 
@@ -81,14 +80,14 @@ private:
     // a container of script objects to store the whole script tree
     std::vector<std::shared_ptr<ScriptAST>> scripts_;
 
+    std::vector<std::string> play_list_;
+
     // an index used in thread (player) selection machanism.
     unsigned select_idx_;
 
     unsigned play_idx_;
 
     std::vector<std::future<bool>> player_futures_;
-
-    RdWrSockSvcHandler* svc_handler_;
 };
 
 #endif

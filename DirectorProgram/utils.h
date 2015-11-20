@@ -13,7 +13,7 @@
 //
 // GetFilePath()
 std::string GetFilePath(const std::string& str);
-
+std::string GetFileName(const std::string& str);
 //
 // ParseFile()
 // this template function parse the file given filename, using user-provided function. non-negative/non-zero integer

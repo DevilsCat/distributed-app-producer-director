@@ -34,20 +34,12 @@ void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_
 
 void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result& result) {
     ACE_Message_Block& mb = result.message_block();
-    ACE_DEBUG((LM_INFO, "bytes transferred: %d\n", result.bytes_transferred()));
     if (!result.success() || result.bytes_transferred() == 0) {  //FIXME do we want to delete this handler?
         mb.release();
         delete this;
     } else {
-        ACE_DEBUG((LM_INFO, "%s", mb.rd_ptr()));
+        ACE_DEBUG((LM_INFO, "%s\n", mb.rd_ptr()));
         InvokeNewRead();
-        //if (this->writer_.write(mb, mb.length()) != 0) {  //write failed
-        //    ACE_ERROR((LM_ERROR, ACE_TEXT("%p\n"),
-        //        ACE_TEXT("RdWrServiceHandler starting write")));
-        //    mb.release();
-        //} else {
-        //    InvokeNewRead();
-        //}
     }
 }
 
@@ -71,7 +63,6 @@ int RdWrServiceHandler::InvokeSend(std::string& message) {
 void RdWrServiceHandler::InvokeNewRead(const unsigned& nbytes) {
     ACE_Message_Block *mb;
     ACE_NEW_NORETURN(mb, ACE_Message_Block(nbytes));
-    ACE_DEBUG((LM_INFO, "Block Space: %d\n", mb->space()));
     if (this->reader_.read(*mb, mb->space()) != 0) {
         ACE_ERROR((LM_ERROR, ACE_TEXT("%p\n"),
             ACE_TEXT("RdWrServiceHandler begin read")));

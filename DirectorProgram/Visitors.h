@@ -33,17 +33,18 @@ public:
 
 class DirectorSkimVisitor : public Visitor {
 public:
-    DirectorSkimVisitor(std::shared_ptr<ScriptAST>&);
     std::vector<std::string> scene_titles() const;
+    std::string play_name() const;
     std::vector<unsigned> frag_nplayers() const;
     unsigned max_nplayers() const;
 
+    virtual void Visit(ScriptAST* node) override;
     virtual void Visit(SceneAST* node) override;
     virtual void Visit(FragmentAST* node) override;
 private:
-    std::shared_ptr<ScriptAST> script_;
     std::vector<std::string> scene_titles_;
     std::vector<unsigned> frag_nplayers_;
+    std::string play_name_;
 };
 
 class DirectorCueVisitor : public Visitor {
