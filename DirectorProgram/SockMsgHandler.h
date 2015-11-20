@@ -14,20 +14,19 @@ public:
         RecvMsg(const MsgType& type_, const int& val_ = 0) : type(type_), val(val_) {}
     };
 
-    struct FeedbackMsg {
-        enum MsgType { kPlayList, kStatus, kAck };
-    };
-
     static SockMsgHandler* instance();
     SockMsgHandler();
     ~SockMsgHandler();
 
+    // Receive and interpret message sent from Producer. 
     RecvMsg Receive(const std::string& msg) const;
     RecvMsg Receive(char* msg) const;
 
+    // Send message to client.
     void set_feedback_proxy(RdWrSockSvcHandler *);
     void FeedbackPlayList(std::vector<std::string> plays) const;
     void FeedbackStatus(bool ready, unsigned cur_idx = 0) const;
+
 private:
     bool Validate(const std::string& msg, const RecvMsg::MsgType& msg_type) const;
     void SendFeedback(const std::string& msg) const;
