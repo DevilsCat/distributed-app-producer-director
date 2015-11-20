@@ -9,10 +9,10 @@ public:
     ConcreteFiniteStateMachine(const StateCode& cur_state)
         : GenericFiniteStateMachine<StateCode, InputCode>(cur_state) 
     {
-        add_state_function(kEntry, std::bind(&ConcreteFiniteStateMachine::entry_state, this));
-        add_state_function(kFoo, std::bind(&ConcreteFiniteStateMachine::foo_state, this));
-        add_state_function(kBar, std::bind(&ConcreteFiniteStateMachine::bar_state, this));
-        add_state_function(kEnd, std::bind(&ConcreteFiniteStateMachine::exit_state, this));
+        add_state_function(kEntry, bind(&ConcreteFiniteStateMachine::entry_state, this, std::placeholders::_1));
+        add_state_function(kFoo, bind(&ConcreteFiniteStateMachine::foo_state, this, std::placeholders::_1));
+        add_state_function(kBar, bind(&ConcreteFiniteStateMachine::bar_state, this, std::placeholders::_1));
+        add_state_function(kEnd, bind(&ConcreteFiniteStateMachine::exit_state, this, std::placeholders::_1));
 
         add_transition(kEntry, kOk, kFoo);
         add_transition(kEntry, kFail, kEnd);
@@ -24,12 +24,12 @@ public:
     }
 
     RetCode entry_state(InputCode input) {
-        std::cout << "entry state: "<< input << " -> ok" << std::endl;
+        std::cout << "entry state:"<< input << " -> ok" << std::endl;
         return kOk;
     }
 
     RetCode foo_state(InputCode input) {
-        std::cout << "foo: " << input << " -> ok" << std::endl;
+        std::cout << "foo:" << input << " -> ok" << std::endl;
         return kOk;
     }
 
