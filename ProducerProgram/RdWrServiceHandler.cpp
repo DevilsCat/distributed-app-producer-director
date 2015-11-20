@@ -21,7 +21,7 @@ void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_
     if (this->reader_.open(*this) || this->writer_.open(*this)) {
         ACE_ERROR((LM_ERROR, ACE_TEXT("%p\n"),
             ACE_TEXT("RdWrServiceHandler open")
-            ));
+        ));
         delete this;
         return;
     }
@@ -29,7 +29,7 @@ void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_
     // FIXME @Proactor thread?, add this handler to producer.
     producer_.AddHandler(this);
 
-    InvokeNewRead();
+    InvokeRead();
 }
 
 void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result& result) {
@@ -39,7 +39,7 @@ void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result
         delete this;
     } else {
         ACE_DEBUG((LM_INFO, "%s\n", mb.rd_ptr()));
-        InvokeNewRead();
+        InvokeRead();
     }
 }
 
@@ -60,7 +60,7 @@ int RdWrServiceHandler::InvokeSend(std::string& message) {
     return ret;
 }
 
-void RdWrServiceHandler::InvokeNewRead(const unsigned& nbytes) {
+void RdWrServiceHandler::InvokeRead(const unsigned& nbytes) {
     ACE_Message_Block *mb;
     ACE_NEW_NORETURN(mb, ACE_Message_Block(nbytes));
     if (this->reader_.read(*mb, mb->space()) != 0) {

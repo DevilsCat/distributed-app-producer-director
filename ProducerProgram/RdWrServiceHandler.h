@@ -20,7 +20,7 @@ public:
 
     int InvokeSend(std::string& message);
 private:
-    void InvokeNewRead(const unsigned& nbytes = 1024);
+    void InvokeRead(const unsigned& nbytes = 1024);
 
     ACE_Asynch_Read_Stream reader_;
     ACE_Asynch_Write_Stream writer_;
