@@ -67,15 +67,6 @@ private:
     RetCode OnStopState(InputCode);
     RetCode OnQuitState(InputCode);
     
-    // A string for the name of a script file
-    std::string script_file_string_;
-
-    // A numeric for the minimum number of players to construct.
-    size_t min_nplayers_;
-
-    // A numeric for the maximum number of players to construct.
-    size_t max_nplayers_;
-
     // a container that holds the titles of the scenes (the same as in Play class)
     std::vector<std::string> scene_titles_;
 
@@ -88,13 +79,12 @@ private:
     // a container of script objects to store the whole script tree
     std::vector<std::shared_ptr<ScriptAST>> scripts_;
 
-    unsigned int select_idx_;
+    // an index used in thread (player) selection machanism.
+    unsigned select_idx_;
 
     std::vector<std::future<bool>> player_futures_;
 
     RdWrSockSvcHandler* svc_handler_;
-
-    bool available_state_ = true;
 };
 
 #endif

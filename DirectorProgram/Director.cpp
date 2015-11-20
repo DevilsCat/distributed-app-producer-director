@@ -13,8 +13,7 @@
 
 Director::Director(std::vector<std::string> script_filenames, unsigned min_nplayers) :
     GenericFiniteStateMachine<StateCode, InputCode>(kEntry),
-    min_nplayers_(min_nplayers), max_nplayers_(0), select_idx_(0), 
-    svc_handler_(nullptr)
+    select_idx_(0), svc_handler_(nullptr)
 {
     // parse all files by given filenames
     for (std::string filename : script_filenames) {
@@ -23,6 +22,7 @@ Director::Director(std::vector<std::string> script_filenames, unsigned min_nplay
         scripts_.push_back(parser.script_ptr());
     }
     
+    size_t max_nplayers = 0;
     // Traverse all parsed scripts to Generate Play and maximum players needed.
     for (std::shared_ptr<ScriptAST> script : scripts_) {
         DirectorSkimVisitor visitor(script);  // After this visit, visitor will get all scene titles 
@@ -30,11 +30,11 @@ Director::Director(std::vector<std::string> script_filenames, unsigned min_nplay
         plays_.push_back(
             std::make_shared<Play>(visitor.scene_titles(), visitor.frag_nplayers())
         );
-        max_nplayers_ = MAX(max_nplayers_, visitor.max_nplayers());  // Record the maximum number of
-    }                                                                // players needed in all scripts
+        max_nplayers = MAX(max_nplayers, visitor.max_nplayers());  // Record the maximum number of
+    }                                                              // players needed in all scripts
 
     // Generate maximum numbers of players.
-    size_t greater = MAX(min_nplayers_, max_nplayers_);
+    size_t greater = MAX(min_nplayers, max_nplayers);
     for (size_t i = 0; i < greater; ++i) {
         players_.push_back(std::make_shared<Player>());
     }
@@ -54,7 +54,6 @@ void Director::Stop() {
 }
 
 void Director::Start(unsigned idx) {
-    if (!available_state_) return;  // Not available means a play is on progress.
     for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Activate));
     Cue(idx);
 }
