@@ -31,16 +31,22 @@ public:
     View* GetView(const std::string& name);
 
     void Render();
-
-    void RenderViews();
-
+    
     // Update prompt.
     void RenderPrompt();
+
+    void NextView();
+    void PrevView();
 
 private:
     ViewRenderer();
     ViewRenderer(const ViewRenderer&);
     ViewRenderer& operator=(const ViewRenderer&);
+
+    // Core render methods
+    void RenderAll_();
+    void RenderView_();
+    void RenderPrompt_();
 
     // Update window_height_ and window_width_.
     int UpdateWindowSize();
@@ -59,7 +65,7 @@ private:
     WidthType window_width_;
 
     // mutual excludes the rendering from input and output thread
-    std::recursive_mutex render_mut_;
+    std::mutex render_mut_;
 
     // user prompt update
     Position cursor_pos_;
@@ -70,4 +76,5 @@ private:
     // view update
     std::map<std::string, std::unique_ptr<View>> view_map_;
     std::vector<std::string> view_names_;
+    size_t curr_view_idx_;
 };

@@ -9,6 +9,13 @@ using namespace utils;
 ViewRenderer* ViewRenderer::renderer_ = nullptr;
 std::once_flag ViewRenderer::once_flag_;
 
+// Initialization methods
+ViewRenderer::ViewRenderer() : std_out_(std::cout), cursor_pos_(0, 0), curr_view_idx_(0) {}
+
+ViewRenderer::ViewRenderer(const ViewRenderer&) : ViewRenderer() {}
+
+ViewRenderer& ViewRenderer::operator=(const ViewRenderer&) { return *this; }
+
 ViewRenderer* ViewRenderer::instance() {
     std::call_once(once_flag_, []{ renderer_ = new ViewRenderer; });
     return renderer_;
@@ -39,25 +46,50 @@ View* ViewRenderer::GetView(const std::string& name) {
 }
 
 void ViewRenderer::Render() {
-    std::lock_guard<std::recursive_mutex> lk(render_mut_);
+    std::lock_guard<std::mutex> lk(render_mut_);
+    RenderAll_();
+}
+
+void ViewRenderer::RenderPrompt() {
+    std::lock_guard<std::mutex> lk(render_mut_);  // since input/output thread will both use this function.
+    RenderPrompt_();
+}
+
+void ViewRenderer::NextView() {
+    std::lock_guard<std::mutex> lk(render_mut_);
+    if (curr_view_idx_ >= view_names_.size() - 1) { return; } // no more next view.
+    ++curr_view_idx_;
+    RenderAll_();
+}
+
+void ViewRenderer::PrevView() {
+    std::lock_guard<std::mutex> lk(render_mut_);
+    if (curr_view_idx_ == 0) { return; }  // nor more previous view;
+    --curr_view_idx_;
+    RenderAll_();
+}
+
+void ViewRenderer::RenderAll_() {
     system("cls");  // clear the screen.
     UpdateWindowSize();
-    RenderViews();
-    RenderPrompt();
+    RenderView_();
+    RenderPrompt_();
 }
 
-void ViewRenderer::RenderViews() {
-    for (std::string& view_name : view_names_) {
-        view_map_[view_name]->Draw(window_width_);
-    }
+void ViewRenderer::RenderView_() {
+    if (view_names_.size() == 0)  { return; }  // no view added yet.
+    if (curr_view_idx_ >= view_names_.size()) { return; }  // but this should not happen.
+    view_map_[view_names_[curr_view_idx_]]->Draw(window_width_);
 }
 
-ViewRenderer::ViewRenderer() : std_out_(std::cout), cursor_pos_(0, 0) {}
+void ViewRenderer::RenderPrompt_() {
+    GoToPromptPos();
+    std::string prompt_line = windows::truncate(std::string(PROMPT_MARK) + user_buf_, window_width_ - 1);
+    std_out_ << windows::left(prompt_line, window_width_, ' ');
+    GoToPromptPos(prompt_line.size());
+}
 
-ViewRenderer::ViewRenderer(const ViewRenderer&): ViewRenderer() {}
-
-ViewRenderer& ViewRenderer::operator=(const ViewRenderer&) { return *this; }
-
+// Util methods.
 int ViewRenderer::UpdateWindowSize() {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     int ret = GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
@@ -67,15 +99,6 @@ int ViewRenderer::UpdateWindowSize() {
     }
     return ret;
 }
-
-void ViewRenderer::RenderPrompt() {
-    std::lock_guard<std::recursive_mutex> lk(render_mut_);  // since input/output thread will both use this function.
-    GoToPromptPos();
-    std::string prompt_line = windows::truncate(std::string(PROMPT_MARK) + user_buf_, window_width_ - 1);
-    std_out_ << windows::left(prompt_line, window_width_, '=');
-    GoToPromptPos(prompt_line.size());
-}
-
 
 void ViewRenderer::GoToXY(WidthType x, HeightType y) {
     COORD homeCoords = { x, y };

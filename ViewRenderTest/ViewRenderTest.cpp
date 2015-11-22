@@ -8,13 +8,24 @@
 #include "TableView.h"
 #include <thread>
 
+#define KEY_UP      72
+#define KEY_DOWN    80
+#define KEY_LEFT    75
+#define KEY_RIGHT   77
+#define KEY_ARROW_PREFIX  224
+
 void PromptTest() {
     std::string line;
     int ch;
     do {
         ch = _getch();
         if (ch == 0x03) raise(SIGINT);  // recover the ctrl-c function.
-        if (ch == '\r') ViewRenderer::instance()->ClearUserInput(); 
+        else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
+        else if (ch == KEY_UP) {}   // so far no-ops
+        else if (ch == KEY_DOWN) {} // so far no-ops
+        else if (ch == KEY_LEFT) ViewRenderer::instance()->PrevView();
+        else if (ch == KEY_RIGHT) ViewRenderer::instance()->NextView();
+        else if (ch == '\r') ViewRenderer::instance()->ClearUserInput(); 
         else            ViewRenderer::instance()->ReceiveUserInput(ch);
         ViewRenderer::instance()->RenderPrompt();
     } while (true);
