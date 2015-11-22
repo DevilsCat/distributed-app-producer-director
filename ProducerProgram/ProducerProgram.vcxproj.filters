@@ -51,6 +51,12 @@
     <ClInclude Include="DirectorAsynchAcceptor.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ViewRenderer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Views.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -75,6 +81,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="DirectorAsynchAcceptor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ViewRenderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Views.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -5,6 +5,7 @@
 #include <ace/Reactor.h>
 #include <ace/Proactor.h>
 #include <thread>
+#include "ViewRenderer.h"
 
 Producer* Producer::producer_ = nullptr;
 std::once_flag Producer::once_flag_;
@@ -30,7 +31,8 @@ void Producer::RemoveHandler(RdWrServiceHandler* handler) {
 }
 
 void Producer::Start(const unsigned& num) {
-    ACE_DEBUG((LM_INFO, "Producer: Executing start <%d> command.\n", num));
+    //ACE_DEBUG((LM_INFO, "Producer: Executing start <%d> command.\n", num));
+    PROGRAM_DEBUG("Producer: Executing start <%d> command.", num);
     // Check handlers index is in bound, otherwise simply returns.
     // Select handler by given index.
     // Call send method in the handler to send message to that Director.
@@ -40,14 +42,16 @@ void Producer::Start(const unsigned& num) {
 }
 
 void Producer::Stop(const unsigned& num) {
-    ACE_DEBUG((LM_INFO, "Producer: Executing stop <%d> command.\n", num));
+    //ACE_DEBUG((LM_INFO, "Producer: Executing stop <%d> command.\n", num));
+    PROGRAM_DEBUG("Producer: Executing stop <%d> command.", num);
     if (handlers_.size() <= num){ return; }  //FIXME do we want to handle this using exception
     std::string msg("stop");
     handlers_[num]->InvokeSend(msg);
 }
 
 void Producer::Quit() const {
-    ACE_DEBUG((LM_INFO, "Producer: Executing quit command.\n"));
+    //ACE_DEBUG((LM_INFO, "Producer: Executing quit command.\n"));
+    PROGRAM_DEBUG("Producer: Executing quit command.");
 
     // Broadcast a quit message to all Directors.
     std::string msg("quit");

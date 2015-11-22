@@ -11,9 +11,14 @@
 #include <ace/Asynch_Acceptor.h>
 #include <ace/Proactor.h>
 #include "DirectorAsynchAcceptor.h"
+#include "ViewRenderer.h"
 
 int main(int argc, char* argv[])
 {
+    // Setup views
+    ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"), 1.0);
+    ViewRenderer::instance()->Render();  // Render an empty view.
+
     // Run the reactor in background thread.
     std::thread reactor_td([]{ 
         // Configure a command event handler
@@ -51,7 +56,8 @@ int main(int argc, char* argv[])
                 break;
         }
         catch (std::runtime_error& e) {
-            std::cerr << e.what() << std::endl;
+            PROGRAM_DEBUG("%s", e.what());
+            //std::cerr << e.what() << std::endl;
         }
     }
 
