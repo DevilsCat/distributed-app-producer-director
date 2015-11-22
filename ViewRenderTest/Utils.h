@@ -25,5 +25,13 @@ namespace utils {
             ss << s << spaces.str();                    // format with padding
             return ss.str();
         }
+
+        inline
+        std::string truncate(const std::string& s, size_t w, bool show_ellipsis = true) {
+            const std::string sEllipsis = "...";
+            if (s.length() > w)
+                return show_ellipsis ? s.substr(0, w - sEllipsis.size()) + sEllipsis : s.substr(0, w);
+            return s;
+        }
     }
 }

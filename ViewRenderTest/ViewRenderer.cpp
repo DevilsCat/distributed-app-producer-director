@@ -1,8 +1,10 @@
 ﻿#include "stdafx.h"
 #include "ViewRenderer.h"
+#include "Utils.h"
 #include <windows.h>
 #include <string>
-#include <sstream>
+
+using namespace utils;
 
 ViewRenderer* ViewRenderer::renderer_ = nullptr;
 std::once_flag ViewRenderer::once_flag_;
@@ -26,6 +28,30 @@ void ViewRenderer::ClearUserInput() {
     user_buf_.clear();
 }
 
+void ViewRenderer::AddView(const std::string& name, View* view) {
+    view_names_.push_back(name);
+    view_map_[name] = std::unique_ptr<View>(view);
+}
+
+View* ViewRenderer::GetView(const std::string& name) {
+    if (view_map_.count(name) == 0) { return nullptr; }
+    return view_map_[name].get();
+}
+
+void ViewRenderer::Render() {
+    std::lock_guard<std::recursive_mutex> lk(render_mut_);
+    system("cls");  // clear the screen.
+    UpdateWindowSize();
+    RenderViews();
+    RenderPrompt();
+}
+
+void ViewRenderer::RenderViews() {
+    for (std::string& view_name : view_names_) {
+        view_map_[view_name]->Draw(window_width_);
+    }
+}
+
 ViewRenderer::ViewRenderer() : std_out_(std::cout), cursor_pos_(0, 0) {}
 
 ViewRenderer::ViewRenderer(const ViewRenderer&): ViewRenderer() {}
@@ -43,9 +69,10 @@ int ViewRenderer::UpdateWindowSize() {
 }
 
 void ViewRenderer::RenderPrompt() {
+    std::lock_guard<std::recursive_mutex> lk(render_mut_);  // since input/output thread will both use this function.
     GoToPromptPos();
-    std::string prompt_line = truncate(std::string(PROMPT_MARK) + user_buf_, window_width_ - 1);
-    std_out_ << left(prompt_line, window_width_, '=');
+    std::string prompt_line = windows::truncate(std::string(PROMPT_MARK) + user_buf_, window_width_ - 1);
+    std_out_ << windows::left(prompt_line, window_width_, '=');
     GoToPromptPos(prompt_line.size());
 }
 
@@ -60,29 +87,4 @@ void ViewRenderer::GoToPromptPos(WidthType x) {
     GoToXY(x, window_height_ - PROMPT_OFFSET);
 }
 
-std::string ViewRenderer::left(const std::string s, const int w, const char delimiter) {
-    std::stringstream ss, spaces;
-    int padding = w - s.size() - 1;             // count excess room to pad
-    for (int i = 0; i<padding; ++i)
-        spaces << delimiter;
-    ss << s << spaces.str();                    // format with padding
-    return ss.str();
-}
 
-std::string ViewRenderer::center(const std::string& s, const int& w, const char delimiter) {
-    std::stringstream ss, spaces;
-    int padding = w - s.size() - 1;                 // count excess room to pad
-    for (int i = 0; i<padding / 2; ++i)
-        spaces << delimiter;
-    ss << spaces.str() << s << spaces.str();    // format with padding
-    if (padding>0 && padding % 2 != 0)               // if odd #, add 1 space
-        ss << delimiter;
-    return ss.str();
-}
-
-std::string ViewRenderer::truncate(const std::string& s, size_t w, bool show_ellipsis) {
-    const std::string sEllipsis = "...";
-    if (s.length() > w)
-        return show_ellipsis ? s.substr(0, w - sEllipsis.size()) + sEllipsis : s.substr(0, w);
-    return s;
-}

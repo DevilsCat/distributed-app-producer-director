@@ -4,46 +4,66 @@
 #include <iterator>
 #include <iostream>
 #include <algorithm>
-#include <sstream>
 #include "Utils.h"
+#include <mutex>
+#include <memory>
 
 using namespace utils;
 
+class View {  // interface of any View class
+public:
+    virtual ~View() {}
+    virtual void Draw(const short& width) const = 0;
+};
+
 template<class CellType>
-class TableView {
+class TableView : public View {
     typedef std::string KeyType;
     typedef std::string ValType;
 public:
-    TableView(const std::string& title) :
-        title_(title)
-    {
-        CellType* cell = new CellType;
-        keys_ = cell->get_keys();
-        delete cell;
-    }
+    ~TableView() {}
 
-    ~TableView() {
-        for (CellType* cell : cells_)  delete cell;
-    }
-
-    void AddCell(CellType* cell) {
+    // Only Proactor call this.
+    void AddCell(std::shared_ptr<CellType> cell) {
+        std::lock_guard<std::mutex> lk(m_);
         cells_.push_back(cell);
     }
 
+    // Only Proactor call this.
     void DeleteCellAt(const size_t& idx) {
+        std::lock_guard<std::mutex> lk(m_);
         if (idx < 0 || idx > cells_.size())  return;
-        delete cells_[idx];
         cells_.erase(cells_.begin() + idx);
     }
 
-    void Draw(const short& width) const {
+    // Only Proactor call this.
+    void DeleteCell(std::shared_ptr<CellType> cell) {
+        std::lock_guard<std::mutex> lk(m_);
+        auto res = std::find(cells_.begin(), cells_.end(), cell);
+        if (res != cells_.end()) cells_.erase(res);
+    }
+
+    // Proactor will call this
+    // Input thread might all call this to refresh screen.
+    virtual void Draw(const short& width) const override {
+        std::lock_guard<std::mutex> lk(m_);
         const short cell_width = width / (keys_.size() + 1);
         DrawTitle(width);
         DrawColumnName(cell_width);
         DrawCells(cell_width);
     }
 
+    static TableView<CellType>* MakeView(const std::string& title) {
+        return new TableView<CellType>(title);
+    }
+
 private:
+    TableView(const std::string& title) :
+        title_(title)
+    {
+        keys_ = std::make_shared<CellType>()->get_keys();
+    }
+
     void DrawTitle(const short& width) const {
         std::cout << windows::center(title_, width, '=') << std::endl;
     }
@@ -72,7 +92,8 @@ private:
 
     std::string title_;
     std::vector<KeyType> keys_;
-    std::vector<CellType*> cells_;
+    std::vector<std::shared_ptr<CellType>> cells_;
+    mutable std::mutex m_;
 };
 
 
@@ -91,6 +112,10 @@ public:
         director_(director), name_(name), status_(status) 
     {}
 
+    void set_director(const std::string& director) { director_ = director; }
+    void set_name(const std::string& name) { name_ = name; }
+    void set_status(const bool status) { status_ = status; }
+
     std::vector<std::string> get_keys() override {
         const char* keys[] = { "Director", "Name", "Status" };
         return std::vector<std::string>(std::begin(keys), std::end(keys));
@@ -107,4 +132,32 @@ private:
     std::string director_;
     std::string name_;
     bool status_;
+};
+
+class PersonTableViewCell : public TableViewCell {
+public:
+    PersonTableViewCell() {}
+
+    PersonTableViewCell(const std::string& name, unsigned age, const std::string& addr, const std::string& phone_num) : 
+        name_(name), age_(age), addr_(addr), phone_num_(phone_num) 
+    {}
+
+    std::vector<std::string> get_keys() override {
+        const char* keys[] = { "Name", "Age", "Address", "Phone Number" };
+        return std::vector<std::string>(std::begin(keys), std::end(keys));
+    }
+
+    std::string get_value(const std::string& key) override {
+        if (key == "Name")          return name_;
+        if (key == "Age")           return std::to_string(age_);
+        if (key == "Address")       return addr_;
+        if (key == "Phone Number")  return phone_num_;
+        return std::string();
+    }
+
+private:
+    std::string name_;
+    unsigned age_;
+    std::string addr_;
+    std::string phone_num_;
 };

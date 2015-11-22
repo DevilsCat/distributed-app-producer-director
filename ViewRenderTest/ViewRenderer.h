@@ -1,6 +1,10 @@
 ﻿#pragma once
 #include <mutex>
 #include <iostream>
+#include <vector>
+#include "TableView.h"
+#include <memory>
+#include <map>
 
 #define PROMPT_OFFSET    1
 
@@ -22,6 +26,14 @@ public:
     void ReceiveUserInput(const char& ch);
     void ClearUserInput();
 
+    // Stores table views
+    void AddView(const std::string& name, View* view);
+    View* GetView(const std::string& name);
+
+    void Render();
+
+    void RenderViews();
+
     // Update prompt.
     void RenderPrompt();
 
@@ -37,23 +49,25 @@ private:
     static void GoToXY(WidthType x, HeightType y);
     void GoToPromptPos(WidthType x = 0);
 
-    // Printing helper function
-    static std::string left(const std::string s, const int w, const char delimiter);
-    static std::string center(const std::string& s, const int& w, const char delimiter);
-    static std::string truncate(const std::string& s, size_t w, bool show_ellipsis = true);
-
     static ViewRenderer* renderer_;
     static std::once_flag once_flag_;
 
     std::ostream& std_out_;
 
-    // Stores latest window  width and height.
+    // Stores latest window width and height.
     HeightType window_height_;
     WidthType window_width_;
+
+    // mutual excludes the rendering from input and output thread
+    std::recursive_mutex render_mut_;
 
     // user prompt update
     Position cursor_pos_;
     HeightType prompt_height_; 
     std::string user_buf_;
     std::mutex user_mut_;
+    
+    // view update
+    std::map<std::string, std::unique_ptr<View>> view_map_;
+    std::vector<std::string> view_names_;
 };
