@@ -18,9 +18,8 @@
         if (debug_view) { \
             debug_view->AddCell(std::make_shared<DebugTableViewCell>(DebugTableViewCell(msg))); \
             ViewRenderer::instance()->Render("Debug"); \
-        } else { \
-            ViewRenderer::instance()->RenderHintView(); \
-        } \
+        }\
+        ViewRenderer::instance()->RenderHintView(); \
     } while(0)
 #endif
 

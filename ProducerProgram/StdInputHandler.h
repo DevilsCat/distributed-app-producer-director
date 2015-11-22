@@ -19,7 +19,7 @@ public:
     StdInputHandler& operator= (const StdInputHandler&) = delete;
 
     // GetInputFromStdStream()
-    std::string GetLine() const;
+    static std::string GetLine();
 
     std::shared_ptr<Command> MakeCommand(const std::string& input) const;
 

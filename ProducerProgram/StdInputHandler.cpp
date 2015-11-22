@@ -33,7 +33,7 @@ StdInputHandler::~StdInputHandler() {
     }
 }
 
-std::string StdInputHandler::GetLine() const {
+std::string StdInputHandler::GetLine() {
     std::string line;
     int ch;
     PromptView* prompt_view = ViewRenderer::instance()->prompt_view();
@@ -53,7 +53,6 @@ std::string StdInputHandler::GetLine() const {
             ViewRenderer::instance()->Render();
             break;
         }
-        
         ViewRenderer::instance()->RenderPromptView();
     } while (true);
     return line;
@@ -67,15 +66,11 @@ std::shared_ptr<Command> StdInputHandler::MakeCommand(const std::string& input) 
     std::getline(iss, params);
 
     switch (CheckCommandType(cmd_type)) {
-    case Command::kStart: 
-        return MakeStartCommand(params);
-    case Command::kStop: 
-        return MakeStopCommand(params);
-    case Command::kQuit: 
-        return MakeQuitCommand(params);
-    case Command::kUnknown: 
-    default:
-        return nullptr;
+    case Command::kStart:   { return MakeStartCommand(params); }
+    case Command::kStop:    { return MakeStopCommand(params); }
+    case Command::kQuit:    { return MakeQuitCommand(params); }
+    case Command::kUnknown: { return nullptr; }
+    default:                { return nullptr; }
     }
 }
 
