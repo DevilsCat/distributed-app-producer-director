@@ -11,13 +11,20 @@
 #define PROMPT_MARK      ">>"
 
 class ViewRenderer {
-    struct Position {
-        short x;
-        short y;
-        Position(const short& x_, const short& y_) : x(x_), y(y_) {}
-    };
     typedef short HeightType;
     typedef short WidthType;
+
+    struct ViewInfo {
+        std::shared_ptr<View> view;
+        double weight;
+        short start_height;
+        short nline_max;
+        ViewInfo() : ViewInfo(nullptr, 0) {}
+        ViewInfo(View* view_, double weight_) : 
+            view(view_), weight(weight_),
+            start_height(0), nline_max(0)
+        {}
+    };
 
 public:
     static ViewRenderer* instance();
@@ -27,7 +34,7 @@ public:
     void ClearUserInput();
 
     // Stores table views
-    void AddView(const std::string& name, View* view);
+    void AddView(const std::string& name, View* view, double weight);
     View* GetView(const std::string& name);
 
     void Render();
@@ -35,8 +42,8 @@ public:
     // Update prompt.
     void RenderPrompt();
 
-    void NextView();
-    void PrevView();
+    //void NextView();
+    //void PrevView();
 
 private:
     ViewRenderer();
@@ -49,7 +56,9 @@ private:
     void RenderPrompt_();
 
     // Update window_height_ and window_width_.
-    int UpdateWindowSize();
+    void OnWindowChanged_();
+    void UpdateViewStartPos_();
+    int UpdateWindowSize_();
 
     // "Goto" function, for specific position on the window.
     static void GoToXY(WidthType x, HeightType y);
@@ -68,13 +77,12 @@ private:
     std::mutex render_mut_;
 
     // user prompt update
-    Position cursor_pos_;
     HeightType prompt_height_; 
     std::string user_buf_;
     std::mutex user_mut_;
     
     // view update
-    std::map<std::string, std::unique_ptr<View>> view_map_;
+    std::map<std::string, ViewInfo> view_info_map_;
     std::vector<std::string> view_names_;
-    size_t curr_view_idx_;
+//    size_t curr_view_idx_;
 };

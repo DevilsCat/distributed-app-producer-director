@@ -23,8 +23,8 @@ void PromptTest() {
         else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
         else if (ch == KEY_UP) {}   // so far no-ops
         else if (ch == KEY_DOWN) {} // so far no-ops
-        else if (ch == KEY_LEFT) ViewRenderer::instance()->PrevView();
-        else if (ch == KEY_RIGHT) ViewRenderer::instance()->NextView();
+        else if (ch == KEY_LEFT) {} // ViewRenderer::instance()->PrevView();
+        else if (ch == KEY_RIGHT) {} // ViewRenderer::instance()->NextView();
         else if (ch == '\r') ViewRenderer::instance()->ClearUserInput(); 
         else            ViewRenderer::instance()->ReceiveUserInput(ch);
         ViewRenderer::instance()->RenderPrompt();
@@ -45,8 +45,8 @@ void TableViewTest() {
 }
 
 void RenderTableViewTest() {
-    ViewRenderer::instance()->AddView("Play List", TableView<PlayTableViewCell>::MakeView("Play List"));
-    ViewRenderer::instance()->AddView("Person Info", TableView<PersonTableViewCell>::MakeView("Person Information Table"));
+    ViewRenderer::instance()->AddView("Play List", TableView<PlayTableViewCell>::MakeView("Play List"), 0.7);
+    ViewRenderer::instance()->AddView("Person Info", TableView<PersonTableViewCell>::MakeView("Person Information Table"), 0.3);
     
     std::vector<std::shared_ptr<PlayTableViewCell>> play_cells;
     play_cells.push_back(std::make_shared<PlayTableViewCell>("director 1", "hamlet", false));
