@@ -12,8 +12,15 @@
 #define PROGRAM_DEBUG(X, ...) \
     do { \
         HintView* view = ViewRenderer::instance()->hint_view(); \
-        view->set_hint(utils::windows::StringPrintf(X, __VA_ARGS__)); \
-        ViewRenderer::instance()->RenderHintView(); \
+        std::string msg = utils::windows::StringPrintf(X, __VA_ARGS__); \
+        view->set_hint(msg); \
+        TableView<DebugTableViewCell>* debug_view = dynamic_cast<TableView<DebugTableViewCell>*>(ViewRenderer::instance()->GetView("Debug")); \
+        if (debug_view) { \
+            debug_view->AddCell(std::make_shared<DebugTableViewCell>(DebugTableViewCell(msg))); \
+            ViewRenderer::instance()->Render("Debug"); \
+        } else { \
+            ViewRenderer::instance()->RenderHintView(); \
+        } \
     } while(0)
 #endif
 
@@ -52,8 +59,8 @@ public:
     void RenderHintView();
     void RenderPromptView();
     
-    //void NextView();
-    //void PrevView();
+    void NextView();
+    void PrevView();
 
 private:
     ViewRenderer();
@@ -62,19 +69,20 @@ private:
 
     // Core render methods
     void RenderAll_();
-    void RenderViews_();
+    void RenderCurrView_();
     void RenderView_(const ViewInfo& vi, bool cursor_back = false) const;
     void RenderHintView_() const;
     void RenderPromptView_() const;
 
     // Update window_height_ and window_width_.
-    void OnWindowChanged_();
-    void UpdateViewStartPos_();
     int UpdateWindowSize_();
 
     // "Goto" function, for specific position on the window.
     void GoToHintPos() const ;
     void GoToPromptPos(WidthType x = 0) const;
+
+    // Retrieves the current view
+    ViewInfo & GetCurrentViewInfo_();
 
     static ViewRenderer* renderer_;
     static std::once_flag once_flag_;
@@ -96,6 +104,7 @@ private:
     // view update
     std::map<std::string, ViewInfo> view_info_map_;
     std::vector<std::string> view_names_;
-
-//    size_t curr_view_idx_;
+    
+    // view switching.
+    size_t curr_view_idx_;
 };

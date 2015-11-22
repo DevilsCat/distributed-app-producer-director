@@ -47,11 +47,15 @@ void ViewRenderer::Render() {
 
 void ViewRenderer::Render(const std::string& view_name) {
     std::lock_guard<std::mutex> lk(render_mut_);
-    RenderView_(view_info_map_[view_name], true);
+    // render only when this view is presented.
+    if (view_name == view_names_[curr_view_idx_])
+        RenderView_(GetCurrentViewInfo_(), true);
 }
 
 void ViewRenderer::Render(View* view) {
     std::lock_guard<std::mutex> lk(render_mut_);
+    if (view == GetCurrentViewInfo_().view.get())
+        RenderView_(GetCurrentViewInfo_(), true);
     for (auto name_vi_pair : view_info_map_) {
         if (view == name_vi_pair.second.view.get())  // search linearly for the view.
             RenderView_(name_vi_pair.second, true);
@@ -68,35 +72,32 @@ void ViewRenderer::RenderPromptView() {
     RenderPromptView_();
 }
 
-//void ViewRenderer::NextView() {
-//    std::lock_guard<std::mutex> lk(render_mut_);
-//    if (curr_view_idx_ >= view_names_.size() - 1) { return; } // no more next view.
-//    ++curr_view_idx_;
-//    RenderAll_();
-//}
+void ViewRenderer::NextView() {
+    std::lock_guard<std::mutex> lk(render_mut_);
+    if (curr_view_idx_ >= view_names_.size() - 1) { return; } // no more next view.
+    ++curr_view_idx_;
+    RenderAll_();
+}
 
-//void ViewRenderer::PrevView() {
-//    std::lock_guard<std::mutex> lk(render_mut_);
-//    if (curr_view_idx_ == 0) { return; }  // nor more previous view;
-//    --curr_view_idx_;
-//    RenderAll_();
-//}
+void ViewRenderer::PrevView() {
+    std::lock_guard<std::mutex> lk(render_mut_);
+    if (curr_view_idx_ == 0) { return; }  // nor more previous view;
+    --curr_view_idx_;
+    RenderAll_();
+}
 
 void ViewRenderer::RenderAll_() {
     system("cls");  // clear the screen.
-    OnWindowChanged_();
-    RenderViews_();
+    UpdateWindowSize_();
+    RenderCurrView_();
     RenderHintView_();
     RenderPromptView_();
 }
 
-void ViewRenderer::RenderViews_() {
-    for (std::string view_name : view_names_) {
-        RenderView_(view_info_map_[view_name], false);
-    }
-    //if (view_names_.size() == 0)  { return; }  // no view added yet.
-    //if (curr_view_idx_ >= view_names_.size()) { return; }  // but this should not happen.
-    //view_info_map_[view_names_[curr_view_idx_]]->Draw(window_width_);
+void ViewRenderer::RenderCurrView_() {
+    if (view_names_.size() == 0)  { return; }  // no view added yet.
+    if (curr_view_idx_ >= view_names_.size()) { return; }  // but this should not happen.
+    RenderView_(view_info_map_[view_names_[curr_view_idx_]], false);
 }
 
 void ViewRenderer::RenderView_(const ViewInfo& vi, bool cursor_back) const {
@@ -122,20 +123,6 @@ void ViewRenderer::RenderPromptView_() const {
     prompt_view_->Draw(window_width_);
 }
 
-void ViewRenderer::OnWindowChanged_() {
-    UpdateWindowSize_();
-    UpdateViewStartPos_();
-}
-
-void ViewRenderer::UpdateViewStartPos_() {
-    short pos = 0;
-    for (std::string view_name : view_names_) {
-        ViewInfo& vi = view_info_map_[view_name];
-        vi.start_height = pos;
-        pos += short(window_height_ * vi.weight);
-    }
-}
-
 // Util methods.
 int ViewRenderer::UpdateWindowSize_() {
     CONSOLE_SCREEN_BUFFER_INFO csbi;
@@ -156,3 +143,6 @@ void ViewRenderer::GoToPromptPos(WidthType x) const {
     windows::GoToXY(x, window_height_ - PROMPT_OFFSET);
 }
 
+ViewRenderer::ViewInfo& ViewRenderer::GetCurrentViewInfo_() {
+    return view_info_map_[view_names_[curr_view_idx_]];
+}

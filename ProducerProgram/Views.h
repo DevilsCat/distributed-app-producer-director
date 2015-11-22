@@ -69,6 +69,8 @@ private:
     std::string user_buf_;
 };
 
+
+#define ID_COL_WIDTH    (4)
 //
 // class TableView.
 template<class CellType>
@@ -102,7 +104,7 @@ public:
     // Input thread might all call this to refresh screen.
     virtual void Draw(const short& width) const override {
         std::lock_guard<std::mutex> lk(m_);
-        const short cell_width = width / (keys_.size() + 1);
+        const short cell_width = (width - ID_COL_WIDTH) / (keys_.size());
         DrawTitle_(width);
         DrawColumnName_(cell_width);
         DrawCells_(cell_width);
@@ -120,7 +122,7 @@ private:
     }
 
     void DrawColumnName_(const short& cell_w) const {
-        std::cout << utils::windows::left("ID", cell_w, ' ');
+        std::cout << utils::windows::left("ID", ID_COL_WIDTH, ' ');
         for (size_t i = 0; i < keys_.size(); ++i) {
             std::cout << utils::windows::left(keys_[i], cell_w, ' ');
         }
@@ -135,7 +137,7 @@ private:
     }
 
     void DrawCell_(const size_t& idx, const short& cell_w) const {
-        std::cout << utils::windows::left(std::to_string(idx), cell_w, ' ');
+        std::cout << utils::windows::left(std::to_string(idx), ID_COL_WIDTH, ' ');
         std::for_each(keys_.begin(), keys_.end(), [&](const KeyType& key) {
             std::cout << utils::windows::left(cells_[idx]->get_value(key), cell_w, ' ');
         });
@@ -177,18 +179,19 @@ private:
     bool status_;
 };
 
-class PersonTableViewCell : public TableViewCell {
+//
+// class DebugTableViewCell
+class DebugTableViewCell : public TableViewCell {
 public:
-    PersonTableViewCell() {}
-    PersonTableViewCell(const std::string& name, unsigned age, const std::string& addr, const std::string& phone_num);
+    DebugTableViewCell();
+    DebugTableViewCell(const std::string& message);
 
     std::vector<std::string> get_keys() override;
     std::string get_value(const std::string& key) override;
+
 private:
-    std::string name_;
-    unsigned age_;
-    std::string addr_;
-    std::string phone_num_;
+    std::string message_;
 };
+
 #endif
 

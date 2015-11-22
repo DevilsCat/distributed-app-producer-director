@@ -3,6 +3,16 @@
 
 using namespace utils;
 
+//
+// make keys for cell factory method.
+#ifndef MAKE_KEYS
+#define MAKE_KEYS_RETURN(...) \
+    do { \
+    const char* keys[] = { __VA_ARGS__ }; \
+    return std::vector<std::string>(std::begin(keys), std::end(keys)); \
+    } while(0)
+#endif
+
 const char* HintView::kHintDefault = "";
 const char* PromptView::sPromptMark = ">>";
 
@@ -79,8 +89,7 @@ void PlayTableViewCell::set_status(const bool status) {
 }
 
 std::vector<std::string> PlayTableViewCell::get_keys() {
-    const char* keys[] = { "Director", "Name", "Status" };
-    return std::vector<std::string>(std::begin(keys), std::end(keys));
+    MAKE_KEYS_RETURN("Director", "Name", "Status");
 }
 
 std::string PlayTableViewCell::get_value(const std::string& key) {
@@ -90,19 +99,15 @@ std::string PlayTableViewCell::get_value(const std::string& key) {
     return std::string();
 }
 
-PersonTableViewCell::PersonTableViewCell(const std::string& name, unsigned age, const std::string& addr, const std::string& phone_num):
-    name_(name), age_(age), addr_(addr), phone_num_(phone_num) 
-{}
+DebugTableViewCell::DebugTableViewCell() {}
 
-std::vector<std::string> PersonTableViewCell::get_keys() {
-    const char* keys[] = { "Name", "Age", "Address", "Phone Number" };
-    return std::vector<std::string>(std::begin(keys), std::end(keys));
+DebugTableViewCell::DebugTableViewCell(const std::string& message) : message_(message) {}
+
+std::vector<std::string> DebugTableViewCell::get_keys() {
+    MAKE_KEYS_RETURN("Message");
 }
 
-std::string PersonTableViewCell::get_value(const std::string& key) {
-    if (key == "Name")          return name_;
-    if (key == "Age")           return std::to_string(age_);
-    if (key == "Address")       return addr_;
-    if (key == "Phone Number")  return phone_num_;
+std::string DebugTableViewCell::get_value(const std::string& key) {
+    if (key == "Message") return message_;
     return std::string();
 }

@@ -8,6 +8,7 @@
 #include "ViewRenderer.h"
 #include <csignal>
 
+#define KEY_SIGINT  03   
 #define KEY_UP      72
 #define KEY_DOWN    80
 #define KEY_LEFT    75
@@ -36,23 +37,23 @@ std::string StdInputHandler::GetLine() const {
     std::string line;
     int ch;
     PromptView* prompt_view = ViewRenderer::instance()->prompt_view();
-    HintView* hint_view = dynamic_cast<HintView*>(ViewRenderer::instance()->hint_view());
     do {
         ch = _getch();
-        if (ch == 0x03) raise(SIGINT);  // recover the ctrl-c function.
+        if      (ch == KEY_SIGINT)       { raise(SIGINT); }  // recover the ctrl-c function.
         else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
-        else if (ch == KEY_UP) { hint_view->set_hint("TODO: paging up"); }   // so far no-ops
-        else if (ch == KEY_DOWN) { hint_view->set_hint("TODO: paging down"); } // so far no-ops
-        else if (ch == KEY_LEFT) { hint_view->set_hint("TODO: switching tag prev"); } // ViewRenderer::instance()->PrevView();
-        else if (ch == KEY_RIGHT) { hint_view->set_hint("TODO: switching tag next"); } // ViewRenderer::instance()->NextView();
-        else if (ch == '\r') {
+        else if (ch == KEY_UP)           {}  // so far no-ops
+        else if (ch == KEY_DOWN)         {}  // so far no-ops
+        else if (ch == KEY_LEFT)         { ViewRenderer::instance()->PrevView(); } 
+        else if (ch == KEY_RIGHT)        { ViewRenderer::instance()->NextView(); }
+        else if (ch != '\r')             { ViewRenderer::instance()->prompt_view()->ReceiveUserInput(ch); }
+        else {  // user hits a return.
             line = prompt_view->user_buf();  // get the input line from user.
             prompt_view->ClearUserInput();
-            hint_view->set_hint(HintView::kHintDefault);
+            ViewRenderer::instance()->hint_view()->set_hint(HintView::kHintDefault);
             ViewRenderer::instance()->Render();
             break;
         }
-        else { prompt_view->ReceiveUserInput(ch); }
+        
         ViewRenderer::instance()->RenderPromptView();
     } while (true);
     return line;

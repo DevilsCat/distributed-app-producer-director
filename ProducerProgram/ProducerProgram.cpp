@@ -4,7 +4,6 @@
 #include "stdafx.h"
 #include "StdInputHandler.h"
 #include "CommandQueue.h"
-#include <iostream>
 #include <ace/Reactor.h>
 #include "CommandEventHandler.h"
 #include <thread>
@@ -16,7 +15,8 @@
 int main(int argc, char* argv[])
 {
     // Setup views
-    ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"), 1.0);
+    ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"), 0.5);
+    ViewRenderer::instance()->AddView("Debug", TableView<DebugTableViewCell>::MakeView("Debug Messages"), 0.5);
     ViewRenderer::instance()->Render();  // Render an empty view.
 
     // Run the reactor in background thread.
