@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include <sstream>
 #include <string>
+#include <windows.h>
 
 namespace utils {
     namespace windows {
@@ -32,6 +33,23 @@ namespace utils {
             if (s.length() > w)
                 return show_ellipsis ? s.substr(0, w - sEllipsis.size()) + sEllipsis : s.substr(0, w);
             return s;
+        }
+
+        inline
+        void GoToXY(const short& x, const short& y) {
+            COORD homeCoords = { x, y };
+            SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), homeCoords);
+        }
+
+        inline
+        int GetCursorPos(short& x, short& y) {
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            int ret = GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            if (ret) {
+                x = csbi.dwCursorPosition.X;
+                y = csbi.dwCursorPosition.Y;
+            }
+            return ret;
         }
     }
 }

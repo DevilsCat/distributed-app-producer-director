@@ -7,24 +7,9 @@
 #include "Utils.h"
 #include <mutex>
 #include <memory>
+#include "View.h"
 
 using namespace utils;
-
-class View {  // interface of any View class
-public:
-    View(const std::string& title) : title_(title) {}
-    virtual ~View() {}
-    
-    virtual void Draw(const short& width) const = 0;
-
-protected:
-    virtual void DrawTitle(const short& width) const {
-        std::cout << windows::left(title_, width, '=') << std::endl;
-    }
-
-private:
-    std::string title_;
-};
 
 template<class CellType>
 class TableView : public View {

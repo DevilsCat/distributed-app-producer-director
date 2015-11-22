@@ -5,6 +5,7 @@
 #include "TableView.h"
 #include <memory>
 #include <map>
+#include "PromptView.h"
 
 #define PROMPT_OFFSET    1
 
@@ -29,19 +30,15 @@ class ViewRenderer {
 public:
     static ViewRenderer* instance();
 
-    // Stores the user inputs for echo them back.
-    void ReceiveUserInput(const char& ch);
-    void ClearUserInput();
-
     // Stores table views
     void AddView(const std::string& name, View* view, double weight);
     View* GetView(const std::string& name);
+    PromptView* GetPrompt() const;
 
     void Render();
-    
-    // Update prompt.
+    void Render(const std::string& view_name);
     void RenderPrompt();
-
+    
     //void NextView();
     //void PrevView();
 
@@ -52,7 +49,8 @@ private:
 
     // Core render methods
     void RenderAll_();
-    void RenderView_();
+    void RenderViews_();
+    void RenderView_(const ViewInfo& vi) const;
     void RenderPrompt_();
 
     // Update window_height_ and window_width_.
@@ -61,7 +59,6 @@ private:
     int UpdateWindowSize_();
 
     // "Goto" function, for specific position on the window.
-    static void GoToXY(WidthType x, HeightType y);
     void GoToPromptPos(WidthType x = 0);
 
     static ViewRenderer* renderer_;
@@ -69,20 +66,19 @@ private:
 
     std::ostream& std_out_;
 
+    // prompt view class
+    std::shared_ptr<PromptView> prompt_;
+
     // Stores latest window width and height.
     HeightType window_height_;
     WidthType window_width_;
 
     // mutual excludes the rendering from input and output thread
     std::mutex render_mut_;
-
-    // user prompt update
-    HeightType prompt_height_; 
-    std::string user_buf_;
-    std::mutex user_mut_;
     
     // view update
     std::map<std::string, ViewInfo> view_info_map_;
     std::vector<std::string> view_names_;
+
 //    size_t curr_view_idx_;
 };

@@ -7,6 +7,7 @@
 #include <csignal>
 #include "TableView.h"
 #include <thread>
+#include "PromptView.h"
 
 #define KEY_UP      72
 #define KEY_DOWN    80
@@ -17,6 +18,7 @@
 void PromptTest() {
     std::string line;
     int ch;
+    PromptView* prompt_view = dynamic_cast<PromptView*>(ViewRenderer::instance()->GetView("Prompt"));
     do {
         ch = _getch();
         if (ch == 0x03) raise(SIGINT);  // recover the ctrl-c function.
@@ -25,8 +27,8 @@ void PromptTest() {
         else if (ch == KEY_DOWN) {} // so far no-ops
         else if (ch == KEY_LEFT) {} // ViewRenderer::instance()->PrevView();
         else if (ch == KEY_RIGHT) {} // ViewRenderer::instance()->NextView();
-        else if (ch == '\r') ViewRenderer::instance()->ClearUserInput(); 
-        else            ViewRenderer::instance()->ReceiveUserInput(ch);
+        else if (ch == '\r') ViewRenderer::instance()->GetPrompt()->ClearUserInput();
+        else                 ViewRenderer::instance()->GetPrompt()->ReceiveUserInput(ch);
         ViewRenderer::instance()->RenderPrompt();
     } while (true);
 }
@@ -47,7 +49,7 @@ void TableViewTest() {
 void RenderTableViewTest() {
     ViewRenderer::instance()->AddView("Play List", TableView<PlayTableViewCell>::MakeView("Play List"), 0.7);
     ViewRenderer::instance()->AddView("Person Info", TableView<PersonTableViewCell>::MakeView("Person Information Table"), 0.3);
-    
+
     std::vector<std::shared_ptr<PlayTableViewCell>> play_cells;
     play_cells.push_back(std::make_shared<PlayTableViewCell>("director 1", "hamlet", false));
     play_cells.push_back(std::make_shared<PlayTableViewCell>("director 2", "Thunderstorm", false));
