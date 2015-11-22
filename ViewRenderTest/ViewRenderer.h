@@ -51,7 +51,7 @@ private:
     // Core render methods
     void RenderAll_();
     void RenderViews_();
-    void RenderView_(const ViewInfo& vi) const;
+    void RenderView_(const ViewInfo& vi, bool cursor_back = false) const;
     void RenderPrompt_();
 
     // Update window_height_ and window_width_.

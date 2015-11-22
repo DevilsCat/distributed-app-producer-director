@@ -42,14 +42,14 @@ void ViewRenderer::Render() {
 
 void ViewRenderer::Render(const std::string& view_name) {
     std::lock_guard<std::mutex> lk(render_mut_);
-    RenderView_(view_info_map_[view_name]);
+    RenderView_(view_info_map_[view_name], true);
 }
 
 void ViewRenderer::Render(View* view) {
     std::lock_guard<std::mutex> lk(render_mut_);
     for (auto name_vi_pair : view_info_map_) {
         if (view == name_vi_pair.second.view.get())  // search linearly for the view.
-            RenderView_(name_vi_pair.second);
+            RenderView_(name_vi_pair.second, true);
     }
 }
 
@@ -81,16 +81,21 @@ void ViewRenderer::RenderAll_() {
 
 void ViewRenderer::RenderViews_() {
     for (std::string view_name : view_names_) {
-        RenderView_(view_info_map_[view_name]);
+        RenderView_(view_info_map_[view_name], false);
     }
     //if (view_names_.size() == 0)  { return; }  // no view added yet.
     //if (curr_view_idx_ >= view_names_.size()) { return; }  // but this should not happen.
     //view_info_map_[view_names_[curr_view_idx_]]->Draw(window_width_);
 }
 
-void ViewRenderer::RenderView_(const ViewInfo& vi) const {
+void ViewRenderer::RenderView_(const ViewInfo& vi, bool cursor_back) const {
+    short cursor_x, cursor_y;
+    windows::GetCursorPos(cursor_x, cursor_y);
     windows::GoToXY(0, vi.start_height);
     vi.view->Draw(window_width_);
+    if (cursor_back) {
+        windows::GoToXY(cursor_x, cursor_y);
+    }
 }
 
 void ViewRenderer::RenderPrompt_() {

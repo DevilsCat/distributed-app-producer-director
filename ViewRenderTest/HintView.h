@@ -14,9 +14,15 @@ public:
         return new HintView(title);
     }
 
-    std::string hint() const { return hint_; }
+    std::string hint() const {
+        std::lock_guard<std::mutex> lk(m_);
+        return hint_;
+    }
 
-    void set_hint(const std::string& hint) { hint_ = hint; }
+    void set_hint(const std::string& hint) {
+        std::lock_guard<std::mutex> lk(m_);
+        hint_ = hint;
+    }
 
 private:
     explicit HintView(const std::string& title) :
@@ -28,6 +34,7 @@ private:
     }
 
     std::string hint_;
+    mutable std::mutex m_;
 };
 
 const char* HintView::kHintDefault = "";
