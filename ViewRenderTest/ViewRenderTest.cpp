@@ -8,6 +8,7 @@
 #include "TableView.h"
 #include <thread>
 #include "PromptView.h"
+#include "HintView.h"
 
 #define KEY_UP      72
 #define KEY_DOWN    80
@@ -18,18 +19,24 @@
 void PromptTest() {
     std::string line;
     int ch;
-    PromptView* prompt_view = dynamic_cast<PromptView*>(ViewRenderer::instance()->GetView("Prompt"));
+    PromptView* prompt_view = ViewRenderer::instance()->GetPrompt();
+    HintView* hint_view = dynamic_cast<HintView*>(ViewRenderer::instance()->GetView("Hint"));
     do {
         ch = _getch();
         if (ch == 0x03) raise(SIGINT);  // recover the ctrl-c function.
         else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
-        else if (ch == KEY_UP) {}   // so far no-ops
-        else if (ch == KEY_DOWN) {} // so far no-ops
-        else if (ch == KEY_LEFT) {} // ViewRenderer::instance()->PrevView();
-        else if (ch == KEY_RIGHT) {} // ViewRenderer::instance()->NextView();
-        else if (ch == '\r') ViewRenderer::instance()->GetPrompt()->ClearUserInput();
-        else                 ViewRenderer::instance()->GetPrompt()->ReceiveUserInput(ch);
+        else if (ch == KEY_UP) { hint_view->set_hint("TODO: paging up"); }   // so far no-ops
+        else if (ch == KEY_DOWN) { hint_view->set_hint("TODO: paging down"); } // so far no-ops
+        else if (ch == KEY_LEFT) { hint_view->set_hint("TODO: switching tag prev"); } // ViewRenderer::instance()->PrevView();
+        else if (ch == KEY_RIGHT) { hint_view->set_hint("TODO: switching tag next"); } // ViewRenderer::instance()->NextView();
+        else if (ch == '\r') {
+            prompt_view->ClearUserInput();
+            hint_view->set_hint(HintView::kHintDefault);
+        }
+        else prompt_view->ReceiveUserInput(ch);
+        ViewRenderer::instance()->Render(hint_view);
         ViewRenderer::instance()->RenderPrompt();
+        
     } while (true);
 }
 
@@ -47,8 +54,9 @@ void TableViewTest() {
 }
 
 void RenderTableViewTest() {
-    ViewRenderer::instance()->AddView("Play List", TableView<PlayTableViewCell>::MakeView("Play List"), 0.7);
+    ViewRenderer::instance()->AddView("Play List", TableView<PlayTableViewCell>::MakeView("Play List"), 0.6);
     ViewRenderer::instance()->AddView("Person Info", TableView<PersonTableViewCell>::MakeView("Person Information Table"), 0.3);
+    ViewRenderer::instance()->AddView("Hint", HintView::MakeView("Hint"), 0.1);
 
     std::vector<std::shared_ptr<PlayTableViewCell>> play_cells;
     play_cells.push_back(std::make_shared<PlayTableViewCell>("director 1", "hamlet", false));

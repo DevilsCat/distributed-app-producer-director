@@ -11,7 +11,7 @@ public:
     virtual void Draw(const short& width) const = 0;
 
 protected:
-    virtual void DrawTitle(const short& width) const {
+    virtual void DrawTitle_(const short& width) const {
         std::cout << utils::windows::left(title_, width, '=') << std::endl;
     }
 

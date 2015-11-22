@@ -37,6 +37,7 @@ public:
 
     void Render();
     void Render(const std::string& view_name);
+    void Render(View* view);
     void RenderPrompt();
     
     //void NextView();

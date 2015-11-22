@@ -43,9 +43,9 @@ public:
     virtual void Draw(const short& width) const override {
         std::lock_guard<std::mutex> lk(m_);
         const short cell_width = width / (keys_.size() + 1);
-        DrawTitle(width);
-        DrawColumnName(cell_width);
-        DrawCells(cell_width);
+        DrawTitle_(width);
+        DrawColumnName_(cell_width);
+        DrawCells_(cell_width);
     }
 
     static TableView<CellType>* MakeView(const std::string& title) {
@@ -59,7 +59,7 @@ private:
         keys_ = std::make_shared<CellType>()->get_keys();
     }
 
-    void DrawColumnName(const short& cell_w) const {
+    void DrawColumnName_(const short& cell_w) const {
         std::cout << windows::left("ID", cell_w, ' ');
         for (size_t i = 0; i < keys_.size(); ++i) {
             std::cout << windows::left(keys_[i], cell_w, ' ');
@@ -67,14 +67,14 @@ private:
         std::cout << std::endl;
     }
 
-    void DrawCells(const short& cell_w) const {
+    void DrawCells_(const short& cell_w) const {
         for (size_t i = 0; i < cells_.size(); ++i) {
-            DrawCell(i, cell_w);
+            DrawCell_(i, cell_w);
             std::cout << std::endl;
         }
     }
 
-    void DrawCell(const size_t& idx, const short& cell_w) const {
+    void DrawCell_(const size_t& idx, const short& cell_w) const {
         std::cout << windows::left(std::to_string(idx), cell_w, ' ');
         std::for_each(keys_.begin(), keys_.end(), [&](const KeyType& key) {
             std::cout << windows::left(cells_[idx]->get_value(key), cell_w, ' ');

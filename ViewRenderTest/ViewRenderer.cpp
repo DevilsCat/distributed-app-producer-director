@@ -45,6 +45,14 @@ void ViewRenderer::Render(const std::string& view_name) {
     RenderView_(view_info_map_[view_name]);
 }
 
+void ViewRenderer::Render(View* view) {
+    std::lock_guard<std::mutex> lk(render_mut_);
+    for (auto name_vi_pair : view_info_map_) {
+        if (view == name_vi_pair.second.view.get())  // search linearly for the view.
+            RenderView_(name_vi_pair.second);
+    }
+}
+
 void ViewRenderer::RenderPrompt() {
     std::lock_guard<std::mutex> lk(render_mut_);
     RenderPrompt_();
