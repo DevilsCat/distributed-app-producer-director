@@ -35,13 +35,12 @@ class HintView : public View {
 public:
     static const char* kHintDefault;
 
-    static HintView* MakeView(const std::string& title) {
-        return new HintView(title);
-    }
+    static HintView* MakeView(const std::string& title);
 
-    virtual void Draw(const short& width, const short& height) const override;
     std::string hint() const;
     void set_hint(const std::string& hint);
+
+    virtual void Draw(const short& width, const short& height) const override;
 
 private:
     explicit HintView(const std::string& title);
@@ -58,14 +57,13 @@ class PromptView : public View {
 public:
     static const char* sPromptMark;
 
-    static PromptView* MakeView() {
-        return new PromptView(std::string());
-    }
+    static PromptView* MakeView();
 
-    void Draw(const short& width, const short& height) const override;
-    void ReceiveUserInput(const char& ch);
+    void AddChar(const char& ch);
     std::string user_buf() const;
     void ClearUserInput();
+
+    void Draw(const short& width, const short& height) const override;
 
 private:
     PromptView(const std::string& title);
@@ -97,7 +95,7 @@ public:
     // Only Proactor call this.
     void DeleteCellAt(const size_t& idx) {
         std::lock_guard<std::mutex> lk(m_);
-        if (idx < 0 || idx > cells_.size())  return;
+        if (idx < 0 || idx > cells_.size()) { return; }
         cells_.erase(cells_.begin() + idx);
         --cur_cell_idx_;
     }
@@ -106,10 +104,10 @@ public:
     void DeleteCell(std::shared_ptr<CellType> cell) {
         std::lock_guard<std::mutex> lk(m_);
         auto res = std::find(cells_.begin(), cells_.end(), cell);
-        if (res != cells_.end()) {
-            cells_.erase(res);
-            --cur_cell_idx_;
-        }
+        if (res == cells_.end()) { return; }  // not cell found.
+        cells_.erase(res);
+        --cur_cell_idx_;
+        
     }
 
     // Proactor will call this
@@ -175,7 +173,7 @@ private:
 };
 
 //
-// Cells class
+// Cells Class
 //
 // class TableViewCell
 class TableViewCell {
@@ -196,6 +194,7 @@ public:
     void set_director(const std::string& director);
     void set_name(const std::string& name);
     void set_status(const bool status);
+
     std::vector<std::string> get_keys() override;
     std::string get_value(const std::string& key) override;
 private:

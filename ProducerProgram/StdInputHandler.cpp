@@ -42,7 +42,7 @@ std::string StdInputHandler::GetLine() {
         else if (ch == KEY_DOWN)         { ViewRenderer::instance()->Scroll(false); }
         else if (ch == KEY_LEFT)         { ViewRenderer::instance()->PrevView(); } 
         else if (ch == KEY_RIGHT)        { ViewRenderer::instance()->NextView(); }
-        else if (ch != '\r')             { ViewRenderer::instance()->prompt_view()->ReceiveUserInput(ch); }
+        else if (ch != '\r')             { ViewRenderer::instance()->prompt_view()->AddChar(ch); }
         else {  // user hits a return.
             line = prompt_view->user_buf();  // get the input line from user.
             prompt_view->ClearUserInput();

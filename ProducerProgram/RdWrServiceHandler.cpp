@@ -8,7 +8,6 @@ RdWrServiceHandler::RdWrServiceHandler(): producer_(*Producer::instance()) {}
 RdWrServiceHandler::RdWrServiceHandler(Producer& producer) : producer_(producer) {}
 
 RdWrServiceHandler::~RdWrServiceHandler() {
-    //ACE_DEBUG((LM_INFO, "[%x]RdWrServiceHandler: Connection Destroyed.\n", this));
     PROGRAM_DEBUG("[%x]RdWrServiceHandler: Connection Destroyed.", this);
     if (ACE_Handler::handle() != ACE_INVALID_HANDLE)
         ACE_OS::closesocket(ACE_Handler::handle());
@@ -18,7 +17,6 @@ RdWrServiceHandler::~RdWrServiceHandler() {
 }
 
 void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_block) {
-    //ACE_DEBUG((LM_INFO, "[%x]Connection established.\n", this));
     PROGRAM_DEBUG("[%x]Connection established.", this);
     this->handle(new_handle);
     if (this->reader_.open(*this) || this->writer_.open(*this)) {
@@ -29,7 +27,7 @@ void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_
         return;
     }
 
-    // FIXME @Proactor thread?, add this handler to producer.
+    // Add this handler to producer.
     producer_.AddHandler(this);
 
     InvokeRead();
@@ -37,11 +35,10 @@ void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_
 
 void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result& result) {
     ACE_Message_Block& mb = result.message_block();
-    if (!result.success() || result.bytes_transferred() == 0) {  //FIXME do we want to delete this handler?
+    if (!result.success() || result.bytes_transferred() == 0) {  // Delete this handler since it's broken.
         mb.release();
         delete this;
     } else {
-        //ACE_DEBUG((LM_INFO, "%s\n", mb.rd_ptr()));
         PROGRAM_DEBUG("%s", mb.rd_ptr());
         InvokeRead();
     }

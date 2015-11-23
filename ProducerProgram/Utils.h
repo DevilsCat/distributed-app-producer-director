@@ -85,6 +85,17 @@ namespace utils {
         }
 
         inline
+        int GetWindowSize(short& w, short& h) {
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            int ret = GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            if (ret) {
+                w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+                h = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+            }
+            return ret;
+        }
+
+        inline
         std::string StringPrintf(const char* format, ...) {
             va_list arg_list;
             va_start(arg_list, format);

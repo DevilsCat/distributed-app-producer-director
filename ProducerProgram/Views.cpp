@@ -22,6 +22,10 @@ void HintView::Draw(const short& width, const short& height) const {
     DrawHint_(width);
 }
 
+HintView* HintView::MakeView(const std::string& title) {  // The reason I use Factory method in Views,
+    return new HintView(title);                           // is to ensure we always create the View on heap.
+}
+
 std::string HintView::hint() const {
     std::lock_guard<std::mutex> lk(m_);
     return hint_;
@@ -40,11 +44,15 @@ void HintView::DrawHint_(const short& width) const {
     std::cout << windows::center(hint_, width, ' ');
 }
 
+PromptView* PromptView::MakeView() {
+    return new PromptView(std::string());
+}
+
 void PromptView::Draw(const short& width, const short& height) const {
     DrawPrompt_(width);
 }
 
-void PromptView::ReceiveUserInput(const char& ch) {
+void PromptView::AddChar(const char& ch) {
     if (ch == '\b') {  // backspace
         if (!user_buf_.empty()) user_buf_.pop_back();
         return;

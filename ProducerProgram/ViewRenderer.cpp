@@ -8,7 +8,7 @@ using namespace utils;
 std::string ViewRenderer::sNoMainView = "NO_MAIN_VIEW";
 std::string ViewRenderer::sAllViews = "ALL_VIEWS";
 
-ViewRenderer* ViewRenderer::renderer_ = nullptr;
+std::shared_ptr<ViewRenderer> ViewRenderer::renderer_ = nullptr;
 std::once_flag ViewRenderer::once_flag_;
 
 // Initialization methods
@@ -20,9 +20,13 @@ ViewRenderer::ViewRenderer(const ViewRenderer&) : ViewRenderer() {}
 
 ViewRenderer& ViewRenderer::operator=(const ViewRenderer&) { return *this; }
 
+ViewRenderer::~ViewRenderer() {
+    std::cout << "ViewRenderer Deallocated" << std::endl;
+}
+
 ViewRenderer* ViewRenderer::instance() {
-    std::call_once(once_flag_, []{ renderer_ = new ViewRenderer; });
-    return renderer_;
+    std::call_once(once_flag_, []{ renderer_ = std::shared_ptr<ViewRenderer>(new ViewRenderer); });
+    return renderer_.get();
 }
 
 void ViewRenderer::AddView(const std::string& name, View* view, double weight) {
@@ -31,7 +35,7 @@ void ViewRenderer::AddView(const std::string& name, View* view, double weight) {
 }
 
 View* ViewRenderer::GetView(const std::string& name) {
-    if (view_info_map_.count(name) == 0) { return nullptr; }
+    if (!view_info_map_.count(name)) { return nullptr; }  // view not exists.
     return view_info_map_[name].view.get();
 }
 
@@ -45,14 +49,13 @@ PromptView* ViewRenderer::prompt_view() const {
 
 void ViewRenderer::Render(const std::string& view_name) {
     std::lock_guard<std::mutex> lk(render_mut_);
-    // render only when this view is presented.
-    RenderAll_(view_name == sAllViews || 
-               view_name == view_names_[curr_view_idx_]);
+    RenderAll_(view_name == sAllViews ||                    // If AllViews toggles, then render all,
+               view_name == view_names_[curr_view_idx_]);   // otherwise, render the main view only if it's the current view.
 }
 
 void ViewRenderer::Render(View* view) {
     std::lock_guard<std::mutex> lk(render_mut_);
-    RenderAll_(view == GetCurrentViewInfo_().view.get());
+    RenderAll_(view == GetCurrentViewInfo_().view.get());   // Use the pointer value to check if identical.
 }
 
 void ViewRenderer::RenderHintView() {
@@ -74,7 +77,7 @@ void ViewRenderer::NextView() {
 
 void ViewRenderer::PrevView() {
     std::lock_guard<std::mutex> lk(render_mut_);
-    if (curr_view_idx_ == 0) { return; }  // nor more previous view;
+    if (curr_view_idx_ == 0) { return; }  // no more previous view;
     --curr_view_idx_;
     RenderAll_(true);
 }
@@ -87,10 +90,10 @@ void ViewRenderer::Scroll(bool is_up) {
     RenderAll_(true);
 }
 
-void ViewRenderer::RenderAll_(bool to_render_view) {
+void ViewRenderer::RenderAll_(bool render_main_view) {
     UpdateWindowSize_();
-    if (to_render_view) {  // clear every thing and re-render.
-        system("cls");     // clear the screen.
+    if (render_main_view) {  // clear every thing and re-render.
+        system("cls");       // clear the screen.
         RenderCurrView_();
     }
     RenderHintView_();
@@ -114,36 +117,21 @@ void ViewRenderer::RenderView_(const ViewInfo& vi, bool cursor_back) const {
 }
 
 void ViewRenderer::RenderHintView_() const {
-    short cursor_x, cursor_y;  // enable the cursor back.
+    short cursor_x, cursor_y;  // Stores old cursor position, enable the cursor back.
     windows::GetCursorPos(cursor_x, cursor_y);
-    GoToHintPos();
+    windows::GoToXY(0, window_height_ - HINT_OFFSET);  // Go to hint view position
     hint_view_->Draw(window_width_, window_height_ - WINDOW_HEIGHT_PRESERVED);
     windows::GoToXY(cursor_x, cursor_y);
 }
 
 void ViewRenderer::RenderPromptView_() const {
-    GoToPromptPos();
+    windows::GoToXY(0, window_height_ - PROMPT_OFFSET);  // Go to Prompt view position. 
     prompt_view_->Draw(window_width_, window_height_ - WINDOW_HEIGHT_PRESERVED);
 }
 
 // Util methods.
 int ViewRenderer::UpdateWindowSize_() {
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    int ret = GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
-    if (ret) {
-        window_width_ = csbi.srWindow.Right - csbi.srWindow.Left + 1;
-        window_height_ = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-    }
-    return ret;
-}
-
-void ViewRenderer::GoToHintPos() const {
-    windows::GoToXY(0, window_height_ - HINT_OFFSET);
-}
-
-void ViewRenderer::GoToPromptPos(WidthType x) const {
-    //UpdateWindowSize_(); // in order to get latest window height.
-    windows::GoToXY(x, window_height_ - PROMPT_OFFSET);
+    return windows::GetWindowSize(window_width_, window_height_);
 }
 
 ViewRenderer::ViewInfo& ViewRenderer::GetCurrentViewInfo_() {

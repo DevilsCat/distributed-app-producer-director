@@ -10,7 +10,7 @@ public:
 
 private:
     CommandQueue();
-    CommandQueue(const CommandQueue&);;
+    CommandQueue(const CommandQueue&);
     CommandQueue& operator=(const CommandQueue&) const;;
     
     static CommandQueue* queue_;

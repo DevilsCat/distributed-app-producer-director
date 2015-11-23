@@ -1,12 +1,11 @@
 ﻿#pragma once
 #include <mutex>
-#include <iostream>
 #include <vector>
 #include <memory>
 #include <map>
 #include "Views.h"
 
-// Instead of using ACE_DEBUG, use this to make sure
+// Instead of using ACE_DEBUG, use this { PROGRAM_DEBUG } to make sure
 // output is UI clean.
 #ifndef PROGRAM_DEBUG
 #define PROGRAM_DEBUG(X, ...) \
@@ -19,7 +18,7 @@
             debug_view->AddCell(std::make_shared<DebugTableViewCell>(DebugTableViewCell(msg))); \
             ViewRenderer::instance()->Render("Debug"); \
         }\
-        ViewRenderer::instance()->RenderHintView(); \
+        ViewRenderer::instance()->Render(ViewRenderer::sNoMainView); \
     } while(0)
 #endif
 
@@ -28,9 +27,6 @@
 #define WINDOW_HEIGHT_PRESERVED     (3)
 
 class ViewRenderer {
-    typedef short HeightType;
-    typedef short WidthType;
-
     struct ViewInfo {
         std::shared_ptr<View> view;
         double weight;
@@ -44,50 +40,52 @@ class ViewRenderer {
     };
 
 public:
+    ~ViewRenderer();
+    // Default string for view rendering.
     static std::string sNoMainView;
     static std::string sAllViews;
     static ViewRenderer* instance();
 
-    // Stores table views
+    // Views' Getter/Setter.
     void AddView(const std::string& name, View* view, double weight = 0);
     View* GetView(const std::string& name);
     HintView* hint_view() const;
     PromptView* prompt_view() const;
     
+    // Render method
     void Render(const std::string& view_name);
     void Render(View* view);
     void RenderHintView();
     void RenderPromptView();
     
+    // View Switching methods.
     void NextView();
     void PrevView();
 
+    // View Scrolling method.
     void Scroll(bool is_up);
 
 private:
+    // Hide constructors and copy operator for singleton patterns.
     ViewRenderer();
     ViewRenderer(const ViewRenderer&);
     ViewRenderer& operator=(const ViewRenderer&);
 
     // Core render methods
-    void RenderAll_(bool to_render_view);
+    void RenderAll_(bool render_main_view);
     void RenderCurrView_();
-    void RenderView_(const ViewInfo& vi, bool cursor_back = false) const;
+    void RenderView_(const ViewInfo& vi, bool cursor_back) const;
     void RenderHintView_() const;
     void RenderPromptView_() const;
 
     // Update window_height_ and window_width_.
     int UpdateWindowSize_();
 
-    // "Goto" function, for specific position on the window.
-    void GoToHintPos() const ;
-    void GoToPromptPos(WidthType x = 0) const;
-
     // Retrieves the current view
     ViewInfo & GetCurrentViewInfo_();
 
     // Singleton.
-    static ViewRenderer* renderer_;
+    static std::shared_ptr<ViewRenderer> renderer_;
     static std::once_flag once_flag_;
 
     // prompt view class
@@ -96,8 +94,8 @@ private:
     std::shared_ptr<HintView> hint_view_;
 
     // Stores latest window width and height.
-    HeightType window_height_;
-    WidthType window_width_;
+    short window_height_;
+    short window_width_;
 
     // mutual excludes the rendering from input and output thread
     std::mutex render_mut_;
