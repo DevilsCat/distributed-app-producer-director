@@ -70,7 +70,7 @@ void RenderTableViewTest() {
     
     std::vector<std::shared_ptr<PersonTableViewCell>> person_cells;
     person_cells.push_back(std::make_shared<PersonTableViewCell>("Yu Xiao", 24, "735 Interdrive", "(314)309-7890"));
-    person_cells.push_back(std::make_shared<PersonTableViewCell>("Anqi Zhang", 22, "6591 Rosberry", "(314)537-0018"));
+    person_cells.push_back(std::make_shared<PersonTableViewCell>("Anqi Zhang", 22, "6219 Rosberry", "(314)537-0018"));
 
     for (std::shared_ptr<PersonTableViewCell> cell : person_cells) {
         dynamic_cast<TableView<PersonTableViewCell>*>(ViewRenderer::instance()->GetView("Person Info"))
