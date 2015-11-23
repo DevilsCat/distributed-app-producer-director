@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "RdWrServiceHandler.h"
 #include <ace/OS.h>
+#include "SockMsgHandler.h"
 
 RdWrServiceHandler::RdWrServiceHandler(): producer_(*Producer::instance()) {}
 
@@ -49,6 +50,8 @@ void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result
         //    InvokeNewRead();
         //}
     }
+	SockMsgHandler::RecvMsg msg = SockMsgHandler::instance()->Recive(mb.rd_ptr());
+	msg.print();
 }
 
 void RdWrServiceHandler::handle_write_stream(const ACE_Asynch_Write_Stream::Result& result) {
