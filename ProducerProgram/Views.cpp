@@ -16,7 +16,7 @@ using namespace utils;
 const char* HintView::kHintDefault = "";
 const char* PromptView::sPromptMark = ">>";
 
-void HintView::Draw(const short& width) const {
+void HintView::Draw(const short& width, const short& height) const {
     std::lock_guard<std::mutex> lk(m_);
     DrawTitle_(width);
     DrawHint_(width);
@@ -40,7 +40,7 @@ void HintView::DrawHint_(const short& width) const {
     std::cout << windows::center(hint_, width, ' ');
 }
 
-void PromptView::Draw(const short& width) const {
+void PromptView::Draw(const short& width, const short& height) const {
     DrawPrompt_(width);
 }
 

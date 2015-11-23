@@ -23,8 +23,9 @@
     } while(0)
 #endif
 
-#define PROMPT_OFFSET    (1)
-#define HINT_OFFSET      (PROMPT_OFFSET + 2)
+#define PROMPT_OFFSET               (1)
+#define HINT_OFFSET                 (PROMPT_OFFSET + 2)
+#define WINDOW_HEIGHT_PRESERVED     (3)
 
 class ViewRenderer {
     typedef short HeightType;

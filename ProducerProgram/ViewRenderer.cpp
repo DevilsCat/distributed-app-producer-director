@@ -99,7 +99,7 @@ void ViewRenderer::RenderView_(const ViewInfo& vi, bool cursor_back) const {
     short cursor_x, cursor_y;
     windows::GetCursorPos(cursor_x, cursor_y);
     windows::GoToXY(0, vi.start_height);
-    vi.view->Draw(window_width_);
+    vi.view->Draw(window_width_, window_height_ - WINDOW_HEIGHT_PRESERVED);
     if (cursor_back) {
         windows::GoToXY(cursor_x, cursor_y);
     }
@@ -109,13 +109,13 @@ void ViewRenderer::RenderHintView_() const {
     short cursor_x, cursor_y;  // enable the cursor back.
     windows::GetCursorPos(cursor_x, cursor_y);
     GoToHintPos();
-    hint_view_->Draw(window_width_);
+    hint_view_->Draw(window_width_, window_height_ - WINDOW_HEIGHT_PRESERVED);
     windows::GoToXY(cursor_x, cursor_y);
 }
 
 void ViewRenderer::RenderPromptView_() const {
     GoToPromptPos();
-    prompt_view_->Draw(window_width_);
+    prompt_view_->Draw(window_width_, window_height_ - WINDOW_HEIGHT_PRESERVED);
 }
 
 // Util methods.
