@@ -41,8 +41,8 @@ std::string StdInputHandler::GetLine() {
         ch = _getch();
         if      (ch == KEY_SIGINT)       { raise(SIGINT); }  // recover the ctrl-c function.
         else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
-        else if (ch == KEY_UP)           {}  // so far no-ops
-        else if (ch == KEY_DOWN)         {}  // so far no-ops
+        else if (ch == KEY_UP)           { ViewRenderer::instance()->Scroll(true); }
+        else if (ch == KEY_DOWN)         { ViewRenderer::instance()->Scroll(false); }
         else if (ch == KEY_LEFT)         { ViewRenderer::instance()->PrevView(); } 
         else if (ch == KEY_RIGHT)        { ViewRenderer::instance()->NextView(); }
         else if (ch != '\r')             { ViewRenderer::instance()->prompt_view()->ReceiveUserInput(ch); }

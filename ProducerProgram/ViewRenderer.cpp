@@ -79,10 +79,18 @@ void ViewRenderer::PrevView() {
     RenderAll_(true);
 }
 
+void ViewRenderer::Scroll(bool is_up) {
+    std::lock_guard<std::mutex> lk(render_mut_);
+    UpdateWindowSize_();
+    if (is_up)  GetCurrentViewInfo_().view->ScrollUp(window_height_ - WINDOW_HEIGHT_PRESERVED);
+    else        GetCurrentViewInfo_().view->ScrollDown(window_height_ - WINDOW_HEIGHT_PRESERVED);
+    RenderAll_(true);
+}
+
 void ViewRenderer::RenderAll_(bool to_render_view) {
     UpdateWindowSize_();
     if (to_render_view) {  // clear every thing and re-render.
-        system("cls");  // clear the screen.
+        system("cls");     // clear the screen.
         RenderCurrView_();
     }
     RenderHintView_();

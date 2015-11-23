@@ -13,7 +13,12 @@ public:
     View(const std::string& title) : title_(title) {}
     virtual ~View() {}
 
+    // Every view must respond a draw event.
     virtual void Draw(const short& width, const short& height) const = 0;
+    
+    // Each view may respond to a scroll event.
+    virtual void ScrollUp(const short& nline_scroll) {}
+    virtual void ScrollDown(const short& nline_scroll) {}
 
 protected:
     virtual void DrawTitle_(const short& width) const {
@@ -115,6 +120,17 @@ public:
         DrawTitle_(width);
         DrawColumnName_(cell_width);
         DrawCells_(cell_width, height - TABLE_VIEW_PRESERVED);
+    }
+
+    virtual void ScrollUp(const short& nline_scroll) override {
+        std::lock_guard<std::mutex> lk(m_);
+        short possible_nscroll = MIN(short(cells_.size()), nline_scroll - TABLE_VIEW_PRESERVED);
+        cur_cell_idx_ = MAX(int(cur_cell_idx_ - possible_nscroll), possible_nscroll);
+    }
+    
+    virtual void ScrollDown(const short& nline_scroll) override {
+        std::lock_guard<std::mutex> lk(m_);
+        cur_cell_idx_ = MIN(cur_cell_idx_ + nline_scroll - TABLE_VIEW_PRESERVED, cells_.size());
     }
 
     static TableView<CellType>* MakeView(const std::string& title) {

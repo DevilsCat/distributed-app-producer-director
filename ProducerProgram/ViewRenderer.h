@@ -62,6 +62,8 @@ public:
     void NextView();
     void PrevView();
 
+    void Scroll(bool is_up);
+
 private:
     ViewRenderer();
     ViewRenderer(const ViewRenderer&);
