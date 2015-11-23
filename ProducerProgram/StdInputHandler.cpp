@@ -8,7 +8,7 @@
 #include "ViewRenderer.h"
 #include <csignal>
 
-#define KEY_SIGINT  03   
+#define KEY_SIGINT  03
 #define KEY_UP      72
 #define KEY_DOWN    80
 #define KEY_LEFT    75
@@ -20,10 +20,7 @@ StdInputHandler* StdInputHandler::handler_ = nullptr;
 std::once_flag StdInputHandler::once_flag_;
 
 StdInputHandler* StdInputHandler::instance() {
-    call_once(once_flag_, []{
-                  if (handler_ == nullptr)
-                      handler_ = new StdInputHandler();
-              });
+    call_once(once_flag_, []{ handler_ = new StdInputHandler; });
     return handler_;
 }
 

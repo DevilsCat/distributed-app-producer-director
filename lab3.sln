@@ -7,8 +7,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ProducerProgram", "Producer
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DirectorProgram", "DirectorProgram\DirectorProgram.vcxproj", "{FEE3DE18-56CE-4677-B4DD-6F3C3B078F33}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ViewRenderTest", "ViewRenderTest\ViewRenderTest.vcxproj", "{63091648-FECC-463C-8A3E-4BD67BE7D4E7}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -23,10 +21,6 @@ Global
 		{FEE3DE18-56CE-4677-B4DD-6F3C3B078F33}.Debug|Win32.Build.0 = Debug|Win32
 		{FEE3DE18-56CE-4677-B4DD-6F3C3B078F33}.Release|Win32.ActiveCfg = Release|Win32
 		{FEE3DE18-56CE-4677-B4DD-6F3C3B078F33}.Release|Win32.Build.0 = Release|Win32
-		{63091648-FECC-463C-8A3E-4BD67BE7D4E7}.Debug|Win32.ActiveCfg = Debug|Win32
-		{63091648-FECC-463C-8A3E-4BD67BE7D4E7}.Debug|Win32.Build.0 = Debug|Win32
-		{63091648-FECC-463C-8A3E-4BD67BE7D4E7}.Release|Win32.ActiveCfg = Release|Win32
-		{63091648-FECC-463C-8A3E-4BD67BE7D4E7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
