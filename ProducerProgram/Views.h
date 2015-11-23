@@ -70,7 +70,8 @@ private:
 };
 
 
-#define ID_COL_WIDTH    (4)
+#define ID_COL_WIDTH            (4)  // Change this to adjust width of id column.
+#define TABLE_VIEW_PRESERVED    (2)  // One for title and one for columns.
 //
 // class TableView.
 template<class CellType>

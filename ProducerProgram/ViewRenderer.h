@@ -43,16 +43,16 @@ class ViewRenderer {
     };
 
 public:
+    static std::string sNoMainView;
+    static std::string sAllViews;
     static ViewRenderer* instance();
 
     // Stores table views
-    void AddView(const std::string& name, View* view, double weight);
+    void AddView(const std::string& name, View* view, double weight = 0);
     View* GetView(const std::string& name);
     HintView* hint_view() const;
     PromptView* prompt_view() const;
     
-
-    void Render();
     void Render(const std::string& view_name);
     void Render(View* view);
     void RenderHintView();
@@ -67,7 +67,7 @@ private:
     ViewRenderer& operator=(const ViewRenderer&);
 
     // Core render methods
-    void RenderAll_();
+    void RenderAll_(bool to_render_view);
     void RenderCurrView_();
     void RenderView_(const ViewInfo& vi, bool cursor_back = false) const;
     void RenderHintView_() const;
@@ -83,10 +83,9 @@ private:
     // Retrieves the current view
     ViewInfo & GetCurrentViewInfo_();
 
+    // Singleton.
     static ViewRenderer* renderer_;
     static std::once_flag once_flag_;
-
-    std::ostream& std_out_;
 
     // prompt view class
     std::shared_ptr<PromptView> prompt_view_;

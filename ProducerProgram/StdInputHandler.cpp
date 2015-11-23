@@ -50,10 +50,10 @@ std::string StdInputHandler::GetLine() {
             line = prompt_view->user_buf();  // get the input line from user.
             prompt_view->ClearUserInput();
             ViewRenderer::instance()->hint_view()->set_hint(HintView::kHintDefault);
-            ViewRenderer::instance()->Render();
+            ViewRenderer::instance()->Render(ViewRenderer::sNoMainView);
             break;
         }
-        ViewRenderer::instance()->RenderPromptView();
+        ViewRenderer::instance()->Render(ViewRenderer::sNoMainView);
     } while (true);
     return line;
 }

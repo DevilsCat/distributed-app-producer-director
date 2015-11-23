@@ -5,12 +5,15 @@
 
 using namespace utils;
 
+std::string ViewRenderer::sNoMainView = "NO_MAIN_VIEW";
+std::string ViewRenderer::sAllViews = "ALL_VIEWS";
+
 ViewRenderer* ViewRenderer::renderer_ = nullptr;
 std::once_flag ViewRenderer::once_flag_;
 
 // Initialization methods
 ViewRenderer::ViewRenderer() : 
-    std_out_(std::cout), prompt_view_(PromptView::MakeView()), hint_view_(HintView::MakeView("Hint")) 
+    prompt_view_(PromptView::MakeView()), hint_view_(HintView::MakeView("Hint")) 
 {}
 
 ViewRenderer::ViewRenderer(const ViewRenderer&) : ViewRenderer() {}
@@ -40,26 +43,16 @@ PromptView* ViewRenderer::prompt_view() const {
     return prompt_view_.get();
 }
 
-void ViewRenderer::Render() {
-    std::lock_guard<std::mutex> lk(render_mut_);
-    RenderAll_();
-}
-
 void ViewRenderer::Render(const std::string& view_name) {
     std::lock_guard<std::mutex> lk(render_mut_);
     // render only when this view is presented.
-    if (view_name == view_names_[curr_view_idx_])
-        RenderView_(GetCurrentViewInfo_(), true);
+    RenderAll_(view_name == sAllViews || 
+               view_name == view_names_[curr_view_idx_]);
 }
 
 void ViewRenderer::Render(View* view) {
     std::lock_guard<std::mutex> lk(render_mut_);
-    if (view == GetCurrentViewInfo_().view.get())
-        RenderView_(GetCurrentViewInfo_(), true);
-    for (auto name_vi_pair : view_info_map_) {
-        if (view == name_vi_pair.second.view.get())  // search linearly for the view.
-            RenderView_(name_vi_pair.second, true);
-    }
+    RenderAll_(view == GetCurrentViewInfo_().view.get());
 }
 
 void ViewRenderer::RenderHintView() {
@@ -76,20 +69,22 @@ void ViewRenderer::NextView() {
     std::lock_guard<std::mutex> lk(render_mut_);
     if (curr_view_idx_ >= view_names_.size() - 1) { return; } // no more next view.
     ++curr_view_idx_;
-    RenderAll_();
+    RenderAll_(true);
 }
 
 void ViewRenderer::PrevView() {
     std::lock_guard<std::mutex> lk(render_mut_);
     if (curr_view_idx_ == 0) { return; }  // nor more previous view;
     --curr_view_idx_;
-    RenderAll_();
+    RenderAll_(true);
 }
 
-void ViewRenderer::RenderAll_() {
-    system("cls");  // clear the screen.
+void ViewRenderer::RenderAll_(bool to_render_view) {
     UpdateWindowSize_();
-    RenderCurrView_();
+    if (to_render_view) {  // clear every thing and re-render.
+        system("cls");  // clear the screen.
+        RenderCurrView_();
+    }
     RenderHintView_();
     RenderPromptView_();
 }

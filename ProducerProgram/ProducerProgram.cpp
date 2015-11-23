@@ -15,9 +15,9 @@
 int main(int argc, char* argv[])
 {
     // Setup views
-    ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"), 0.5);
-    ViewRenderer::instance()->AddView("Debug", TableView<DebugTableViewCell>::MakeView("Debug Messages"), 0.5);
-    ViewRenderer::instance()->Render();  // Render an empty view.
+    ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"));
+    ViewRenderer::instance()->AddView("Debug", TableView<DebugTableViewCell>::MakeView("Debug Messages"));
+    ViewRenderer::instance()->Render(ViewRenderer::sAllViews);  // Render an empty view.
 
     // Run the reactor in background thread.
     std::thread reactor_td([]{ 
@@ -25,8 +25,8 @@ int main(int argc, char* argv[])
         ACE_Reactor::instance()->schedule_timer(
             new CommandEventHandler,
             nullptr,
-            ACE_Time_Value(1, 0),
-            ACE_Time_Value(1, 0)
+            ACE_Time_Value(0, 100000),
+            ACE_Time_Value(0, 100000)
         );
         ACE_Reactor::instance()->run_event_loop(); 
     });
