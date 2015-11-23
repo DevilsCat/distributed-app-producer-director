@@ -13,15 +13,12 @@ public:
     ~RdWrServiceHandler();
 
     virtual void open(ACE_HANDLE new_handle, ACE_Message_Block& message_block) override;
-
     virtual void handle_read_stream(const ACE_Asynch_Read_Stream::Result& result) override;
-
     virtual void handle_write_stream(const ACE_Asynch_Write_Stream::Result& result) override;
 
     int InvokeSend(std::string& message);
+    void InvokeRead(const unsigned& nbytes = 1024);
 private:
-    void InvokeNewRead(const unsigned& nbytes = 1);
-
     ACE_Asynch_Read_Stream reader_;
     ACE_Asynch_Write_Stream writer_;
     Producer& producer_;

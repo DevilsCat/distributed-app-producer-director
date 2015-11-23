@@ -94,6 +94,8 @@
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ThreadSafeQueue.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="ViewRenderer.h" />
+    <ClInclude Include="Views.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CommandQueue.cpp" />
@@ -108,6 +110,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="ViewRenderer.cpp" />
+    <ClCompile Include="Views.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

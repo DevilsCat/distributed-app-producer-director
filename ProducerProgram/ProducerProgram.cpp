@@ -4,24 +4,29 @@
 #include "stdafx.h"
 #include "StdInputHandler.h"
 #include "CommandQueue.h"
-#include <iostream>
 #include <ace/Reactor.h>
 #include "CommandEventHandler.h"
 #include <thread>
 #include <ace/Asynch_Acceptor.h>
 #include <ace/Proactor.h>
 #include "DirectorAsynchAcceptor.h"
+#include "ViewRenderer.h"
 
 int main(int argc, char* argv[])
 {
+    // Setup views
+    ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"));
+    ViewRenderer::instance()->AddView("Debug", TableView<DebugTableViewCell>::MakeView("Debug Messages"));
+    ViewRenderer::instance()->Render(ViewRenderer::sAllViews);  // Render an empty view.
+
     // Run the reactor in background thread.
     std::thread reactor_td([]{ 
         // Configure a command event handler
         ACE_Reactor::instance()->schedule_timer(
             new CommandEventHandler,
             nullptr,
-            ACE_Time_Value(1, 0),
-            ACE_Time_Value(1, 0)
+            ACE_Time_Value(0, 100000),
+            ACE_Time_Value(0, 100000)
         );
         ACE_Reactor::instance()->run_event_loop(); 
     });
@@ -42,16 +47,15 @@ int main(int argc, char* argv[])
     // Run UI event in main (UI) thread.
     while (true) {
         try {
-            std::string cmd_str = StdInputHandler::instance()->GetLine();
+            std::string cmd_str = StdInputHandler::GetLine();
             std::shared_ptr<Command> command = StdInputHandler::instance()->MakeCommand(cmd_str);
-            if (command != nullptr)
-                CommandQueue::instance()->push(command);  // Queue up the command so that ACE_Reactor
-                                                          // handler can handle it.
+            if (command != nullptr)                       // if command vaild, queue up the command 
+                CommandQueue::instance()->push(command);  // so that ACE_Reactor handler can handle it.
             if (command && command->cmd_type == Command::kQuit)
                 break;
         }
         catch (std::runtime_error& e) {
-            std::cerr << e.what() << std::endl;
+            PROGRAM_DEBUG("%s", e.what());
         }
     }
 

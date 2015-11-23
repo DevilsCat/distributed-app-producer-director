@@ -3,16 +3,24 @@
 #include "Utils.h"
 #include <string>
 #include <vector>
+#include <conio.h>
+#include "Views.h"
+#include "ViewRenderer.h"
+#include <csignal>
+
+#define KEY_SIGINT  03
+#define KEY_UP      72
+#define KEY_DOWN    80
+#define KEY_LEFT    75
+#define KEY_RIGHT   77
+#define KEY_ARROW_PREFIX  224
 
 StdInputHandler* StdInputHandler::handler_ = nullptr;
 
 std::once_flag StdInputHandler::once_flag_;
 
 StdInputHandler* StdInputHandler::instance() {
-    call_once(once_flag_, []{
-                  if (handler_ == nullptr)
-                      handler_ = new StdInputHandler();
-              });
+    call_once(once_flag_, []{ handler_ = new StdInputHandler; });
     return handler_;
 }
 
@@ -22,9 +30,28 @@ StdInputHandler::~StdInputHandler() {
     }
 }
 
-std::string StdInputHandler::GetLine() const {
+std::string StdInputHandler::GetLine() {
     std::string line;
-    std::getline(std_cin_, line);
+    int ch;
+    PromptView* prompt_view = ViewRenderer::instance()->prompt_view();
+    do {
+        ch = _getch();
+        if      (ch == KEY_SIGINT)       { raise(SIGINT); }  // recover the ctrl-c function.
+        else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
+        else if (ch == KEY_UP)           { ViewRenderer::instance()->Scroll(true); }
+        else if (ch == KEY_DOWN)         { ViewRenderer::instance()->Scroll(false); }
+        else if (ch == KEY_LEFT)         { ViewRenderer::instance()->PrevView(); } 
+        else if (ch == KEY_RIGHT)        { ViewRenderer::instance()->NextView(); }
+        else if (ch != '\r')             { ViewRenderer::instance()->prompt_view()->AddChar(ch); }
+        else {  // user hits a return.
+            line = prompt_view->user_buf();  // get the input line from user.
+            prompt_view->ClearUserInput();
+            ViewRenderer::instance()->hint_view()->set_hint(HintView::kHintDefault);
+            ViewRenderer::instance()->Render(ViewRenderer::sNoMainView);
+            break;
+        }
+        ViewRenderer::instance()->Render(ViewRenderer::sNoMainView);
+    } while (true);
     return line;
 }
 
@@ -36,15 +63,11 @@ std::shared_ptr<Command> StdInputHandler::MakeCommand(const std::string& input) 
     std::getline(iss, params);
 
     switch (CheckCommandType(cmd_type)) {
-    case Command::kStart: 
-        return MakeStartCommand(params);
-    case Command::kStop: 
-        return MakeStopCommand(params);
-    case Command::kQuit: 
-        return MakeQuitCommand(params);
-    case Command::kUnknown: 
-    default:
-        return nullptr;
+    case Command::kStart:   { return MakeStartCommand(params); }
+    case Command::kStop:    { return MakeStopCommand(params); }
+    case Command::kQuit:    { return MakeQuitCommand(params); }
+    case Command::kUnknown: { return nullptr; }
+    default:                { return nullptr; }
     }
 }
 

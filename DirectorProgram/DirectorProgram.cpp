@@ -60,19 +60,10 @@ int main(int argc, char* argv[])
     }
 
     // Do some other stuffs
-    ACE_Reactor::instance()->schedule_timer (
-        director,
-        nullptr,
-        ACE_Time_Value(),
-        ACE_Time_Value(0, 10000)
-    );
-
     ACE_INET_Addr addr(1234, ACE_LOCALHOST);
 
     ACE_Connector<RdWrSockSvcHandler, ACE_SOCK_Connector> connector;
-
     RdWrSockSvcHandler* svc_handler = new RdWrSockSvcHandler(director);
-    director->SetSvcHandler(svc_handler);
     if (connector.connect(svc_handler, addr) == -1) {
         ACE_ERROR((LM_ERROR, "Connection Failed"));
     }

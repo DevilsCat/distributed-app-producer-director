@@ -46,12 +46,12 @@ void PrintVisitor::Visit(PartAST* node) {
     std::cout << pad_whitespace(3) << "[part] " << node->string_ << " : " << node->dialog_filename_ << std::endl;
 }
 
-DirectorSkimVisitor::DirectorSkimVisitor(std::shared_ptr<ScriptAST>& script) :
-    script_(script)
-{}
-
 std::vector<std::string> DirectorSkimVisitor::scene_titles() const {
     return scene_titles_;
+}
+
+std::string DirectorSkimVisitor::play_name() const {
+    return play_name_;
 }
 
 std::vector<unsigned> DirectorSkimVisitor::frag_nplayers() const {
@@ -60,6 +60,10 @@ std::vector<unsigned> DirectorSkimVisitor::frag_nplayers() const {
 
 unsigned DirectorSkimVisitor::max_nplayers() const {
     return *max_element(frag_nplayers_.begin(), frag_nplayers_.end());
+}
+
+void DirectorSkimVisitor::Visit(ScriptAST* node) {
+    play_name_ = node->string_;
 }
 
 void DirectorSkimVisitor::Visit(SceneAST* node) {

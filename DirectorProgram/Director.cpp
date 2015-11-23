@@ -13,7 +13,7 @@
 
 Director::Director(std::vector<std::string> script_filenames, unsigned min_nplayers) :
     GenericFiniteStateMachine<StateCode, InputCode>(kEntry),
-    select_idx_(0), svc_handler_(nullptr)
+    select_idx_(0)
 {
     // parse all files by given filenames
     for (std::string filename : script_filenames) {
@@ -25,11 +25,12 @@ Director::Director(std::vector<std::string> script_filenames, unsigned min_nplay
     size_t max_nplayers = 0;  // Stores maximum numbers that needed in all plays.
     // Traverse all parsed scripts to Generate Play and maximum players needed.
     for (std::shared_ptr<ScriptAST> script : scripts_) {
-        DirectorSkimVisitor visitor(script);  // After this visit, visitor will get all scene titles 
+        DirectorSkimVisitor visitor;  // After this visit, visitor will get all scene titles 
         script->accept(visitor);              // and number of players needed in each fragment.
         plays_.push_back(
             std::make_shared<Play>(visitor.scene_titles(), visitor.frag_nplayers())
         );
+        play_list_.push_back(visitor.play_name());
         max_nplayers = MAX(max_nplayers, visitor.max_nplayers());  // Record the maximum number of
     }                                                              // players needed in all scripts
 
@@ -41,7 +42,6 @@ Director::Director(std::vector<std::string> script_filenames, unsigned min_nplay
 
     // Setup Finite State Machine
     GenericFiniteStateMachine<StateCode, InputCode>::setup();
-    run(inTimeout);
 }
 
 Director::~Director() {
@@ -81,10 +81,6 @@ int Director::handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) {
     return 0;
 }
 
-void Director::SetSvcHandler(RdWrSockSvcHandler* svc_handler) {
-    svc_handler_ = svc_handler;
-}
-
 void Director::set_play_idx(unsigned idx) {
     play_idx_ = idx;
 }
@@ -95,6 +91,7 @@ std::shared_ptr<Player> Director::Select() {
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnEntryState(InputCode input) {
     ACE_DEBUG((LM_INFO, "OnEntryState:%d -> ok\n", input));
+    SockMsgHandler::instance()->FeedbackPlayList(play_list_);  // notice the producer by sending a socket.
     return kOk;
 }
 
@@ -107,6 +104,7 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnIdleState(I
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStartState(InputCode) {
     ACE_DEBUG((LM_INFO, "OnStartState -> ok\n"));
     Start(play_idx_);
+    SockMsgHandler::instance()->FeedbackStatus(false, play_idx_);
     return kOk;
 }
 
@@ -138,6 +136,7 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnProgressSta
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStopState(InputCode input) {
     ACE_DEBUG((LM_INFO, "OnStopState -> ok\n"));
     Stop();
+    SockMsgHandler::instance()->FeedbackStatus(true);
     return kOk;
 }
 
