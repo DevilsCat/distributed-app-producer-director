@@ -88,6 +88,7 @@ public:
     // Only Proactor call this.
     void AddCell(std::shared_ptr<CellType> cell) {
         std::lock_guard<std::mutex> lk(m_);
+        cell->set_parent(this);
         cells_.push_back(cell);
         ++cur_cell_idx_;
     }
@@ -101,13 +102,13 @@ public:
     }
 
     // Only Proactor call this.
-    void DeleteCell(std::shared_ptr<CellType> cell) {
+    void DeleteCell(CellType* cell) {
         std::lock_guard<std::mutex> lk(m_);
-        auto res = std::find(cells_.begin(), cells_.end(), cell);
-        if (res == cells_.end()) { return; }  // not cell found.
-        cells_.erase(res);
-        --cur_cell_idx_;
-        
+        auto res = std::find_if(cells_.begin(), cells_.end(), [&cell](std::shared_ptr<CellType> elt)
+        {
+            return elt.get() == cell;
+        });
+        if (res != cells_.end()) cells_.erase(res);
     }
 
     // Proactor will call this
@@ -178,9 +179,20 @@ private:
 // class TableViewCell
 class TableViewCell {
 public:
+    TableViewCell() : parent_(nullptr) {}
     virtual ~TableViewCell() {}
     virtual std::vector<std::string> get_keys() = 0;
     virtual std::string get_value(const std::string& key) = 0;
+    
+    // used to delete itself from parent
+    template<typename TableViewType>
+    void set_parent(TableViewType* parent) { parent_ = parent; }
+    void DeleteFromParent() {
+        if (parent_)
+            static_cast<TableView<TableViewCell>*>(parent_)->DeleteCell(this);
+    }
+private:
+    void* parent_;
 };
 
 //
