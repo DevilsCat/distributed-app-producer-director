@@ -79,8 +79,9 @@ void RenderTableViewTest() {
 
     // Test delete entry from table view.
     ViewRenderer::instance()->Render();
-    // delet "Thunderstorm"
-    dynamic_cast<TableView<PlayTableViewCell>*>(ViewRenderer::instance()->GetView("Play List"))->DeleteCell(play_cells[1]);
+    // delete "Thunderstorm"
+    //dynamic_cast<TableView<PlayTableViewCell>*>(ViewRenderer::instance()->GetView("Play List"))->DeleteCell(play_cells[1]);
+    (play_cells.begin() + 1)->get()->DeleteFromParent();
     play_cells.erase(play_cells.begin() + 1);  // also erase from vector.
     
     // Test modify cell in table view.
