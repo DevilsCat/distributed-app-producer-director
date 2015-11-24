@@ -95,7 +95,12 @@ void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
 	std::vector<std::string> MsgToken = utils::tokenize(msg);
 	if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kPlaylist, MsgToken)) {	//add new play table view cell
 		for (size_t i = 2; i < MsgToken.size(); i++) {
-			producer_.table_view_->AddCell(new PlayTableViewCell(producer_.GetHandlerIndex(this), MsgToken[i], true));
+			producer_.table_view_->AddCell(new PlayTableViewCell(
+				producer_.GetHandlerIndex(this),
+				i - 2,
+				MsgToken[i], 
+				true)
+			);
 			ViewRenderer::instance()->Render("Play");
 		}
 	}

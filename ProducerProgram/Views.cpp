@@ -78,14 +78,18 @@ void PromptView::DrawPrompt_(const short& width) const {
     windows::GoToXY(prompt_line.size(), old_y);
 }
 
-PlayTableViewCell::PlayTableViewCell(): director_id_(), name_(), status_(false) {}
+PlayTableViewCell::PlayTableViewCell(): director_id_(), play_id_(),name_(), status_(false) {}
 
-PlayTableViewCell::PlayTableViewCell(const int id, const std::string& name, bool status) :
-    director_id_(id), name_(name), status_(status) 
+PlayTableViewCell::PlayTableViewCell(const int& director_id, const int& play_id, const std::string& name, bool status) :
+    director_id_(director_id), play_id_(play_id), name_(name), status_(status) 
 {}
 
 void PlayTableViewCell::set_director_id(const int& director_id) {
     director_id_ = director_id;
+}
+
+void PlayTableViewCell::set_play_id(const int& play_id) {
+	play_id_ = play_id;
 }
 
 void PlayTableViewCell::set_name(const std::string& name) {
@@ -98,6 +102,10 @@ void PlayTableViewCell::set_status(const bool status) {
 
 int PlayTableViewCell::director_id() const {
 	return director_id_;
+}
+
+int PlayTableViewCell::play_id() const {
+	return play_id_;
 }
 
 std::string PlayTableViewCell::name() const {

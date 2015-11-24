@@ -40,9 +40,13 @@ size_t Producer::GetHandlerIndex(RdWrServiceHandler* handler) const {
 
 void Producer::Start(const unsigned& num) {
     PROGRAM_DEBUG("Producer: Executing start <%d> command.", num);
-    if (handlers_.size() <= num){ return; }  //FIXME do we want to handle this using exception
-    std::string msg("start 0");
-    handlers_[num]->InvokeSend(msg);
+    if (table_view_->Size() <= num){ return; }  //FIXME do we want to handle this using exception
+    
+	// Retrieve cell from table view for sending
+	std::shared_ptr<PlayTableViewCell> cell = table_view_->GetCellAt(num);
+	std::string msg("start ");
+	msg += std::to_string(cell->play_id());
+    handlers_[cell->director_id()]->InvokeSend(msg);
 }
 
 void Producer::Stop(const unsigned& num) {

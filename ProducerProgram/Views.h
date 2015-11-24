@@ -120,19 +120,19 @@ public:
     }
 
 	std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>FindFunc) {
-		std::vector<std::shared_ptr<CellType>> res;
-		for (std::shared_ptr<CellType> cell : cells_) {
-			if (FindFunc(*cell))  res.push_back(cell);
-		}
-		return res;
+		std::lock_guard<std::mutex> lk(data_m_);
+		return Query_(FindFunc);
     }
 
 	size_t Update(std::function<bool(const CellType&)>WhereFunc, std::function<void(CellType&)>UpdateFunc) {
-		std::vector<std::shared_ptr<CellType>> query_res = Query(WhereFunc);
+		std::lock_guard<std::mutex> lk(data_m_);
+		std::vector<std::shared_ptr<CellType>> query_res = Query_(WhereFunc);
 		for (std::shared_ptr<CellType> cell : query_res)
 			UpdateFunc(*cell);
 		return query_res.size();
     }
+
+	size_t Size() const { return cells_.size(); }
 
     // Proactor will call this
     // Input thread might all call this to refresh screen.
@@ -160,6 +160,14 @@ public:
     }
 
 private:
+	std::vector<std::shared_ptr<CellType>> Query_(std::function<bool(const CellType&)>FindFunc) {
+		std::vector<std::shared_ptr<CellType>> res;
+		for (std::shared_ptr<CellType> cell : cells_) {
+			if (FindFunc(*cell))  res.push_back(cell);
+		}
+		return res;
+	}
+
     TableView(const std::string& title) :
         View(title), cur_cell_idx_(0)
     {
@@ -213,12 +221,14 @@ class PlayTableViewCell : public TableViewCell {
 public:
     PlayTableViewCell();
 
-    PlayTableViewCell(const int id, const std::string& name, bool status);
+    PlayTableViewCell(const int& director_id, const int& play_id, const std::string& name, bool status);
 
     void set_director_id(const int& director_id);
+	void set_play_id(const int& play_id);
     void set_name(const std::string& name);
     void set_status(const bool status);
 	int director_id() const;
+	int play_id() const;
 	std::string name() const;
 	bool status() const;
 
@@ -227,6 +237,7 @@ public:
 private:
     //std::string director_;
 	int director_id_;
+	int play_id_;
 	std::string name_;
     bool status_;
 };
