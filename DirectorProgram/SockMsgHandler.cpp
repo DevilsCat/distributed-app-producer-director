@@ -54,7 +54,7 @@ void SockMsgHandler::FeedbackPlayList(std::vector<std::string> plays) const {
 
 void SockMsgHandler::FeedbackStatus(bool ready, unsigned cur_idx) const {
     const std::string sStatusHeader = "STATUS";
-    const std::string sReady = ready ? "available" : "inavailable";
+    const std::string sReady = ready ? "available" : "unavailable";
     const std::string sIndex = ready ? "" : std::to_string(cur_idx);
     const std::string msg = sStatusHeader + " " + sReady + " " + sIndex + '\0';
     SendFeedback(msg);

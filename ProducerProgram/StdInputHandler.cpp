@@ -8,7 +8,7 @@
 #include "ViewRenderer.h"
 #include <csignal>
 
-#define KEY_SIGINT  03   
+#define KEY_SIGINT  03
 #define KEY_UP      72
 #define KEY_DOWN    80
 #define KEY_LEFT    75
@@ -20,10 +20,7 @@ StdInputHandler* StdInputHandler::handler_ = nullptr;
 std::once_flag StdInputHandler::once_flag_;
 
 StdInputHandler* StdInputHandler::instance() {
-    call_once(once_flag_, []{
-                  if (handler_ == nullptr)
-                      handler_ = new StdInputHandler();
-              });
+    call_once(once_flag_, []{ handler_ = new StdInputHandler; });
     return handler_;
 }
 
@@ -45,7 +42,7 @@ std::string StdInputHandler::GetLine() {
         else if (ch == KEY_DOWN)         { ViewRenderer::instance()->Scroll(false); }
         else if (ch == KEY_LEFT)         { ViewRenderer::instance()->PrevView(); } 
         else if (ch == KEY_RIGHT)        { ViewRenderer::instance()->NextView(); }
-        else if (ch != '\r')             { ViewRenderer::instance()->prompt_view()->ReceiveUserInput(ch); }
+        else if (ch != '\r')             { ViewRenderer::instance()->prompt_view()->AddChar(ch); }
         else {  // user hits a return.
             line = prompt_view->user_buf();  // get the input line from user.
             prompt_view->ClearUserInput();

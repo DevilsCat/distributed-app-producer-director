@@ -47,17 +47,15 @@ int main(int argc, char* argv[])
     // Run UI event in main (UI) thread.
     while (true) {
         try {
-            std::string cmd_str = StdInputHandler::instance()->GetLine();
+            std::string cmd_str = StdInputHandler::GetLine();
             std::shared_ptr<Command> command = StdInputHandler::instance()->MakeCommand(cmd_str);
-            if (command != nullptr)
-                CommandQueue::instance()->push(command);  // Queue up the command so that ACE_Reactor
-                                                          // handler can handle it.
+            if (command != nullptr)                       // if command vaild, queue up the command 
+                CommandQueue::instance()->push(command);  // so that ACE_Reactor handler can handle it.
             if (command && command->cmd_type == Command::kQuit)
                 break;
         }
         catch (std::runtime_error& e) {
             PROGRAM_DEBUG("%s", e.what());
-            //std::cerr << e.what() << std::endl;
         }
     }
 

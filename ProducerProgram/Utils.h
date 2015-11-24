@@ -4,6 +4,7 @@
 #include <vector>
 #include <sstream>
 #include <algorithm>
+#include <winsock2.h>
 #include <windows.h>
 #include <iostream>
 
@@ -80,6 +81,17 @@ namespace utils {
             if (ret) {
                 x = csbi.dwCursorPosition.X;
                 y = csbi.dwCursorPosition.Y;
+            }
+            return ret;
+        }
+
+        inline
+        int GetWindowSize(short& w, short& h) {
+            CONSOLE_SCREEN_BUFFER_INFO csbi;
+            int ret = GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+            if (ret) {
+                w = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+                h = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
             }
             return ret;
         }

@@ -2,6 +2,7 @@
 #define PRODUCER_H
 #include <mutex>
 #include <vector>
+#include "Views.h"
 
 class Producer {
     friend class RdWrServiceHandler;
@@ -17,11 +18,12 @@ public:
     void Quit() const;
 
 private:
-    Producer() = default;
+	Producer();
 
     void AddHandler(class RdWrServiceHandler* handler);
     void RemoveHandler(RdWrServiceHandler* handler);
-    
+	size_t GetHandlerIndex(RdWrServiceHandler* handler) const;
+
     // Used for Singleton Pattern
     static Producer* producer_;
     static std::once_flag once_flag_;
@@ -29,6 +31,9 @@ private:
     // Used for caching connection event handler
     // This is a critcal section
     std::vector<RdWrServiceHandler*> handlers_;
+
+	TableView<PlayTableViewCell>* table_view_;
+	std::vector<PlayTableViewCell> table_view_cells_;
 };
 
 

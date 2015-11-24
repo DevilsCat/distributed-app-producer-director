@@ -1,5 +1,5 @@
 ﻿#ifndef Std_INPUT_HANDLER_H
-#define Std_INPUT_HANDLER_h
+#define Std_INPUT_HANDLER_H
 #include <istream>
 #include <mutex>
 #include <iostream>
