@@ -20,10 +20,6 @@ ViewRenderer::ViewRenderer(const ViewRenderer&) : ViewRenderer() {}
 
 ViewRenderer& ViewRenderer::operator=(const ViewRenderer&) { return *this; }
 
-ViewRenderer::~ViewRenderer() {
-    std::cout << "ViewRenderer Deallocated" << std::endl;
-}
-
 ViewRenderer* ViewRenderer::instance() {
     std::call_once(once_flag_, []{ renderer_ = std::shared_ptr<ViewRenderer>(new ViewRenderer); });
     return renderer_.get();

@@ -42,7 +42,6 @@ class ViewRenderer {
     };
 
 public:
-    ~ViewRenderer();
     // Default string for view rendering.
     static std::string sNoMainView;
     static std::string sAllViews;
