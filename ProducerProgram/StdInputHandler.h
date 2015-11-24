@@ -7,6 +7,9 @@
 #include "Commands.h"
 
 class StdInputHandler {
+    static const std::string sCmdStartHeader;
+    static const std::string sCmdStopHeader;
+    static const std::string sCmdQuitHeader;
 public:
     // Provides the singleton interface for this program.
     static StdInputHandler* instance();

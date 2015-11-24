@@ -4,7 +4,7 @@
 #include "stdafx.h"
 #include "StdInputHandler.h"
 #include "CommandQueue.h"
-#include "CommandEventHandler.h"
+#include "ReactorEventHandlers.h"
 #include "DirectorAsynchAcceptor.h"
 #include "ViewRenderer.h"
 #include <thread>
@@ -42,13 +42,17 @@ int main(int argc, char* argv[])
 
     // Run the reactor in background thread.
     std::thread reactor_td([]{ 
-        // Configure a command event handler
+        // Register a command event handler
         ACE_Reactor::instance()->schedule_timer(
             new CommandEventHandler,
             nullptr,
             ACE_Time_Value(ACE_TIMER_SECS, ACE_TIMER_MCROSECS),
             ACE_Time_Value(ACE_TIMER_SECS, ACE_TIMER_MCROSECS)
         );
+
+        // Register a signal handler to deal with Ctl-C
+        ACE_Reactor::instance()->register_handler(SIGINT, new SignalEventHandler);
+
         ACE_Reactor::instance()->run_event_loop(); 
     });
 

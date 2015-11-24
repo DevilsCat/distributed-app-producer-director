@@ -83,7 +83,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CommandEventHandler.h" />
+    <ClInclude Include="ReactorEventHandlers.h" />
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Commands.h" />
     <ClInclude Include="DirectorAsynchAcceptor.h" />

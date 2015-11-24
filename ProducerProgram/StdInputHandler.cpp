@@ -15,8 +15,11 @@
 #define KEY_RIGHT   77
 #define KEY_ARROW_PREFIX  224
 
-StdInputHandler* StdInputHandler::handler_ = nullptr;
+const std::string StdInputHandler::sCmdStartHeader = "start";
+const std::string StdInputHandler::sCmdStopHeader = "stop";
+const std::string StdInputHandler::sCmdQuitHeader = "quit";
 
+StdInputHandler* StdInputHandler::handler_ = nullptr;
 std::once_flag StdInputHandler::once_flag_;
 
 StdInputHandler* StdInputHandler::instance() {
@@ -36,7 +39,7 @@ std::string StdInputHandler::GetLine() {
     PromptView* prompt_view = ViewRenderer::instance()->prompt_view();
     do {
         ch = _getch();
-        if      (ch == KEY_SIGINT)       { raise(SIGINT); }  // recover the ctrl-c function.
+        if (ch == KEY_SIGINT) { raise(SIGINT); }  // recover the ctrl-c function.
         else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
         else if (ch == KEY_UP)           { ViewRenderer::instance()->Scroll(true); }
         else if (ch == KEY_DOWN)         { ViewRenderer::instance()->Scroll(false); }
@@ -72,9 +75,9 @@ std::shared_ptr<Command> StdInputHandler::MakeCommand(const std::string& input) 
 }
 
 Command::CommandType StdInputHandler::CheckCommandType(const std::string& cmd_type) {
-    if (cmd_type == "start")   return Command::kStart;
-    if (cmd_type == "stop")    return Command::kStop;
-    if (cmd_type == "quit")    return Command::kQuit;
+    if (cmd_type == sCmdStartHeader)   return Command::kStart;
+    if (cmd_type == sCmdStopHeader)    return Command::kStop;
+    if (cmd_type == sCmdQuitHeader)    return Command::kQuit;
     return Command::kUnknown;
 }
 

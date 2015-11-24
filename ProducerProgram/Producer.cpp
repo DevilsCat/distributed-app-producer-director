@@ -81,4 +81,6 @@ void Producer::Quit() const {
     // Quit itself
     ACE_Reactor::instance()->end_event_loop();
     ACE_Proactor::instance()->end_event_loop();
+
+    raise(SIGABRT);  // this one stop the UI thread.
 }
