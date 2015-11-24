@@ -99,13 +99,25 @@ void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
 				producer_.GetHandlerIndex(this),
 				i - 2,
 				MsgToken[i], 
-				true)
+				PlayTableViewCell::kAvailable)
 			);
 			ViewRenderer::instance()->Render("Play");
 		}
 	}
 	if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kStatus, MsgToken)) {	//update play table view cell
-		
+		producer_.table_view_->Update (
+			[this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) == producer_.GetHandlerIndex(this); },
+			[this, &MsgToken](PlayTableViewCell& cell) {
+				if (MsgToken[1] == "available") {
+					cell.set_status(PlayTableViewCell::kAvailable);
+				} else {
+					int inprog_idx = utils::to_number(MsgToken[2]);
+					cell.play_id() == inprog_idx ?
+						cell.set_status(PlayTableViewCell::kInProgress) : cell.set_status(PlayTableViewCell::kUnavailable);
+				}
+			}
+		);
+		ViewRenderer::instance()->Render("Play");
 	}
 
 }

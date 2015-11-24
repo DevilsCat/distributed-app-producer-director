@@ -219,18 +219,22 @@ public:
 // class PlayTableViewCell.
 class PlayTableViewCell : public TableViewCell {
 public:
+	enum StatusType {
+		kAvailable, kUnavailable, kInProgress
+	};
+
     PlayTableViewCell();
 
-    PlayTableViewCell(const int& director_id, const int& play_id, const std::string& name, bool status);
+    PlayTableViewCell(const int& director_id, const int& play_id, const std::string& name, StatusType status);
 
     void set_director_id(const int& director_id);
 	void set_play_id(const int& play_id);
     void set_name(const std::string& name);
-    void set_status(const bool status);
+    void set_status(const StatusType status);
 	int director_id() const;
 	int play_id() const;
 	std::string name() const;
-	bool status() const;
+	StatusType status() const;
 
     std::vector<std::string> get_keys() override;
     std::string get_value(const std::string& key) override;		//Fixme director id
@@ -239,7 +243,7 @@ private:
 	int director_id_;
 	int play_id_;
 	std::string name_;
-    bool status_;
+    StatusType status_;
 };
 
 //
