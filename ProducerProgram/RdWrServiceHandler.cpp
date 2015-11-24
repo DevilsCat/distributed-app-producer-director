@@ -1,8 +1,8 @@
 ﻿#include "stdafx.h"
 #include "RdWrServiceHandler.h"
-#include <ace/OS.h>
 #include "ViewRenderer.h"
 #include "SockMsgHandler.h"
+#include "Producer.h"
 
 RdWrServiceHandler::RdWrServiceHandler(): producer_(*Producer::instance()) {}
 

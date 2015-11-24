@@ -84,3 +84,7 @@ void Producer::Quit() const {
 
     raise(SIGABRT);  // this one stop the UI thread.
 }
+
+RdWrServiceHandler* Producer::make_handler() {
+    return new RdWrServiceHandler(*this);
+}

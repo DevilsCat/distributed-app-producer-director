@@ -42,9 +42,6 @@
     <ClInclude Include="RdWrServiceHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DirectorAsynchAcceptor.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="SockMsgHandler.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -90,9 +87,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Views.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DirectorAsynchAcceptor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

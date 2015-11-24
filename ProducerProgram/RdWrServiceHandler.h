@@ -3,7 +3,9 @@
 
 #include <ace/Asynch_IO.h>
 #include <ace/Message_Block.h>
-#include "Producer.h"
+#include <string>
+
+class Producer;
 
 class RdWrServiceHandler : public ACE_Service_Handler {
 public:

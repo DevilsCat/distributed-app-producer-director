@@ -3,8 +3,10 @@
 #include <mutex>
 #include <vector>
 #include "Views.h"
+#include <ace/Asynch_Acceptor.h>
+#include "RdWrServiceHandler.h"
 
-class Producer {
+class Producer : public ACE_Asynch_Acceptor<RdWrServiceHandler>{
     friend class RdWrServiceHandler;
 public:
     static Producer* instance();
@@ -17,10 +19,13 @@ public:
     void Stop(const unsigned&);
     void Quit() const;
 
+protected:
+    virtual RdWrServiceHandler* make_handler() override;
+
 private:
 	Producer();
 
-    void AddHandler(class RdWrServiceHandler* handler);
+    void AddHandler(RdWrServiceHandler* handler);
     void RemoveHandler(RdWrServiceHandler* handler);
 	size_t GetHandlerIndex(RdWrServiceHandler* handler) const;
 

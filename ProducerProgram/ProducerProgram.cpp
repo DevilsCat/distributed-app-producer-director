@@ -5,7 +5,6 @@
 #include "StdInputHandler.h"
 #include "CommandQueue.h"
 #include "ReactorEventHandlers.h"
-#include "DirectorAsynchAcceptor.h"
 #include "ViewRenderer.h"
 #include <thread>
 #include <ace/Reactor.h>
@@ -27,18 +26,17 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    //Config the ssynchrnous io acceptor
-    ACE_INET_Addr addr(to_number(argv[PORT_ARG_POS]), ACE_LOCALHOST);
-    DirectorAsynchAcceptor aio_acceptor;
-    if (aio_acceptor.open(addr)) {
-        ACE_ERROR_RETURN((LM_ERROR, ACE_TEXT("%p\n"),
-            ACE_TEXT("acceptor open")), EXIT_FAILURE);
-    }
-
     // Setup views
     ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"));
     ViewRenderer::instance()->AddView("Debug", TableView<DebugTableViewCell>::MakeView("Debug Messages"));
     ViewRenderer::instance()->Render(ViewRenderer::sAllViews);  // Render an empty view.
+
+    //Config the ssynchrnous io acceptor
+    ACE_INET_Addr addr(to_number(argv[PORT_ARG_POS]), ACE_LOCALHOST);
+    if (Producer::instance()->open(addr)) {
+        ACE_ERROR_RETURN((LM_ERROR, ACE_TEXT("%p\n"),
+            ACE_TEXT("acceptor open")), EXIT_FAILURE);
+    }
 
     // Run the reactor in background thread.
     std::thread reactor_td([]{ 
