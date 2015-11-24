@@ -9,33 +9,28 @@ RdWrServiceHandler::RdWrServiceHandler(): producer_(*Producer::instance()) {}
 RdWrServiceHandler::RdWrServiceHandler(Producer& producer) : producer_(producer) {}
 
 RdWrServiceHandler::~RdWrServiceHandler() {
-    PROGRAM_DEBUG("[%x]RdWrServiceHandler: Connection Destroyed.", this);
+    PROGRAM_DEBUG("RdWrServiceHandler: Id[%d] Connection Destroyed.", producer_.GetHandlerIndex(this));
     if (ACE_Handler::handle() != ACE_INVALID_HANDLE)
         ACE_OS::closesocket(ACE_Handler::handle());
+    
+    // Delete the cells associated with this on deleting director connection.
+    producer_.table_view_->Delete([this](const PlayTableViewCell& cell) {
+        return cell.director_id() == producer_.GetHandlerIndex(this);
+    });
 
-	// Get all cells that contain the same id associated with this handler.
-	auto query_res = producer_.table_view_->Query([this](const PlayTableViewCell& cell) {
-		return cell.director_id() == producer_.GetHandlerIndex(this);
-	});
-
-	// Delete all these cells from table view.
-	for (std::shared_ptr<PlayTableViewCell> cell : query_res) {
-		producer_.table_view_->DeleteCell(cell);
-	}
-
-	// Update other cells by decreasing index 1 after "this" index.
-	producer_.table_view_->Update(
-		[this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) > producer_.GetHandlerIndex(this); },
-		[](PlayTableViewCell& cell) { cell.set_director_id(cell.director_id() - 1); }
-	);
-
-	ViewRenderer::instance()->Render("Play");
+    // Update other cells decreasing index by 1 after "this" index.
+    producer_.table_view_->Update(
+        [this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) > producer_.GetHandlerIndex(this); },
+        [](PlayTableViewCell& cell) { cell.set_director_id(cell.director_id() - 1); }
+    );
     // Remove this handler from producer handlers container.
     producer_.RemoveHandler(this);
+
+    // Render the updated play if is present.
+    ViewRenderer::instance()->Render("Play");
 }
 
 void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_block) {
-    PROGRAM_DEBUG("[%x]Connection established.", this);
     this->handle(new_handle);
     if (this->reader_.open(*this) || this->writer_.open(*this)) {
         ACE_ERROR((LM_ERROR, ACE_TEXT("%p\n"),
@@ -44,11 +39,11 @@ void RdWrServiceHandler::open(ACE_HANDLE new_handle, ACE_Message_Block& message_
         delete this;
         return;
     }
-
     // Add this handler to producer.
     producer_.AddHandler(this);
+    InvokeSockReadRequest();
 
-    InvokeRead();
+    PROGRAM_DEBUG("RdWrServiceHandler: Id[%d] Connection established.", producer_.GetHandlerIndex(this));
 }
 
 void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result& result) {
@@ -58,8 +53,8 @@ void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result
         delete this;
     } else {
         PROGRAM_DEBUG("%s", mb.rd_ptr());
-        InvokeRead();
-		UpdateTableView(mb.rd_ptr());
+        InvokeSockReadRequest();
+        UpdateTableView(mb.rd_ptr());
     }
 }
 
@@ -67,7 +62,7 @@ void RdWrServiceHandler::handle_write_stream(const ACE_Asynch_Write_Stream::Resu
     result.message_block().release();
 }
 
-int RdWrServiceHandler::InvokeSend(std::string& message) {
+int RdWrServiceHandler::InvokeSockSendRequest(std::string& message) {
     ACE_Message_Block* mb;
     ACE_NEW_RETURN(mb, ACE_Message_Block(message.size()+1), -1);  //FIXME do we want to return -1
     mb->copy(message.c_str(), message.size() + 1);
@@ -80,7 +75,7 @@ int RdWrServiceHandler::InvokeSend(std::string& message) {
     return ret;
 }
 
-void RdWrServiceHandler::InvokeRead(const unsigned& nbytes) {
+void RdWrServiceHandler::InvokeSockReadRequest(const unsigned& nbytes) {
     ACE_Message_Block *mb;
     ACE_NEW_NORETURN(mb, ACE_Message_Block(nbytes));
     if (this->reader_.read(*mb, mb->space()) != 0) {
@@ -92,32 +87,33 @@ void RdWrServiceHandler::InvokeRead(const unsigned& nbytes) {
 }
 
 void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
-	std::vector<std::string> MsgToken = utils::tokenize(msg);
-	if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kPlaylist, MsgToken)) {	//add new play table view cell
-		for (size_t i = 2; i < MsgToken.size(); i++) {
-			producer_.table_view_->AddCell(new PlayTableViewCell(
-				producer_.GetHandlerIndex(this),
-				i - 2,
-				MsgToken[i], 
-				PlayTableViewCell::kAvailable)
-			);
-			ViewRenderer::instance()->Render("Play");
-		}
-	}
-	if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kStatus, MsgToken)) {	//update play table view cell
-		producer_.table_view_->Update (
-			[this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) == producer_.GetHandlerIndex(this); },
-			[this, &MsgToken](PlayTableViewCell& cell) {
-				if (MsgToken[1] == "available") {
-					cell.set_status(PlayTableViewCell::kAvailable);
-				} else {
-					int inprog_idx = utils::to_number(MsgToken[2]);
-					cell.play_id() == inprog_idx ?
-						cell.set_status(PlayTableViewCell::kInProgress) : cell.set_status(PlayTableViewCell::kUnavailable);
-				}
-			}
-		);
-		ViewRenderer::instance()->Render("Play");
-	}
+    std::vector<std::string> MsgToken = tokenize(msg);
+    if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kPlaylist, MsgToken)) {	//add new play table view cell
+        for (size_t i = 2; i < MsgToken.size(); i++) {
+            producer_.table_view_->AddCell(new PlayTableViewCell(
+                producer_.GetHandlerIndex(this),
+                i - 2,
+                MsgToken[i], 
+                PlayTableViewCell::kAvailable)
+            );
+            ViewRenderer::instance()->Render("Play");
+        }
+    }
+    if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kStatus, MsgToken)) {	//update play table view cell
+        producer_.table_view_->Update (
+            [this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) == producer_.GetHandlerIndex(this); },
+            [this, &MsgToken](PlayTableViewCell& cell) {
+                if (MsgToken[1] == "available") {
+                    cell.set_status(PlayTableViewCell::kAvailable);
+                } else {
+                    int inprog_idx = to_number(MsgToken[2]);
+                    cell.play_id() == inprog_idx ?
+                        cell.set_status(PlayTableViewCell::kInProgress) : 
+                        cell.set_status(PlayTableViewCell::kUnavailable);
+                }
+            }
+        );
+        ViewRenderer::instance()->Render("Play");
+    }
 
 }

@@ -42,3 +42,9 @@ bool SockMsgHandler::Validate(const MsgType& type, std::vector<std::string>& Msg
 		return false;
 	}
 }
+
+std::string SockMsgHandler::MakeStartMsg(const int& play_id) {
+    const std::string sStartHeader("start");
+    const std::string sStartPlayIdx(std::to_string(play_id));
+    return sStartHeader + " " + sStartPlayIdx;
+}

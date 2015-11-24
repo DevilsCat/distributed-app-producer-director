@@ -5,6 +5,7 @@
 #include <ace/Proactor.h>
 #include <thread>
 #include "ViewRenderer.h"
+#include "SockMsgHandler.h"
 
 Producer* Producer::producer_ = nullptr;
 std::once_flag Producer::once_flag_;
@@ -44,16 +45,15 @@ void Producer::Start(const unsigned& num) {
     
 	// Retrieve cell from table view for sending
 	std::shared_ptr<PlayTableViewCell> cell = table_view_->GetCellAt(num);
-	std::string msg("start ");
-	msg += std::to_string(cell->play_id());
-    handlers_[cell->director_id()]->InvokeSend(msg);
+    std::string msg = SockMsgHandler::instance()->MakeStartMsg(cell->play_id());
+    handlers_[cell->director_id()]->InvokeSockSendRequest(msg);
 }
 
 void Producer::Stop(const unsigned& num) {
     PROGRAM_DEBUG("Producer: Executing stop <%d> command.", num);
     if (handlers_.size() <= num){ return; }  //FIXME do we want to handle this using exception
     std::string msg("stop");
-    handlers_[num]->InvokeSend(msg);
+    handlers_[num]->InvokeSockSendRequest(msg);
 }
 
 void Producer::Quit() const {
@@ -62,12 +62,12 @@ void Producer::Quit() const {
     // Broadcast a quit message to all Directors.
     std::string msg("quit");
     for_each(handlers_.begin(), handlers_.end(), 
-        [&msg](RdWrServiceHandler* handler){ handler->InvokeSend(msg); });
+        [&msg](RdWrServiceHandler* handler){ handler->InvokeSockSendRequest(msg); });
 
     // Wait on all Director quit, which means all handlers will be removed by proactor
     // from RdWrEventHandler's deconstructor.
     while (handlers_.size())
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        std::this_thread::yield();
 
     // Quit itself
     ACE_Reactor::instance()->end_event_loop();

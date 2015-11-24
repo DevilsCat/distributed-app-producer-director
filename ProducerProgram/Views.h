@@ -104,26 +104,9 @@ public:
 		return cells_[idx];
     }
 
-    // Only Proactor call this.
-    void DeleteCellAt(const size_t& idx) {
-        std::lock_guard<std::mutex> lk(data_m_);
-        if (idx >= cells_.size()) { return; }
-        cells_.erase(cells_.begin() + idx);
-        --cur_cell_idx_;
-    }
-
-    // Only Proactor call this.
-    void DeleteCell(std::shared_ptr<CellType> cell) {
-        std::lock_guard<std::mutex> lk(data_m_);
-        auto res = std::find(cells_.begin(), cells_.end(), cell);
-        if (res == cells_.end()) { return; }  // not cell found.
-        cells_.erase(res);
-        --cur_cell_idx_;
-    }
-
-	std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>FindFunc) {
+	std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>WhereFunc) {
 		std::lock_guard<std::mutex> lk(data_m_);
-		return Query_(FindFunc);
+		return Query_(WhereFunc);
     }
 
 	size_t Update(std::function<bool(const CellType&)>WhereFunc, std::function<void(CellType&)>UpdateFunc) {
@@ -134,7 +117,18 @@ public:
 		return query_res.size();
     }
 
-	size_t Size() const { return cells_.size(); }
+    size_t Delete(std::function<bool(const CellType&)>WhereFunc) {
+        std::lock_guard<std::mutex> lk(data_m_);
+        std::vector<std::shared_ptr<CellType>> query_res = Query_(WhereFunc);
+        for (std::shared_ptr<CellType> cell : query_res)
+            DeleteCell_(cell);
+        return query_res.size();
+    }
+
+	size_t Size() const {
+        std::lock_guard<std::mutex> lk(data_m_);
+        return cells_.size();
+    }
 
     // Proactor will call this
     // Input thread might all call this to refresh screen.
@@ -168,6 +162,14 @@ private:
 		}
 		return res;
 	}
+
+    // Only Proactor call this.
+    void DeleteCell_(std::shared_ptr<CellType> cell) {
+        auto res = std::find(cells_.begin(), cells_.end(), cell);
+        if (res == cells_.end()) { return; }  // not cell found.
+        cells_.erase(res);
+        --cur_cell_idx_;
+    }
 
     TableView(const std::string& title) :
         View(title), cur_cell_idx_(0)

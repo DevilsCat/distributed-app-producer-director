@@ -16,8 +16,8 @@ public:
     virtual void handle_read_stream(const ACE_Asynch_Read_Stream::Result& result) override;
     virtual void handle_write_stream(const ACE_Asynch_Write_Stream::Result& result) override;
 
-    int InvokeSend(std::string& message);
-    void InvokeRead(const unsigned& nbytes = 1024);
+    int InvokeSockSendRequest(std::string& message);
+    void InvokeSockReadRequest(const unsigned& nbytes = 1024);
 	void UpdateTableView(const std::string&);
 
 private:
