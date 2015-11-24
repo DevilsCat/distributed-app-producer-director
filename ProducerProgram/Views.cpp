@@ -117,11 +117,11 @@ PlayTableViewCell::StatusType PlayTableViewCell::status() const {
 }
 
 std::vector<std::string> PlayTableViewCell::get_keys() {
-    MAKE_KEYS_RETURN("Director", "Name", "Status");
+    MAKE_KEYS_RETURN("Director_Id", "Name", "Status");
 }
 
 std::string PlayTableViewCell::get_value(const std::string& key) {
-    if (key == "Director") return std::to_string(director_id_);
+    if (key == "Director_Id") return std::to_string(director_id_);
     if (key == "Name")     return name_;
 	if (key == "Status") {
 		switch (status_) {
@@ -132,6 +132,13 @@ std::string PlayTableViewCell::get_value(const std::string& key) {
 		}
 	}
     return std::string();
+}
+
+double PlayTableViewCell::get_weight(const std::string& key) {
+    if (key == "Director_Id") return 0.2;
+    if (key == "Name")        return 0.6;
+    if (key == "Status")      return 0.2;
+    return 0.0;
 }
 
 DebugTableViewCell::DebugTableViewCell() {}
@@ -145,4 +152,9 @@ std::vector<std::string> DebugTableViewCell::get_keys() {
 std::string DebugTableViewCell::get_value(const std::string& key) {
     if (key == "Message") return message_;
     return std::string();
+}
+
+double DebugTableViewCell::get_weight(const std::string& key) {
+    if (key == "Message") return 1.0;
+    return 0.0;
 }
