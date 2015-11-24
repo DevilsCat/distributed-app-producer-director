@@ -18,13 +18,19 @@
 #define ACE_TIMER_SECS      0
 #define ACE_TIMER_MCROSECS  100000
 
+#define DEFAULT_PORT        1234
+
 int main(int argc, char* argv[])
 {
     // Validate coming argument.
-    if (argc != NUM_ARGS || !is_number(argv[PORT_ARG_POS])) {
+    if (argc > NUM_ARGS ||
+        argc == NUM_ARGS && !is_number(argv[PORT_ARG_POS])) {
         std::cout << "usage: " << argv[PROGRAM_ARG_POS] << " [port]" << std::endl;
         return EXIT_FAILURE;
     }
+
+    unsigned port_num;
+    port_num = argc == NUM_ARGS ? to_number(argv[PORT_ARG_POS]) : DEFAULT_PORT;
 
     // Setup views
     ViewRenderer::instance()->AddView("Play", TableView<PlayTableViewCell>::MakeView("Play List"));
@@ -32,7 +38,7 @@ int main(int argc, char* argv[])
     ViewRenderer::instance()->Render(ViewRenderer::sAllViews);  // Render an empty view.
 
     //Config the ssynchrnous io acceptor
-    ACE_INET_Addr addr(to_number(argv[PORT_ARG_POS]), ACE_LOCALHOST);
+    ACE_INET_Addr addr(port_num, ACE_LOCALHOST);
     if (Producer::instance()->open(addr)) {
         ACE_ERROR_RETURN((LM_ERROR, ACE_TEXT("%p\n"),
             ACE_TEXT("acceptor open")), EXIT_FAILURE);

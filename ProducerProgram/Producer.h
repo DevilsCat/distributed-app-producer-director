@@ -2,8 +2,8 @@
 #define PRODUCER_H
 #include <mutex>
 #include <vector>
-#include "Views.h"
 #include <ace/Asynch_Acceptor.h>
+#include "Views.h"
 #include "RdWrServiceHandler.h"
 
 class Producer : public ACE_Asynch_Acceptor<RdWrServiceHandler>{
@@ -34,7 +34,6 @@ private:
     static std::once_flag once_flag_;
 
     // Used for caching connection event handler
-    // This is a critcal section
     std::vector<RdWrServiceHandler*> handlers_;
 
 	TableView<PlayTableViewCell>* table_view_;
