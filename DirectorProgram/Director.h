@@ -48,7 +48,7 @@ public:
 
     virtual int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
-    void set_play_idx(unsigned idx);
+    void set_request_play_idx(unsigned idx);
 
 protected:
     virtual void on_machine_setup() override;
@@ -85,7 +85,8 @@ private:
     // an index used in thread (player) selection machanism.
     unsigned select_idx_;
 
-    unsigned play_idx_;
+    unsigned request_play_idx_;
+    unsigned current_play_idx_;
 
     std::vector<std::future<bool>> player_futures_;
 };

@@ -43,10 +43,11 @@ public:
             SockMsgHandler::RecvMsg msg = SockMsgHandler::instance()->Receive(str);
             switch(msg.type) {
             case SockMsgHandler::RecvMsg::kStart: 
-                director_->set_play_idx(msg.val);
+                director_->set_request_play_idx(msg.val);
                 director_->run(inStart);
                 break;
             case SockMsgHandler::RecvMsg::kStop: 
+                director_->set_request_play_idx(msg.val);
                 director_->run(inStop);
                 break;
             case SockMsgHandler::RecvMsg::kQuit: 
