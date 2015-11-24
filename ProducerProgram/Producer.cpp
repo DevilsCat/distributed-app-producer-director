@@ -40,7 +40,10 @@ size_t Producer::GetHandlerIndex(RdWrServiceHandler* handler) const {
 }
 
 void Producer::Start(const unsigned& num) {
-    if (table_view_->Size() <= num){ return; }
+    if (table_view_->Size() <= num) {
+        PROGRAM_DEBUG("Producer: Executing start command, but no connection exist.");
+        return;
+    }
 	// Retrieve cell from table view for sending
 	std::shared_ptr<PlayTableViewCell> cell = table_view_->GetCellAt(num);
     std::string msg = SockMsgHandler::instance()->MakeSendMsg(SockMsgHandler::kStart, cell->play_id());
@@ -50,7 +53,10 @@ void Producer::Start(const unsigned& num) {
 }
 
 void Producer::Stop(const unsigned& num) {
-    if (table_view_->Size() <= num){ return; }
+    if (table_view_->Size() <= num) {
+        PROGRAM_DEBUG("Producer: Executing stop command, but no connection exist.");
+        return;
+    }
     std::shared_ptr<PlayTableViewCell> cell = table_view_->GetCellAt(num);
     std::string msg = SockMsgHandler::instance()->MakeSendMsg(SockMsgHandler::kStop, cell->play_id());
     handlers_[cell->director_id()]->InvokeSockSendRequest(msg);
