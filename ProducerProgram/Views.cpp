@@ -78,22 +78,42 @@ void PromptView::DrawPrompt_(const short& width) const {
     windows::GoToXY(prompt_line.size(), old_y);
 }
 
-PlayTableViewCell::PlayTableViewCell(): director_(), name_(), status_(false) {}
+PlayTableViewCell::PlayTableViewCell(): director_id_(), play_id_(),name_(), status_(kAvailable) {}
 
-PlayTableViewCell::PlayTableViewCell(const std::string& director, const std::string& name, bool status):
-    director_(director), name_(name), status_(status) 
+PlayTableViewCell::PlayTableViewCell(const int& director_id, const int& play_id, const std::string& name, const StatusType status) :
+    director_id_(director_id), play_id_(play_id), name_(name), status_(status) 
 {}
 
-void PlayTableViewCell::set_director(const std::string& director) {
-    director_ = director;
+void PlayTableViewCell::set_director_id(const int& director_id) {
+    director_id_ = director_id;
+}
+
+void PlayTableViewCell::set_play_id(const int& play_id) {
+	play_id_ = play_id;
 }
 
 void PlayTableViewCell::set_name(const std::string& name) {
     name_ = name;
 }
 
-void PlayTableViewCell::set_status(const bool status) {
+void PlayTableViewCell::set_status(const StatusType status) {
     status_ = status;
+}
+
+int PlayTableViewCell::director_id() const {
+	return director_id_;
+}
+
+int PlayTableViewCell::play_id() const {
+	return play_id_;
+}
+
+std::string PlayTableViewCell::name() const {
+	return name_;
+}
+
+PlayTableViewCell::StatusType PlayTableViewCell::status() const {
+	return status_;
 }
 
 std::vector<std::string> PlayTableViewCell::get_keys() {
@@ -101,9 +121,16 @@ std::vector<std::string> PlayTableViewCell::get_keys() {
 }
 
 std::string PlayTableViewCell::get_value(const std::string& key) {
-    if (key == "Director") return director_;
+    if (key == "Director") return std::to_string(director_id_);
     if (key == "Name")     return name_;
-    if (key == "Status")   return status_ ? "available" : "inavailable";
+	if (key == "Status") {
+		switch (status_) {
+		case kAvailable:	return "available";
+		case kUnavailable:	return "unavailable";
+		case kInProgress:	return "in progress";
+		default:			return std::string();
+		}
+	}
     return std::string();
 }
 

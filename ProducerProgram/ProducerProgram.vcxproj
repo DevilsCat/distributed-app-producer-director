@@ -41,6 +41,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <IntDir>$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
@@ -86,6 +87,7 @@
     <ClInclude Include="CommandQueue.h" />
     <ClInclude Include="Commands.h" />
     <ClInclude Include="DirectorAsynchAcceptor.h" />
+    <ClInclude Include="SockMsgHandler.h" />
     <ClInclude Include="RdWrServiceHandler.h" />
     <ClInclude Include="StdInputHandler.h" />
     <ClInclude Include="Producer.h" />
@@ -100,6 +102,7 @@
     <ClCompile Include="CommandQueue.cpp" />
     <ClCompile Include="Commands.cpp" />
     <ClCompile Include="DirectorAsynchAcceptor.cpp" />
+    <ClCompile Include="SockMsgHandler.cpp" />
     <ClCompile Include="RdWrServiceHandler.cpp" />
     <ClCompile Include="StdInputHandler.cpp" />
     <ClCompile Include="Producer.cpp" />

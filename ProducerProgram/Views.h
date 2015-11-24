@@ -1,10 +1,10 @@
 ﻿#ifndef VIEWS_H
 #define VIEWS_H
 #include <iostream>
-#include "Utils.h"
 #include <mutex>
 #include <memory>
 #include <algorithm>
+#include "Utils.h"
 
 //
 // class View.
@@ -87,34 +87,57 @@ public:
 
     // Only Proactor call this.
     void AddCell(std::shared_ptr<CellType> cell) {
-        std::lock_guard<std::mutex> lk(m_);
-        cell->set_parent(this);
+        std::lock_guard<std::mutex> lk(data_m_);
         cells_.push_back(cell);
         ++cur_cell_idx_;
     }
 
+	void AddCell(CellType* cell) {
+		AddCell(std::shared_ptr<CellType>(cell));
+    }
+
+	std::shared_ptr<CellType> GetCellAt(const size_t& idx) {
+		std::lock_guard<std::mutex> lk(data_m_);
+		if (idx >= cells_.size()) { return nullptr; }
+		return cells_[idx];
+    }
+
     // Only Proactor call this.
     void DeleteCellAt(const size_t& idx) {
-        std::lock_guard<std::mutex> lk(m_);
-        if (idx < 0 || idx > cells_.size()) { return; }
+        std::lock_guard<std::mutex> lk(data_m_);
+        if (idx >= cells_.size()) { return; }
         cells_.erase(cells_.begin() + idx);
         --cur_cell_idx_;
     }
 
     // Only Proactor call this.
-    void DeleteCell(CellType* cell) {
-        std::lock_guard<std::mutex> lk(m_);
-        auto res = std::find_if(cells_.begin(), cells_.end(), [&cell](std::shared_ptr<CellType> elt)
-        {
-            return elt.get() == cell;
-        });
-        if (res != cells_.end()) cells_.erase(res);
+    void DeleteCell(std::shared_ptr<CellType> cell) {
+        std::lock_guard<std::mutex> lk(data_m_);
+        auto res = std::find(cells_.begin(), cells_.end(), cell);
+        if (res == cells_.end()) { return; }  // not cell found.
+        cells_.erase(res);
+        --cur_cell_idx_;
     }
+
+	std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>FindFunc) {
+		std::lock_guard<std::mutex> lk(data_m_);
+		return Query_(FindFunc);
+    }
+
+	size_t Update(std::function<bool(const CellType&)>WhereFunc, std::function<void(CellType&)>UpdateFunc) {
+		std::lock_guard<std::mutex> lk(data_m_);
+		std::vector<std::shared_ptr<CellType>> query_res = Query_(WhereFunc);
+		for (std::shared_ptr<CellType> cell : query_res)
+			UpdateFunc(*cell);
+		return query_res.size();
+    }
+
+	size_t Size() const { return cells_.size(); }
 
     // Proactor will call this
     // Input thread might all call this to refresh screen.
     virtual void Draw(const short& width, const short& height) const override {
-        std::lock_guard<std::mutex> lk(m_);
+        std::lock_guard<std::mutex> lk(data_m_);
         const short cell_width = (width - ID_COL_WIDTH) / (keys_.size());
         DrawTitle_(width);
         DrawColumnName_(cell_width);
@@ -122,13 +145,13 @@ public:
     }
 
     virtual void ScrollUp(const short& nline_scroll) override {
-        std::lock_guard<std::mutex> lk(m_);
+        std::lock_guard<std::mutex> lk(data_m_);
         short possible_nscroll = MIN(short(cells_.size()), nline_scroll - TABLE_VIEW_PRESERVED);
         cur_cell_idx_ = MAX(int(cur_cell_idx_ - possible_nscroll), possible_nscroll);
     }
     
     virtual void ScrollDown(const short& nline_scroll) override {
-        std::lock_guard<std::mutex> lk(m_);
+        std::lock_guard<std::mutex> lk(data_m_);
         cur_cell_idx_ = MIN(cur_cell_idx_ + nline_scroll - TABLE_VIEW_PRESERVED, cells_.size());
     }
 
@@ -137,6 +160,14 @@ public:
     }
 
 private:
+	std::vector<std::shared_ptr<CellType>> Query_(std::function<bool(const CellType&)>FindFunc) {
+		std::vector<std::shared_ptr<CellType>> res;
+		for (std::shared_ptr<CellType> cell : cells_) {
+			if (FindFunc(*cell))  res.push_back(cell);
+		}
+		return res;
+	}
+
     TableView(const std::string& title) :
         View(title), cur_cell_idx_(0)
     {
@@ -169,7 +200,7 @@ private:
     std::string title_;
     std::vector<KeyType> keys_;
     std::vector<std::shared_ptr<CellType>> cells_;
-    mutable std::mutex m_;
+    mutable std::mutex data_m_;
     size_t cur_cell_idx_;
 };
 
@@ -179,40 +210,40 @@ private:
 // class TableViewCell
 class TableViewCell {
 public:
-    TableViewCell() : parent_(nullptr) {}
     virtual ~TableViewCell() {}
     virtual std::vector<std::string> get_keys() = 0;
     virtual std::string get_value(const std::string& key) = 0;
-    
-    // used to delete itself from parent
-    template<typename TableViewType>
-    void set_parent(TableViewType* parent) { parent_ = parent; }
-    void DeleteFromParent() {
-        if (parent_)
-            static_cast<TableView<TableViewCell>*>(parent_)->DeleteCell(this);
-    }
-private:
-    void* parent_;
 };
 
 //
 // class PlayTableViewCell.
 class PlayTableViewCell : public TableViewCell {
 public:
+	enum StatusType {
+		kAvailable, kUnavailable, kInProgress
+	};
+
     PlayTableViewCell();
 
-    PlayTableViewCell(const std::string& director, const std::string& name, bool status);
+    PlayTableViewCell(const int& director_id, const int& play_id, const std::string& name, StatusType status);
 
-    void set_director(const std::string& director);
+    void set_director_id(const int& director_id);
+	void set_play_id(const int& play_id);
     void set_name(const std::string& name);
-    void set_status(const bool status);
+    void set_status(const StatusType status);
+	int director_id() const;
+	int play_id() const;
+	std::string name() const;
+	StatusType status() const;
 
     std::vector<std::string> get_keys() override;
-    std::string get_value(const std::string& key) override;
+    std::string get_value(const std::string& key) override;		//Fixme director id
 private:
-    std::string director_;
+    //std::string director_;
+	int director_id_;
+	int play_id_;
     std::string name_;
-    bool status_;
+    StatusType status_;
 };
 
 //

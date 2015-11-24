@@ -1,4 +1,6 @@
-﻿#pragma once
+﻿#ifndef VIEW_RENDER_H
+#define VIEW_RENDER_H
+
 #include <mutex>
 #include <vector>
 #include <memory>
@@ -15,7 +17,7 @@
         view->set_hint(msg); \
         TableView<DebugTableViewCell>* debug_view = dynamic_cast<TableView<DebugTableViewCell>*>(ViewRenderer::instance()->GetView("Debug")); \
         if (debug_view) { \
-            debug_view->AddCell(std::make_shared<DebugTableViewCell>(DebugTableViewCell(msg))); \
+            debug_view->AddCell(std::make_shared<DebugTableViewCell>(msg)); \
             ViewRenderer::instance()->Render("Debug"); \
         }\
         ViewRenderer::instance()->Render(ViewRenderer::sNoMainView); \
@@ -40,7 +42,6 @@ class ViewRenderer {
     };
 
 public:
-    ~ViewRenderer();
     // Default string for view rendering.
     static std::string sNoMainView;
     static std::string sAllViews;
@@ -107,3 +108,5 @@ private:
     // view switching.
     size_t curr_view_idx_;
 };
+
+#endif

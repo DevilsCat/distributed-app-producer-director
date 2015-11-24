@@ -1,5 +1,5 @@
-﻿#ifndef RD_WR_SERVICE_HANDLER
-#define RD_WR_SERVICE_HANDLER
+﻿#ifndef RD_WR_SERVICE_HANDLER_H
+#define RD_WR_SERVICE_HANDLER_H
 
 #include <ace/Asynch_IO.h>
 #include <ace/Message_Block.h>
@@ -18,6 +18,8 @@ public:
 
     int InvokeSend(std::string& message);
     void InvokeRead(const unsigned& nbytes = 1024);
+	void UpdateTableView(const std::string&);
+
 private:
     ACE_Asynch_Read_Stream reader_;
     ACE_Asynch_Write_Stream writer_;

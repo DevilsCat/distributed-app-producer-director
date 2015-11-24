@@ -1,6 +1,5 @@
 ﻿#include "stdafx.h"
 #include "Producer.h"
-#include <ace/Log_Msg.h>
 #include "RdWrServiceHandler.h"
 #include <ace/Reactor.h>
 #include <ace/Proactor.h>
@@ -13,6 +12,10 @@ std::once_flag Producer::once_flag_;
 Producer* Producer::instance() {
     std::call_once(once_flag_, []{ producer_ = new Producer; });
     return producer_;
+}
+
+Producer::Producer() {
+	table_view_ = dynamic_cast<TableView<PlayTableViewCell>*>(ViewRenderer::instance()->GetView("Play"));
 }
 
 Producer::~Producer() {
@@ -30,19 +33,23 @@ void Producer::RemoveHandler(RdWrServiceHandler* handler) {
     handlers_.erase(it);
 }
 
+size_t Producer::GetHandlerIndex(RdWrServiceHandler* handler) const {
+	std::vector<RdWrServiceHandler*>::const_iterator it = find(handlers_.begin(), handlers_.end(), handler);
+	return it - handlers_.begin();
+}
+
 void Producer::Start(const unsigned& num) {
-    //ACE_DEBUG((LM_INFO, "Producer: Executing start <%d> command.\n", num));
     PROGRAM_DEBUG("Producer: Executing start <%d> command.", num);
-    // Check handlers index is in bound, otherwise simply returns.
-    // Select handler by given index.
-    // Call send method in the handler to send message to that Director.
-    if (handlers_.size() <= num){ return; }  //FIXME do we want to handle this using exception
-    std::string msg("start 0");
-    handlers_[num]->InvokeSend(msg);
+    if (table_view_->Size() <= num){ return; }  //FIXME do we want to handle this using exception
+    
+	// Retrieve cell from table view for sending
+	std::shared_ptr<PlayTableViewCell> cell = table_view_->GetCellAt(num);
+	std::string msg("start ");
+	msg += std::to_string(cell->play_id());
+    handlers_[cell->director_id()]->InvokeSend(msg);
 }
 
 void Producer::Stop(const unsigned& num) {
-    //ACE_DEBUG((LM_INFO, "Producer: Executing stop <%d> command.\n", num));
     PROGRAM_DEBUG("Producer: Executing stop <%d> command.", num);
     if (handlers_.size() <= num){ return; }  //FIXME do we want to handle this using exception
     std::string msg("stop");
@@ -50,7 +57,6 @@ void Producer::Stop(const unsigned& num) {
 }
 
 void Producer::Quit() const {
-    //ACE_DEBUG((LM_INFO, "Producer: Executing quit command.\n"));
     PROGRAM_DEBUG("Producer: Executing quit command.");
 
     // Broadcast a quit message to all Directors.
