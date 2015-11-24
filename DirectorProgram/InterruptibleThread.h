@@ -5,9 +5,9 @@
 #define INTERRUPTIBLE_THREAD_H
 #include <thread>
 #include <future>
-#include <iostream>
 #include "InterruptFlag.h"
 #include "ProgramException.h"
+#include "utils.h"
 
 class InterruptibleThread {
     typedef bool* FlagType;
@@ -20,7 +20,7 @@ public:
             try {
                 f();
             } catch (ProgramException& e) {
-                std::cerr << "[" << std::this_thread::get_id() << "]" << e.what() << std::endl;
+                DEBUG_PRINTF("%s\n", e.what());
             }
         });
         interruptFlag = p.get_future().get();

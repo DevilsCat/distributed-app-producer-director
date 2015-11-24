@@ -7,6 +7,7 @@
 #include "ScriptParser.h"
 #include <ace/Log_Msg.h>
 #include "RdWrSockSvcHandler.h"
+#include "utils.h"
 
 #define MAX(X,Y)    ((X) > (Y) ? (X) : (Y))
 #undef GetExceptionCode
@@ -91,7 +92,7 @@ std::shared_ptr<Player> Director::Select() {
 }
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnEntryState(InputCode input) {
-    ACE_DEBUG((LM_INFO, "OnEntryState:%d -> ok\n", input));
+    DEBUG_PRINTF("OnEntryState:%d -> ok\n", input);
     SockMsgHandler::instance()->FeedbackPlayList(play_list_);  // notice the producer by sending a socket.
     return kOk;
 }
@@ -103,7 +104,7 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnIdleState(I
 }
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStartState(InputCode) {
-    ACE_DEBUG((LM_INFO, "OnStartState -> ok\n"));
+    DEBUG_PRINTF("OnStartState -> ok\n");
     Start(request_play_idx_);  // inside will update current play index.
     SockMsgHandler::instance()->FeedbackStatus(false, current_play_idx_);
     return kOk;
@@ -123,7 +124,7 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnProgressSta
             }
         }
     } catch (ProgramException& e) {
-        ACE_DEBUG((LM_INFO, "%s", e.what()));
+        DEBUG_PRINTF("%s", e.what());
         return kOk;
     }
     
@@ -137,21 +138,21 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnProgressSta
 }
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStopState(InputCode input) {
-    ACE_DEBUG((LM_INFO, "OnStopState -> ok\n"));
+    DEBUG_PRINTF("OnStopState -> ok\n");
     Stop();
     SockMsgHandler::instance()->FeedbackStatus(true);
     return kOk;
 }
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnQuitState(InputCode input) {
-    ACE_DEBUG((LM_INFO, "OnQuitState -> ok\n"));
+    DEBUG_PRINTF("OnQuitState -> ok\n");
     Stop();
     ACE_Reactor::instance()->end_event_loop();
     return kOk;
 }
 
 void Director::on_machine_setup() {
-    ACE_DEBUG((LM_INFO, "On State Machine Setup\n"));
+    DEBUG_PRINTF("On State Machine Setup\n");
 
     // Add state working functions
     add_state_function(kEntry, std::bind(&Director::OnEntryState, this, std::placeholders::_1));

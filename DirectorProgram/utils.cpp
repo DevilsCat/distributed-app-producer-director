@@ -3,6 +3,7 @@
 #include "stdafx.h"
 #include "utils.h"
 #include <regex>
+#include <sstream>
 
 std::string path_string;
 

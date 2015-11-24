@@ -8,7 +8,11 @@
 #include <fstream>
 #include <string>
 #include <vector>
-#include <sstream>
+
+#define DEBUG   0
+
+#define DEBUG_PRINTF(fmt, ...) \
+            do { if (DEBUG) fprintf(stderr, fmt, __VA_ARGS__); } while (0)
 
 //
 // GetFilePath()

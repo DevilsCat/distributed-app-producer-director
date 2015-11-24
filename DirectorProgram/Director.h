@@ -7,14 +7,13 @@
 
 #include "Play.h"
 #include "Player.h"
-
+#include "ASTNodes.h"
+#include "Visitors.h"
+#include "GenericFiniteStateMachine.h"
+#include <ace/Event_Handler.h>
 #include <string>
 #include <vector>
 #include <memory>
-#include "ASTNodes.h"
-#include "Visitors.h"
-#include <ace/Event_Handler.h>
-#include "GenericFiniteStateMachine.h"
 
 enum StateCode { kEntry, kIdle, kStart, kProgress, kStop, kQuit };
 enum InputCode { inTimeout, inStart, inStop, inQuit };

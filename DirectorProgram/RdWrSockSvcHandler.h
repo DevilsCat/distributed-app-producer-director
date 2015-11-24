@@ -5,21 +5,22 @@
 #include "Director.h"
 #include "SignalEventHandler.h"
 #include "SockMsgHandler.h"
+#include "utils.h"
 
 class RdWrSockSvcHandler : public ACE_Svc_Handler<ACE_SOCK_STREAM, ACE_NULL_SYNCH>   {
 public:
     RdWrSockSvcHandler() : director_(nullptr) {}
 
     RdWrSockSvcHandler(Director* director) : director_(director) {
-        ACE_DEBUG((LM_INFO, "[%x]RdWrSockSvcHandler Allocated\n", this));
+        DEBUG_PRINTF("[%p]RdWrSockSvcHandler Allocated\n", this);
     }
 
     ~RdWrSockSvcHandler() {
-        ACE_DEBUG((LM_INFO, "[%x]RdWrSockSvcHandler Deallocated\n", this));
+        DEBUG_PRINTF("[%p]RdWrSockSvcHandler Deallocated\n", this);
     }
 
     virtual int open(void* acceptor_or_connector) override {
-        ACE_DEBUG((LM_INFO, "[%x]RdWrSockSvcHandler Connection Established\n", this));
+        DEBUG_PRINTF("[%p]RdWrSockSvcHandler Connection Established\n", this);
         ACE_Reactor::instance()->register_handler(this, READ_MASK);
         ACE_Reactor::instance()->register_handler(SIGINT, new SignalEventHandler);
         ACE_Reactor::instance()->schedule_timer(  // director can now run the state machine
@@ -37,7 +38,7 @@ public:
         int ret = peer().recv(buf, 20);
         if (ret > 0) {
             std::string str(buf);
-            ACE_DEBUG((LM_INFO, "%s\n", str.c_str()));
+            DEBUG_PRINTF("%s\n", str.c_str());
             
             // Execute the received message on Director object.
             SockMsgHandler::RecvMsg msg = SockMsgHandler::instance()->Receive(str);
