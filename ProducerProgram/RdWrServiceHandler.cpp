@@ -13,6 +13,23 @@ RdWrServiceHandler::~RdWrServiceHandler() {
     if (ACE_Handler::handle() != ACE_INVALID_HANDLE)
         ACE_OS::closesocket(ACE_Handler::handle());
 
+	// Get all cells that contain the same id associated with this handler.
+	auto query_res = producer_.table_view_->Query([this](const PlayTableViewCell& cell) {
+		return cell.director_id() == producer_.GetHandlerIndex(this);
+	});
+
+	// Delete all these cells from table view.
+	for (std::shared_ptr<PlayTableViewCell> cell : query_res) {
+		producer_.table_view_->DeleteCell(cell);
+	}
+
+	// Update other cells by decreasing index 1 after "this" index.
+	producer_.table_view_->Update(
+		[this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) > producer_.GetHandlerIndex(this); },
+		[](PlayTableViewCell& cell) { cell.set_director_id(cell.director_id() - 1); }
+	);
+
+	ViewRenderer::instance()->Render("Play");
     // Remove this handler from producer handlers container.
     producer_.RemoveHandler(this);
 }
@@ -42,9 +59,8 @@ void RdWrServiceHandler::handle_read_stream(const ACE_Asynch_Read_Stream::Result
     } else {
         PROGRAM_DEBUG("%s", mb.rd_ptr());
         InvokeRead();
+		UpdateTableView(mb.rd_ptr());
     }
-	SockMsgHandler::RecvMsg msg = SockMsgHandler::instance()->Recive(mb.rd_ptr());
-	msg.print();
 }
 
 void RdWrServiceHandler::handle_write_stream(const ACE_Asynch_Write_Stream::Result& result) {
@@ -73,4 +89,18 @@ void RdWrServiceHandler::InvokeRead(const unsigned& nbytes) {
         mb->release();
         delete this;
     }
+}
+
+void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
+	std::vector<std::string> MsgToken = utils::tokenize(msg);
+	if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kPlaylist, MsgToken)) {	//add new play table view cell
+		for (size_t i = 2; i < MsgToken.size(); i++) {
+			producer_.table_view_->AddCell(new PlayTableViewCell(producer_.GetHandlerIndex(this), MsgToken[i], true));
+			ViewRenderer::instance()->Render("Play");
+		}
+	}
+	if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kStatus, MsgToken)) {	//update play table view cell
+		
+	}
+
 }

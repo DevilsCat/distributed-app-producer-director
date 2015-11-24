@@ -78,14 +78,14 @@ void PromptView::DrawPrompt_(const short& width) const {
     windows::GoToXY(prompt_line.size(), old_y);
 }
 
-PlayTableViewCell::PlayTableViewCell(): director_(), name_(), status_(false) {}
+PlayTableViewCell::PlayTableViewCell(): director_id_(), name_(), status_(false) {}
 
-PlayTableViewCell::PlayTableViewCell(const std::string& director, const std::string& name, bool status):
-    director_(director), name_(name), status_(status) 
+PlayTableViewCell::PlayTableViewCell(const int id, const std::string& name, bool status) :
+    director_id_(id), name_(name), status_(status) 
 {}
 
-void PlayTableViewCell::set_director(const std::string& director) {
-    director_ = director;
+void PlayTableViewCell::set_director_id(const int& director_id) {
+    director_id_ = director_id;
 }
 
 void PlayTableViewCell::set_name(const std::string& name) {
@@ -96,12 +96,24 @@ void PlayTableViewCell::set_status(const bool status) {
     status_ = status;
 }
 
+int PlayTableViewCell::director_id() const {
+	return director_id_;
+}
+
+std::string PlayTableViewCell::name() const {
+	return name_;
+}
+
+bool PlayTableViewCell::status() const {
+	return status_;
+}
+
 std::vector<std::string> PlayTableViewCell::get_keys() {
     MAKE_KEYS_RETURN("Director", "Name", "Status");
 }
 
 std::string PlayTableViewCell::get_value(const std::string& key) {
-    if (key == "Director") return director_;
+    if (key == "Director") return std::to_string(director_id_);
     if (key == "Name")     return name_;
     if (key == "Status")   return status_ ? "available" : "inavailable";
     return std::string();
