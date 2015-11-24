@@ -88,7 +88,7 @@ void RdWrServiceHandler::InvokeSockReadRequest(const unsigned& nbytes) {
 
 void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
     std::vector<std::string> MsgToken = tokenize(msg);
-    if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kPlaylist, MsgToken)) {	//add new play table view cell
+    if (SockMsgHandler::instance()->Validate(SockMsgHandler::FeedBackMsgType::kPlaylist, MsgToken)) {	//add new play table view cell
         for (size_t i = 2; i < MsgToken.size(); i++) {
             producer_.table_view_->AddCell(new PlayTableViewCell(
                 producer_.GetHandlerIndex(this),
@@ -99,7 +99,7 @@ void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
             ViewRenderer::instance()->Render("Play");
         }
     }
-    if (SockMsgHandler::instance()->Validate(SockMsgHandler::MsgType::kStatus, MsgToken)) {	//update play table view cell
+    if (SockMsgHandler::instance()->Validate(SockMsgHandler::FeedBackMsgType::kStatus, MsgToken)) {	//update play table view cell
         producer_.table_view_->Update (
             [this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) == producer_.GetHandlerIndex(this); },
             [this, &MsgToken](PlayTableViewCell& cell) {

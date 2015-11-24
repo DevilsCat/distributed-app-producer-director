@@ -40,29 +40,32 @@ size_t Producer::GetHandlerIndex(RdWrServiceHandler* handler) const {
 }
 
 void Producer::Start(const unsigned& num) {
-    PROGRAM_DEBUG("Producer: Executing start <%d> command.", num);
-    if (table_view_->Size() <= num){ return; }  //FIXME do we want to handle this using exception
-    
+    if (table_view_->Size() <= num){ return; }
 	// Retrieve cell from table view for sending
 	std::shared_ptr<PlayTableViewCell> cell = table_view_->GetCellAt(num);
-    std::string msg = SockMsgHandler::instance()->MakeStartMsg(cell->play_id());
+    std::string msg = SockMsgHandler::instance()->MakeSendMsg(SockMsgHandler::kStart, cell->play_id());
     handlers_[cell->director_id()]->InvokeSockSendRequest(msg);
+
+    PROGRAM_DEBUG("Producer: Executing start <%d> command on Id[%d].", num, cell->director_id());
 }
 
 void Producer::Stop(const unsigned& num) {
-    PROGRAM_DEBUG("Producer: Executing stop <%d> command.", num);
-    if (handlers_.size() <= num){ return; }  //FIXME do we want to handle this using exception
-    std::string msg("stop");
-    handlers_[num]->InvokeSockSendRequest(msg);
+    if (table_view_->Size() <= num){ return; }
+    std::shared_ptr<PlayTableViewCell> cell = table_view_->GetCellAt(num);
+    std::string msg = SockMsgHandler::instance()->MakeSendMsg(SockMsgHandler::kStop, cell->play_id());
+    handlers_[cell->director_id()]->InvokeSockSendRequest(msg);
+
+    PROGRAM_DEBUG("Producer: Executing stop <%d> command on Id[%d].", num, cell->director_id());
 }
 
 void Producer::Quit() const {
     PROGRAM_DEBUG("Producer: Executing quit command.");
 
     // Broadcast a quit message to all Directors.
-    std::string msg("quit");
-    for_each(handlers_.begin(), handlers_.end(), 
-        [&msg](RdWrServiceHandler* handler){ handler->InvokeSockSendRequest(msg); });
+    std::string msg = SockMsgHandler::instance()->MakeSendMsg(SockMsgHandler::kQuit);
+    for_each(handlers_.begin(), handlers_.end(), [&msg](RdWrServiceHandler* handler) {
+        handler->InvokeSockSendRequest(msg);
+    });
 
     // Wait on all Director quit, which means all handlers will be removed by proactor
     // from RdWrEventHandler's deconstructor.

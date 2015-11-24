@@ -18,7 +18,7 @@ SockMsgHandler::~SockMsgHandler() {
 	if (handler_) delete this;
 }
 
-bool SockMsgHandler::Validate(const MsgType& type, std::vector<std::string>& MsgToken) {
+bool SockMsgHandler::Validate(const FeedBackMsgType& type, std::vector<std::string>& MsgToken) {
 	if (MsgToken.empty()) { return false; }
 
 	const std::string sStatus = "STATUS";
@@ -30,12 +30,12 @@ bool SockMsgHandler::Validate(const MsgType& type, std::vector<std::string>& Msg
 	const size_t kUnavailableSize = 3;
 
 	switch (type) {		//Fix hard code
-	case MsgType::kStatus: {
+	case FeedBackMsgType::kStatus: {
 		bool available = MsgToken[1] == sAvailable && MsgToken.size() == kAvailableSize;
 		bool unavailable = MsgToken.size() == kUnavailableSize && MsgToken[1] == sUnavailable && utils::is_number(MsgToken[2]);
 		return MsgToken.front() == sStatus && (available || unavailable);
 	}
-	case MsgType::kPlaylist: {
+	case FeedBackMsgType::kPlaylist: {
 		return MsgToken.front() == sPlaylist && utils::is_number(MsgToken[1]) && MsgToken.size() > 2; 
 	}
 	default:
@@ -43,8 +43,28 @@ bool SockMsgHandler::Validate(const MsgType& type, std::vector<std::string>& Msg
 	}
 }
 
-std::string SockMsgHandler::MakeStartMsg(const int& play_id) {
+std::string SockMsgHandler::MakeSendMsg(SendMsgType type, const int& play_id) {
+    switch (type) {
+    case kStart: { return MakeStartMsg_(play_id); }
+    case kStop:  { return MakeStopMsg_(play_id); }
+    case kQuit:  { return MakeQuitMsg_(); }
+    default:     { return std::string(); }
+    }
+}
+
+std::string SockMsgHandler::MakeStartMsg_(const int& play_id) {
     const std::string sStartHeader("start");
     const std::string sStartPlayIdx(std::to_string(play_id));
     return sStartHeader + " " + sStartPlayIdx;
+}
+
+std::string SockMsgHandler::MakeStopMsg_(const int& play_id) {
+    const std::string sStopHeader("stop");
+    const std::string sStopPlayIdx(std::to_string(play_id));
+    return sStopHeader + " " + sStopPlayIdx;
+}
+
+std::string SockMsgHandler::MakeQuitMsg_() {
+    const std::string sQuitHeader("quit");
+    return sQuitHeader;
 }
