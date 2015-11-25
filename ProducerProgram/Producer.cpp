@@ -19,10 +19,14 @@ Producer::Producer() {
 	table_view_ = dynamic_cast<TableView<PlayTableViewCell>*>(ViewRenderer::instance()->GetView("Play"));
 }
 
+Producer::Producer(const Producer&other) : table_view_(other.table_view_) {}
+
 Producer::~Producer() {
     if (producer_)
         delete producer_;
 }
+
+Producer& Producer::operator=(const Producer&) { return *this; }
 
 void Producer::AddHandler(RdWrServiceHandler* handler) {
     handlers_.push_back(handler);

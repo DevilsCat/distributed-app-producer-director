@@ -34,7 +34,10 @@ class ViewRenderer {
         double weight;
         short start_height;
         short nline_max;
-        ViewInfo() : ViewInfo(nullptr, 0) {}
+        ViewInfo() : 
+            view(nullptr), weight(0), 
+            start_height(0), nline_max(0) 
+        {}
         ViewInfo(View* view_, double weight_) : 
             view(view_), weight(weight_),
             start_height(0), nline_max(0)

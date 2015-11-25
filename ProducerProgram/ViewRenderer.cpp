@@ -13,10 +13,9 @@ std::once_flag ViewRenderer::once_flag_;
 
 // Initialization methods
 ViewRenderer::ViewRenderer() : 
-    prompt_view_(PromptView::MakeView()), hint_view_(HintView::MakeView("Hint")) 
-{}
+    prompt_view_(PromptView::MakeView()), hint_view_(HintView::MakeView("Hint")), curr_view_idx_(0) {}
 
-ViewRenderer::ViewRenderer(const ViewRenderer&) : ViewRenderer() {}
+ViewRenderer::ViewRenderer(const ViewRenderer&) {}
 
 ViewRenderer& ViewRenderer::operator=(const ViewRenderer&) { return *this; }
 

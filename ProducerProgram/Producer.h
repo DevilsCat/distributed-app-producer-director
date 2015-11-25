@@ -12,9 +12,6 @@ public:
     static Producer* instance();
     ~Producer();
 
-    Producer(const Producer&) = delete;
-    Producer& operator= (const Producer&) = delete;
-
     void Start(const unsigned&);
     void Stop(const unsigned&);
     void Quit() const;
@@ -24,6 +21,8 @@ protected:
 
 private:
 	Producer();
+    Producer(const Producer&);
+    Producer& operator= (const Producer&);
 
     void AddHandler(RdWrServiceHandler* handler);
     void RemoveHandler(RdWrServiceHandler* handler);

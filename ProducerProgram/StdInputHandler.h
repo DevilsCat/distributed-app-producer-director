@@ -17,25 +17,21 @@ public:
     // Deallocates the singleton (if initialized).
     ~StdInputHandler();
 
-    // Make StdInputHandler in program singleton.
-    StdInputHandler(const StdInputHandler&) = delete;
-    StdInputHandler& operator= (const StdInputHandler&) = delete;
-
     // GetInputFromStdStream()
     static std::string GetLine();
 
     std::shared_ptr<Command> MakeCommand(const std::string& input) const;
 
 private:
-    StdInputHandler() : std_cin_(std::cin) {}
+    // Make StdInputHandler in program singleton.
+    StdInputHandler();
+    StdInputHandler(const StdInputHandler&);;
+    StdInputHandler& operator=(const StdInputHandler&);;
 
     static Command::CommandType CheckCommandType(const std::string& cmd_type);
     std::shared_ptr<StartCommand> MakeStartCommand(const std::string& params_str) const;
     std::shared_ptr<StopCommand> MakeStopCommand(const std::string& params_str) const;
     std::shared_ptr<QuitCommand> MakeQuitCommand(const std::string& params_str) const;
-
-    // input stream to read from.
-    std::istream& std_cin_;
 
     // Pointers to singleton handler
     static StdInputHandler* handler_;

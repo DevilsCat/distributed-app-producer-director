@@ -20,10 +20,11 @@ namespace utils {
     inline 
     std::vector<std::string> tokenize(const std::string& line) {
         std::istringstream iss(line);
-        return std::vector<std::string> {
-            std::istream_iterator<std::string> {iss},
-            std::istream_iterator<std::string> {}
-        };
+        std::vector<std::string> tokens;
+        copy(std::istream_iterator<std::string>(iss),
+            std::istream_iterator<std::string>(),
+            back_inserter(tokens));
+        return tokens;
     }
 
     inline

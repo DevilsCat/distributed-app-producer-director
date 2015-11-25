@@ -74,6 +74,14 @@ std::shared_ptr<Command> StdInputHandler::MakeCommand(const std::string& input) 
     }
 }
 
+StdInputHandler::StdInputHandler() {}
+
+StdInputHandler::StdInputHandler(const StdInputHandler&) {}
+
+StdInputHandler& StdInputHandler::operator=(const StdInputHandler&) { return *this; }
+
+
+
 Command::CommandType StdInputHandler::CheckCommandType(const std::string& cmd_type) {
     if (cmd_type == sCmdStartHeader)   return Command::kStart;
     if (cmd_type == sCmdStopHeader)    return Command::kStop;
