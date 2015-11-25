@@ -25,7 +25,7 @@ SockMsgHandler::RecvMsg SockMsgHandler::Receive(const std::string& msg) const {
     if (Validate(msg, RecvMsg::kStart))
         return RecvMsg(RecvMsg::kStart, to_number(tokenize(msg).back()));
     if (Validate(msg, RecvMsg::kStop))
-        return RecvMsg(RecvMsg::kStop);
+        return RecvMsg(RecvMsg::kStop, to_number(tokenize(msg).back()));
     if (Validate(msg, RecvMsg::kQuit))
         return RecvMsg(RecvMsg::kQuit);
     return RecvMsg(RecvMsg::kOther);
@@ -65,6 +65,7 @@ bool SockMsgHandler::Validate(const std::string& msg, const RecvMsg::MsgType& ms
     const std::string sStopHeader = "stop";
     const std::string sQuitHeader = "quit";
     const unsigned kStartMsgSize = 2;
+    const unsigned kStopMsgSize = 2;
     
     std::vector<std::string> msg_tokens = tokenize(msg);
     if (msg_tokens.empty()) { return false; }
@@ -75,7 +76,9 @@ bool SockMsgHandler::Validate(const std::string& msg, const RecvMsg::MsgType& ms
                msg_tokens.size() == kStartMsgSize && 
                is_number(msg_tokens.back());
     case RecvMsg::kStop:
-        return msg_tokens.front() == sStopHeader;
+        return msg_tokens.front() == sStopHeader &&
+               msg_tokens.size() == kStopMsgSize &&
+               is_number(msg_tokens.back());
     case RecvMsg::kQuit: 
         return msg_tokens.front() == sQuitHeader;
     case RecvMsg::kOther:

@@ -54,6 +54,7 @@ void Director::Stop() {
 }
 
 void Director::Start(unsigned idx) {
+    current_play_idx_ = idx;
     for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Activate));
     Cue(idx);
 }
@@ -81,8 +82,8 @@ int Director::handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) {
     return 0;
 }
 
-void Director::set_play_idx(unsigned idx) {
-    play_idx_ = idx;
+void Director::set_request_play_idx(unsigned idx) {
+    request_play_idx_ = idx;
 }
 
 std::shared_ptr<Player> Director::Select() {
@@ -103,8 +104,8 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnIdleState(I
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStartState(InputCode) {
     ACE_DEBUG((LM_INFO, "OnStartState -> ok\n"));
-    Start(play_idx_);
-    SockMsgHandler::instance()->FeedbackStatus(false, play_idx_);
+    Start(request_play_idx_);  // inside will update current play index.
+    SockMsgHandler::instance()->FeedbackStatus(false, current_play_idx_);
     return kOk;
 }
 
@@ -126,7 +127,9 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnProgressSta
         return kOk;
     }
     
-    if (player_futures_.empty() || input == inStop)
+    if (player_futures_.empty())
+        return kOk;
+    if (input == inStop && request_play_idx_ == current_play_idx_)  // stop exactly current play.
         return kOk;
     if (input == inQuit)
         return kFail;

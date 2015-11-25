@@ -6,6 +6,8 @@
 #include <algorithm>
 #include "Utils.h"
 
+using namespace utils;
+
 //
 // class View.
 class View {  // interface of any View class
@@ -102,26 +104,9 @@ public:
 		return cells_[idx];
     }
 
-    // Only Proactor call this.
-    void DeleteCellAt(const size_t& idx) {
-        std::lock_guard<std::mutex> lk(data_m_);
-        if (idx >= cells_.size()) { return; }
-        cells_.erase(cells_.begin() + idx);
-        --cur_cell_idx_;
-    }
-
-    // Only Proactor call this.
-    void DeleteCell(std::shared_ptr<CellType> cell) {
-        std::lock_guard<std::mutex> lk(data_m_);
-        auto res = std::find(cells_.begin(), cells_.end(), cell);
-        if (res == cells_.end()) { return; }  // not cell found.
-        cells_.erase(res);
-        --cur_cell_idx_;
-    }
-
-	std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>FindFunc) {
+	std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>WhereFunc) {
 		std::lock_guard<std::mutex> lk(data_m_);
-		return Query_(FindFunc);
+		return Query_(WhereFunc);
     }
 
 	size_t Update(std::function<bool(const CellType&)>WhereFunc, std::function<void(CellType&)>UpdateFunc) {
@@ -132,16 +117,26 @@ public:
 		return query_res.size();
     }
 
-	size_t Size() const { return cells_.size(); }
+    size_t Delete(std::function<bool(const CellType&)>WhereFunc) {
+        std::lock_guard<std::mutex> lk(data_m_);
+        std::vector<std::shared_ptr<CellType>> query_res = Query_(WhereFunc);
+        for (std::shared_ptr<CellType> cell : query_res)
+            DeleteCell_(cell);
+        return query_res.size();
+    }
+
+	size_t Size() const {
+        std::lock_guard<std::mutex> lk(data_m_);
+        return cells_.size();
+    }
 
     // Proactor will call this
     // Input thread might all call this to refresh screen.
     virtual void Draw(const short& width, const short& height) const override {
         std::lock_guard<std::mutex> lk(data_m_);
-        const short cell_width = (width - ID_COL_WIDTH) / (keys_.size());
         DrawTitle_(width);
-        DrawColumnName_(cell_width);
-        DrawCells_(cell_width, height - TABLE_VIEW_PRESERVED);
+        DrawColumnName_(width);
+        DrawCells_(width, height - TABLE_VIEW_PRESERVED);
     }
 
     virtual void ScrollUp(const short& nline_scroll) override {
@@ -168,32 +163,47 @@ private:
 		return res;
 	}
 
+    // Only Proactor call this.
+    void DeleteCell_(std::shared_ptr<CellType> cell) {
+        auto res = std::find(cells_.begin(), cells_.end(), cell);
+        if (res == cells_.end()) { return; }  // not cell found.
+        cells_.erase(res);
+        --cur_cell_idx_;
+    }
+
     TableView(const std::string& title) :
         View(title), cur_cell_idx_(0)
     {
         keys_ = std::make_shared<CellType>()->get_keys();
     }
 
-    void DrawColumnName_(const short& cell_w) const {
-        std::cout << utils::windows::left("ID", ID_COL_WIDTH, ' ');
+    void DrawColumnName_(const short& width) const {
+        std::cout << windows::left("ID", ID_COL_WIDTH, ' ');
+        const short rest_w = width - ID_COL_WIDTH;
+        CellType* empty_cell = new CellType;  // used to get weight.
         for (size_t i = 0; i < keys_.size(); ++i) {
-            std::cout << utils::windows::left(keys_[i], cell_w, ' ');
+            short cell_w = short(rest_w * empty_cell->get_weight(keys_[i]));
+            std::cout << windows::truncate(windows::left(keys_[i], cell_w, ' '), cell_w);
         }
         std::cout << std::endl;
+        delete empty_cell;
     }
 
-    void DrawCells_(const short& cell_w, const size_t& num_cells) const {
-        size_t greater = MAX(int(cur_cell_idx_ - num_cells), 0);
+    void DrawCells_(const short& width, const size_t& num_cells) const {
+        size_t greater = MAX(int(cur_cell_idx_ - num_cells), 0);  // Display the latest cells.
         for (size_t i = greater; i < cur_cell_idx_; ++i) {
-            DrawCell_(i, cell_w);
+            DrawCell_(i, width);
             std::cout << std::endl;
         }
     }
 
-    void DrawCell_(const size_t& idx, const short& cell_w) const {
-        std::cout << utils::windows::left(std::to_string(idx), ID_COL_WIDTH, ' ');
+    void DrawCell_(const size_t& idx, const short& width) const {
+        std::cout << windows::left(std::to_string(idx), ID_COL_WIDTH, ' ');
+        const short rest_w = width - ID_COL_WIDTH;
+        int col_idx = 0;
         std::for_each(keys_.begin(), keys_.end(), [&](const KeyType& key) {
-            std::cout << utils::windows::left(cells_[idx]->get_value(key), cell_w, ' ');
+            short cell_w = short(rest_w * cells_[idx]->get_weight(keys_[col_idx++]));
+            std::cout << windows::truncate(windows::left(cells_[idx]->get_value(key), cell_w, ' '), cell_w);
         });
     }
 
@@ -213,6 +223,7 @@ public:
     virtual ~TableViewCell() {}
     virtual std::vector<std::string> get_keys() = 0;
     virtual std::string get_value(const std::string& key) = 0;
+    virtual double get_weight(const std::string&key) = 0;
 };
 
 //
@@ -236,13 +247,13 @@ public:
 	std::string name() const;
 	StatusType status() const;
 
-    std::vector<std::string> get_keys() override;
-    std::string get_value(const std::string& key) override;		//Fixme director id
+    virtual std::vector<std::string> get_keys() override;
+    virtual std::string get_value(const std::string& key) override;
+    virtual double get_weight(const std::string& key) override;
 private:
-    //std::string director_;
 	int director_id_;
 	int play_id_;
-	std::string name_;
+    std::string name_;
     StatusType status_;
 };
 
@@ -253,8 +264,9 @@ public:
     DebugTableViewCell();
     DebugTableViewCell(const std::string& message);
 
-    std::vector<std::string> get_keys() override;
-    std::string get_value(const std::string& key) override;
+    virtual std::vector<std::string> get_keys() override;
+    virtual std::string get_value(const std::string& key) override;
+    virtual double get_weight(const std::string& key) override;
 
 private:
     std::string message_;

@@ -33,7 +33,6 @@ private:
     std::vector<RdWrServiceHandler*> handlers_;
 
 	TableView<PlayTableViewCell>* table_view_;
-	std::vector<PlayTableViewCell> table_view_cells_;
 };
 
 
