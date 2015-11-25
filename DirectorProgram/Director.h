@@ -88,6 +88,8 @@ private:
     unsigned current_play_idx_;
 
     std::vector<std::future<bool>> player_futures_;
+
+    std::vector<std::shared_ptr<std::atomic<bool>>> player_done_flags_;
 };
 
 #endif

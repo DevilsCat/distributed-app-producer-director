@@ -11,7 +11,8 @@
 
 Play::Play(const std::vector<std::string>& scene_titles,
            const std::vector<unsigned>& required_pnum_v) :
-    line_counter_(1), frag_counter_(1), on_stage_(0), required_pnum_v_(required_pnum_v)
+    line_counter_(1), frag_counter_(1), on_stage_(0), required_pnum_v_(required_pnum_v),
+    progress_(PLAY_BEGIN)
 {
 	// Initialize the iterator (scene_title_iterator_) point to the beginning of that container
     scene_titles_ = scene_titles;

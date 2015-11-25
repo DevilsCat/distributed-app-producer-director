@@ -20,9 +20,9 @@ class Player: public ActiveObject<bool> {
         ACT = 0,
         EXIT
     };
-    const std::string sName = "NAME";
-    const std::string sFileName = "FILE";
-    const std::string sFrag = "FRAG";
+    static const std::string sName;
+    static const std::string sFileName;
+    static const std::string sFrag;
 public:
     virtual ~Player();
 
@@ -54,7 +54,7 @@ public:
 	// Interface for sending Role task to worker thread. Returns the future for given task.
     // Director should via this method assign role to each thread.
 	//
-	std::future<bool> Enter(const play_t::name_t& name, const std::string& file_name, unsigned frag_number);
+	std::shared_ptr<std::atomic<bool>> Enter(const play_t::name_t& name, const std::string& file_name, unsigned frag_number);
 
 	//
     // Service()

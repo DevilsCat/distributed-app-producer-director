@@ -5,8 +5,8 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
-#include <string>
 #include <future>
+#include <atomic>
 #include "ProgramException.h"
 
 // This class is Message, the thing that director send to the queue in the active object. 
@@ -16,26 +16,24 @@ class Message : public std::promise<FutureType> {
     typedef std::string KeyType;
 public:
     Message(const unsigned msg_code) : 
-        msg_code_(msg_code) 
+        msg_code_(msg_code), done_flag_(new std::atomic<bool>(false))
     {}
 
     Message(Message &&other) :
         std::promise<FutureType>(std::move(other)),
         msg_code_(std::move(other.msg_code_)), 
         str_map_(std::move(other.str_map_)),
-        unsigend_map_(std::move(other.unsigend_map_))
+        unsigend_map_(std::move(other.unsigend_map_)),
+        done_flag_(std::move(other.done_flag_))
     {}
 
     Message &operator= (Message &&other) {
         msg_code_ = std::move(other.msg_code_);
         str_map_ = std::move(other.str_map_);
         unsigend_map_ = std::move(other.unsigend_map_);
+        done_flag_ = std::move(other.done_flag_);
         return *this;
     }
-
-    Message() = delete;
-    Message(const Message &) = delete;
-    Message &operator= (const Message &) = delete;
 
     void SetStrMessage(const KeyType &key, const std::string &str) {
         str_map_[key] = str;
@@ -53,7 +51,7 @@ public:
         return unsigend_map_[key];
     }
 
-    const unsigned &What() { 
+    const unsigned &What() const { 
         return msg_code_;
     }
 
@@ -77,18 +75,24 @@ public:
         std::promise<FutureType>::set_exception_at_thread_exit(std::make_exception_ptr(e));
     }
 
+    std::shared_ptr<std::atomic<bool>> get_done_flag() const { return done_flag_; }
+
+    void set_done_flag() { done_flag_->store(true); }
+
     static std::shared_ptr<Message> MakeMessage(const unsigned msg_code) {
         return std::make_shared<Message>(msg_code);
 	}
 
 private:
+    Message() : msg_code_() {};
+    Message(const Message &other) : msg_code_(other.msg_code_) {};
+    Message &operator= (const Message &) { return *this; };
+
     const unsigned msg_code_;
-
     std::map<KeyType, std::string> str_map_;
-
     std::map<KeyType, unsigned> unsigend_map_;
 
-
+    std::shared_ptr<std::atomic<bool>> done_flag_;
 
 };
 

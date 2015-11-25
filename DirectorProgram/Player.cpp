@@ -8,6 +8,10 @@
 #include <fstream>
 #include "ProgramException.h"
 
+const std::string Player::sName("NAME");
+const std::string Player::sFileName("FILE");
+const std::string Player::sFrag("FRAG");
+
 Player::~Player() {}
 
 Player::Player() :
@@ -49,16 +53,16 @@ void Player::Act(const std::string& name, const unsigned& frag_number) {
 // Player Enter with all the info in a message
 // enqueue the message to the active object's queue.
 // set the future so that the caller can know when it's done.
-std::future<bool> Player::Enter(const play_t::name_t& name, const std::string& file_name, unsigned frag_number) {
+std::shared_ptr<std::atomic<bool>> Player::Enter(const play_t::name_t& name, const std::string& file_name, unsigned frag_number) {
     std::shared_ptr<Message<bool>> msg = Message<bool>::MakeMessage(ACT);
 
     msg->SetStrMessage(sName, name);
     msg->SetStrMessage(sFileName, file_name);
     msg->SetUnsignedMessage(sFrag, frag_number);
 
-	std::future<bool> f = msg->GetFuture();
+    std::shared_ptr<std::atomic<bool>> flag = msg->get_done_flag();
 	enqueue(*msg);
-	return f;
+	return flag;
 }
 
 // override Service, read, act 
@@ -80,7 +84,8 @@ void Player::Service(std::shared_ptr<Message<bool>> msg_ptr) {
 
         Read(in_);
         Act(name, frag_number);
-        msg_ptr->SetPromiseValue(true);
+        //msg_ptr->SetPromiseValue(true);
+        msg_ptr->set_done_flag();
         
         break;
     }

@@ -4,6 +4,8 @@
 #include "utils.h"
 #include <regex>
 #include <sstream>
+#include <iterator>
+#include <ostream>
 
 std::string path_string;
 
@@ -62,8 +64,9 @@ bool is_filename(char* s) {
 
 std::vector<std::string> tokenize(const std::string& line) {
     std::istringstream iss(line);
-    return std::vector<std::string> {
-        std::istream_iterator<std::string> {iss},
-        std::istream_iterator<std::string> {}
-    };
+    std::vector<std::string> tokens;
+    copy(std::istream_iterator<std::string>(iss),
+         std::istream_iterator<std::string>(),
+         back_inserter(tokens));
+    return tokens;
 }

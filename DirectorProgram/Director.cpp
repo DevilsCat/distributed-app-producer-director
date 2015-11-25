@@ -50,7 +50,7 @@ Director::~Director() {
 }
 
 void Director::Stop() {
-    player_futures_.clear();
+    player_done_flags_.clear();
     for_each(players_.begin(), players_.end(), std::mem_fn(&Player::Exit));
 }
 
@@ -111,24 +111,33 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnStartState(
 }
 
 GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnProgressState(InputCode input) {
-    const unsigned kWaitTimeMilliseconds = 1;
-    std::vector<std::future<bool>>::iterator it = player_futures_.begin();
-    try {
-        while(it != player_futures_.end()) {
-            std::future_status status = it->wait_for(std::chrono::milliseconds(kWaitTimeMilliseconds));
-            if (status == std::future_status::ready) { // one task ready
-                it->get();
-                it = player_futures_.erase(it);
-            } else {
-                ++it;
-            }
-        }
-    } catch (ProgramException& e) {
-        DEBUG_PRINTF("%s", e.what());
-        return kOk;
+    const unsigned kWaitTimeMilliseconds = 10;
+    auto it = player_done_flags_.begin();
+    while (it != player_done_flags_.end()) {
+        if ((*it)->load())
+            it = player_done_flags_.erase(it);
+        else
+            ++it;
     }
-    
-    if (player_futures_.empty())
+    //std::vector<std::future<bool>>::iterator it = player_futures_.begin();
+    //try {
+    //    while(it != player_futures_.end()) {
+    //        auto status = it->wait_for(std::chrono::milliseconds(kWaitTimeMilliseconds));
+    //        if (status == std::future_status::ready) { // one task ready
+    //            it->get();
+    //            it = player_futures_.erase(it);
+    //        } else {
+    //            ++it;
+    //        }
+    //    }
+    //} catch (ProgramException& e) {
+    //    DEBUG_PRINTF("%s", e.what());
+    //    return kOk;
+    //}
+    //
+    //if (player_futures_.empty())
+    //    return kOk;
+    if (player_done_flags_.empty())
         return kOk;
     if (input == inStop && request_play_idx_ == current_play_idx_)  // stop exactly current play.
         return kOk;

@@ -15,6 +15,9 @@ public:
         StateCode src_state;
         RetCode   ret_code;
         StateCode dst_state;
+        Transition(StateCode src_state, RetCode ret_code, StateCode dst_state) : 
+            src_state(src_state), ret_code(ret_code), dst_state(dst_state) 
+        {}
     };
 
     GenericFiniteStateMachine(const StateCode& cur_state) : 
@@ -22,7 +25,7 @@ public:
     {}
 
     void add_transition(StateCode src, RetCode rc, StateCode dst) {
-        transitions.push_back({ src, rc, dst });
+        transitions.push_back(Transition(src, rc, dst));
     }
 
     void add_state_function(StateCode code, std::function<RetCode(InputCode)> func) {

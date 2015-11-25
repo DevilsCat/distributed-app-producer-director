@@ -142,7 +142,7 @@ private:
     std::vector<unsigned int> required_pnum_v_;
 
     // Maintains the Progress of Play.
-    PlayProgress progress_ = PLAY_BEGIN;
+    PlayProgress progress_;
 };
 
 #endif

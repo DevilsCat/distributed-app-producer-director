@@ -96,6 +96,7 @@ void DirectorCueVisitor::Visit(PartAST* node) {
     unsigned int part_frag_counter = frag_counter_;
 
     // Select & Cue Palyer to enter (hand off Message)
-    std::future<bool> uf = director_.Select()->Enter(part_name, part_filename, part_frag_counter);
-    director_.player_futures_.push_back(move(uf));
+    std::shared_ptr<std::atomic<bool>> done_flag = director_.Select()->Enter(part_name, part_filename, part_frag_counter);
+    //director_.player_futures_.push_back(move(uf));
+    director_.player_done_flags_.push_back(done_flag);
 }
