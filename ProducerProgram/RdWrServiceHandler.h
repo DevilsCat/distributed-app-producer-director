@@ -7,8 +7,14 @@
 
 class RdWrServiceHandler : public ACE_Service_Handler {
 public:
+	//
+	//default constructor
+	//
     RdWrServiceHandler();
-    explicit RdWrServiceHandler(Producer& producer);
+    //
+	//
+	//
+	explicit RdWrServiceHandler(Producer& producer);
 
     ~RdWrServiceHandler();
 

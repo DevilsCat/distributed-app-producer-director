@@ -2,9 +2,12 @@
 #include "SockMsgHandler.h"
 #include "Utils.h"
 
-#define 	AVAILABLESIZE 2;
-#define		UNAVAILABLESIZE 3;
-
+#define 	AVAILABLESIZE 2
+#define		UNAVAILABLESIZE 3
+#define		PLAYLISTSIZE	2
+#define		STATUS_POS	1
+#define		PLAY_POS	2
+#define		PLAY_NUM_POS	1	
 
 SockMsgHandler* SockMsgHandler::handler_ = nullptr;
 std::once_flag SockMsgHandler::once_flag_;
@@ -26,17 +29,14 @@ bool SockMsgHandler::Validate(const MsgType& type, std::vector<std::string>& Msg
 	const std::string sUnavailable = "unavailable"; 
 	const std::string sPlaylist = "PLAYLIST";
 
-	const size_t kAvailableSize = 2;
-	const size_t kUnavailableSize = 3;
-
-	switch (type) {		//Fix hard code
+	switch (type) {
 	case MsgType::kStatus: {
-		bool available = MsgToken[1] == sAvailable && MsgToken.size() == kAvailableSize;
-		bool unavailable = MsgToken.size() == kUnavailableSize && MsgToken[1] == sUnavailable && utils::is_number(MsgToken[2]);
+		bool available = MsgToken[STATUS_POS] == sAvailable && MsgToken.size() == AVAILABLESIZE;
+		bool unavailable = MsgToken.size() == UNAVAILABLESIZE && MsgToken[STATUS_POS] == sUnavailable && utils::is_number(MsgToken[PLAY_POS]);
 		return MsgToken.front() == sStatus && (available || unavailable);
 	}
 	case MsgType::kPlaylist: {
-		return MsgToken.front() == sPlaylist && utils::is_number(MsgToken[1]) && MsgToken.size() > 2; 
+		return MsgToken.front() == sPlaylist && utils::is_number(MsgToken[PLAY_NUM_POS]) && MsgToken.size() > PLAYLISTSIZE;
 	}
 	default:
 		return false;
