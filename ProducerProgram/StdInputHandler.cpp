@@ -39,7 +39,7 @@ std::string StdInputHandler::GetLine() {
     PromptView* prompt_view = ViewRenderer::instance()->prompt_view();
     do {
         ch = _getch();
-        if (ch == KEY_SIGINT)            { raise(SIGINT); }  // recover the ctrl-c function.
+        if (ch == KEY_SIGINT)            { return sCmdQuitHeader; }  // recover the ctrl-c function.
         else if (ch == KEY_ARROW_PREFIX) {}  // ignore arrow prefix. 
         else if (ch == KEY_UP)           { ViewRenderer::instance()->Scroll(true); }
         else if (ch == KEY_DOWN)         { ViewRenderer::instance()->Scroll(false); }
