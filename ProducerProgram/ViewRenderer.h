@@ -1,4 +1,7 @@
-﻿#ifndef VIEW_RENDER_H
+﻿//
+// Define a class to render a console view.
+//
+#ifndef VIEW_RENDER_H
 #define VIEW_RENDER_H
 
 #include <mutex>

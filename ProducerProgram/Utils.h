@@ -1,3 +1,6 @@
+//
+// Define some helper function used in this lab.
+//
 #ifndef UTILS_H 
 #define UTILS_H
 #include <string>

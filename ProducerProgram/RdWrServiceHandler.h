@@ -1,4 +1,8 @@
-﻿#ifndef RD_WR_SERVICE_HANDLER_H
+﻿//
+// Define a derived class of ACE_Service_Handler to handle reciving and sending message
+// between producer and directors.
+//
+#ifndef RD_WR_SERVICE_HANDLER_H
 #define RD_WR_SERVICE_HANDLER_H
 
 #include <ace/Asynch_IO.h>

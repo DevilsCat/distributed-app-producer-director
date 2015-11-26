@@ -1,4 +1,7 @@
-﻿#ifndef VIEWS_H
+﻿//
+// Define a class to store console view information.
+//
+#ifndef VIEWS_H
 #define VIEWS_H
 #include <iostream>
 #include <mutex>

@@ -1,8 +1,11 @@
-﻿#ifndef Std_INPUT_HANDLER_H
+﻿//
+// Define a class to analyse user input commands and make corresponding
+// Command objects.
+//
+#ifndef Std_INPUT_HANDLER_H
 #define Std_INPUT_HANDLER_H
 #include <istream>
 #include <mutex>
-#include <iostream>
 #include <memory>
 #include "Commands.h"
 

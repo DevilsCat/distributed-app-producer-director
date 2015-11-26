@@ -1,3 +1,7 @@
+//
+// Define a class of thread safe queue that allow mutiple thread read/write 
+// the queue without racing condition.
+//
 #ifndef THREAD_SAFE_QUEUE_H
 #define THREAD_SAFE_QUEUE_H
 
