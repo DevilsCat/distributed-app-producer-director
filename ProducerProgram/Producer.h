@@ -8,6 +8,7 @@
 #include <ace/Asynch_Acceptor.h>
 #include "Views.h"
 #include "RdWrServiceHandler.h"
+#include "TableViewCells.h"
 
 class Producer : public ACE_Asynch_Acceptor<RdWrServiceHandler>{
     friend class RdWrServiceHandler;
