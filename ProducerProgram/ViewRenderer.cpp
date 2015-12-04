@@ -1,7 +1,9 @@
-﻿#include "stdafx.h"
+﻿// ViewRenderer.cpp -- This file defines a ViewRenderer class, used to render the view.
+// Created by Yu Xiao, Anqi Zhang, Yuhan Hao, all rights reserved.
+//
+#include "stdafx.h"
 #include "ViewRenderer.h"
 #include "Utils.h"
-#include <windows.h>
 
 using namespace utils;
 
@@ -11,6 +13,14 @@ std::string ViewRenderer::sAllViews = "ALL_VIEWS";
 std::shared_ptr<ViewRenderer> ViewRenderer::renderer_ = nullptr;
 std::once_flag ViewRenderer::once_flag_;
 
+ViewRenderer::ViewInfo::ViewInfo() :
+view(nullptr), weight(0),
+start_height(0), nline_max(0) {}
+
+ViewRenderer::ViewInfo::ViewInfo(View* view_, double weight_) :
+view(view_), weight(weight_),
+start_height(0), nline_max(0) {}
+
 // Initialization methods
 ViewRenderer::ViewRenderer() : 
     prompt_view_(PromptView::MakeView()), hint_view_(HintView::MakeView("Hint")), curr_view_idx_(0) {}
@@ -18,6 +28,7 @@ ViewRenderer::ViewRenderer() :
 ViewRenderer::ViewRenderer(const ViewRenderer&) {}
 
 ViewRenderer& ViewRenderer::operator=(const ViewRenderer&) { return *this; }
+
 
 ViewRenderer* ViewRenderer::instance() {
     std::call_once(once_flag_, []{ renderer_ = std::shared_ptr<ViewRenderer>(new ViewRenderer); });
@@ -27,11 +38,6 @@ ViewRenderer* ViewRenderer::instance() {
 void ViewRenderer::AddView(const std::string& name, View* view, double weight) {
     view_names_.push_back(name);
     view_info_map_[name] = ViewInfo(view, weight);
-}
-
-View* ViewRenderer::GetView(const std::string& name) {
-    if (!view_info_map_.count(name)) { return nullptr; }  // view not exists.
-    return view_info_map_[name].view.get();
 }
 
 HintView* ViewRenderer::hint_view() const {
@@ -83,6 +89,12 @@ void ViewRenderer::Scroll(bool is_up) {
     if (is_up)  GetCurrentViewInfo_().view->ScrollUp(window_height_ - WINDOW_HEIGHT_PRESERVED);
     else        GetCurrentViewInfo_().view->ScrollDown(window_height_ - WINDOW_HEIGHT_PRESERVED);
     RenderAll_(true);
+}
+
+
+View* ViewRenderer::GetView_(const std::string& name) {
+    if (!view_info_map_.count(name)) { return nullptr; }  // view not exists.
+    return view_info_map_[name].view.get();
 }
 
 void ViewRenderer::RenderAll_(bool render_main_view) {

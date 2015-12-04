@@ -16,7 +16,7 @@ Producer* Producer::instance() {
 }
 
 Producer::Producer() {
-	table_view_ = dynamic_cast<TableView<PlayTableViewCell>*>(ViewRenderer::instance()->GetView("Play"));
+    table_view_ = ViewRenderer::instance()->GetView<TableView<PlayTableViewCell>>("Play");
 }
 
 Producer::Producer(const Producer&other) : table_view_(other.table_view_) {}

@@ -43,19 +43,22 @@ int main(int argc, char* argv[])
         ACE_ERROR_RETURN((LM_ERROR, ACE_TEXT("%p\n"),
             ACE_TEXT("acceptor open")), EXIT_FAILURE);
     }
-
     // Run the reactor in background thread.
     std::thread reactor_td([]{ 
         // Register a command event handler
+        CommandEventHandler* cmd_event_handler;
+        ACE_NEW_NORETURN(cmd_event_handler, CommandEventHandler);
         ACE_Reactor::instance()->schedule_timer(
-            new CommandEventHandler,
+            cmd_event_handler,
             nullptr,
             ACE_Time_Value(ACE_TIMER_SECS, ACE_TIMER_MCROSECS),
             ACE_Time_Value(ACE_TIMER_SECS, ACE_TIMER_MCROSECS)
         );
 
         // Register a signal handler to deal with Ctl-C
-        ACE_Reactor::instance()->register_handler(SIGINT, new SignalEventHandler);
+        SignalEventHandler* signal_event_handler;
+        ACE_NEW_NORETURN(signal_event_handler, SignalEventHandler);
+        ACE_Reactor::instance()->register_handler(SIGINT, signal_event_handler);
 
         ACE_Reactor::instance()->run_event_loop(); 
     });
@@ -80,6 +83,7 @@ int main(int argc, char* argv[])
         }
     }
 
+    // Join both reactor and proactor to quit.
     reactor_td.join();
     proactor_td.join();
     
