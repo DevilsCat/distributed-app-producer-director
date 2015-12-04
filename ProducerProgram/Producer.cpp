@@ -1,4 +1,7 @@
-﻿#include "stdafx.h"
+﻿//
+//Defines a singleton producer class for this lab.
+//
+#include "stdafx.h"
 #include "Producer.h"
 #include "RdWrServiceHandler.h"
 #include <ace/Reactor.h>

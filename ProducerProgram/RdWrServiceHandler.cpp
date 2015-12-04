@@ -1,4 +1,8 @@
-﻿#include "stdafx.h"
+﻿//
+// Define a derived class of ACE_Service_Handler to handle reciving and sending message
+// between producer and directors.
+//
+#include "stdafx.h"
 #include "RdWrServiceHandler.h"
 #include "ViewRenderer.h"
 #include "SockMsgHandler.h"

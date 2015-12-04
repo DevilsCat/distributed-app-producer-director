@@ -1,5 +1,5 @@
 //
-// Define a singleton class to analyse message from directors and construct instruction
+// Declares a singleton class to analyse message from directors and construct instruction
 // to be sent to directors.
 //
 #ifndef  MSGHANDLER_H

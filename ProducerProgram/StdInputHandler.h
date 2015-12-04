@@ -1,5 +1,5 @@
 ﻿//
-// Define a class to analyse user input commands and make corresponding
+// Decclares a class to analyse user input commands and make corresponding
 // Command objects.
 //
 #ifndef Std_INPUT_HANDLER_H

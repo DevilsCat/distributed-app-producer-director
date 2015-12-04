@@ -1,3 +1,7 @@
+// CommandQueue.cpp -- Defines a singleton command queue used in this program
+// A thread safe queue to store user input commands.
+// Created by Anqi Zhang, Yu Xiao, Yuhan Hao, all rights reserved.
+//
 #include "stdafx.h"
 #include "CommandQueue.h"
 

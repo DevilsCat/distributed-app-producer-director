@@ -1,3 +1,6 @@
+//
+// Define several objects of user input commands.
+//
 #include "stdafx.h"
 #include "Commands.h"
 #include "Producer.h"

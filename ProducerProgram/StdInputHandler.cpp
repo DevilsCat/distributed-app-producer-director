@@ -1,4 +1,8 @@
-﻿#include "stdafx.h"
+﻿//
+// Decclares a class to analyse user input commands and make corresponding
+// Command objects.
+//
+#include "stdafx.h"
 #include "StdInputHandler.h"
 #include "Utils.h"
 #include <string>
@@ -6,13 +10,13 @@
 #include <conio.h>
 #include "Views.h"
 #include "ViewRenderer.h"
-#include <csignal>
 
-#define KEY_SIGINT  03
-#define KEY_UP      72
-#define KEY_DOWN    80
-#define KEY_LEFT    75
-#define KEY_RIGHT   77
+// Macro for key code.
+#define KEY_SIGINT        03
+#define KEY_UP            72
+#define KEY_DOWN          80
+#define KEY_LEFT          75
+#define KEY_RIGHT         77
 #define KEY_ARROW_PREFIX  224
 
 const std::string StdInputHandler::sCmdStartHeader = "start";
