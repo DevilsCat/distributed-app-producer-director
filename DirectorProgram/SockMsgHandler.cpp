@@ -1,4 +1,8 @@
-﻿#include "stdafx.h"
+﻿//Socket Message Handler
+//this class is designed to handle the transition protocal(message)
+//
+
+#include "stdafx.h"
 #include "SockMsgHandler.h"
 #include "utils.h"
 #include "RdWrSockSvcHandler.h"
@@ -90,6 +94,6 @@ bool SockMsgHandler::Validate(const std::string& msg, const RecvMsg::MsgType& ms
 void SockMsgHandler::SendFeedback(const std::string& msg) const {
     int ret = feedback_proxy_->peer().send_n(msg.c_str(), msg.size());
     if (ret < 0) {
-        // FIXME handle this situation.
+        // No need to handle this situation.
     }
 }

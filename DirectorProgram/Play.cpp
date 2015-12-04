@@ -1,4 +1,4 @@
-// Play.h -- This file implements a Play class, which allows players to enter and "play".
+// Play.cpp -- This file implements a Play class, which allows players to enter and "play".
 // for all "Players" to have dialogs in order.
 // Created by Anqi Zhang, Yu Xiao, Yuhan Hao
 //

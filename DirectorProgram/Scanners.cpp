@@ -1,4 +1,4 @@
-// Scanner.h -- Implements general Scanner, which contains most common operation for sub Scanner.
+// Scanner.cpp -- Implements general Scanner, which contains most common operation for sub Scanner.
 // Created by Yuhan Hao, Anqi Zhang, Yu Xiao
 //
 #include "stdafx.h"

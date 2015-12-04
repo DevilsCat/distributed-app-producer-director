@@ -53,12 +53,12 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>H:\cse532\ACE-6.2.1\ACE\ACE_wrappers</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)ACE_wrappers</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>H:\cse532\ACE-6.2.1\ACE\ACE_wrappers\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ACE_wrappers\lib</AdditionalLibraryDirectories>
       <AdditionalDependencies>ACEd.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -130,7 +130,6 @@
     <ClCompile Include="Play.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProgramException.cpp" />
-    <ClCompile Include="RdWrSockSvcHandler.cpp" />
     <ClCompile Include="Scanners.cpp" />
     <ClCompile Include="ScriptParser.cpp" />
     <ClCompile Include="SockMsgHandler.cpp" />

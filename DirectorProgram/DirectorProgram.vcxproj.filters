@@ -176,9 +176,6 @@
     <ClCompile Include="Visitors.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="RdWrSockSvcHandler.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="SockMsgHandler.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

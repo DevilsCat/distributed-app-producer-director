@@ -1,4 +1,4 @@
-// PartParser.h -- Implements a parser for parsing Part file
+// PartParser.cpp -- Implements a parser for parsing Part file
 // Created by Yu Xiao
 //
 #include "stdafx.h"

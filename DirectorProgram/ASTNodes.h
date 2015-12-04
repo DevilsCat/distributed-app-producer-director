@@ -1,4 +1,7 @@
-﻿#ifndef AST_NODES_H
+﻿// ASTNodes.h -- This file declares AST nodes class family for script and play parsing tree.
+// Created by Yu Xiao, Anqi Zhang, Yuhan Hao, all rights reserved.
+//
+#ifndef AST_NODES_H
 #define AST_NODES_H
 
 #include <vector>
