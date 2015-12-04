@@ -1,4 +1,7 @@
-﻿#ifndef VIEWS_H
+﻿// Views.h -- This file declares View class family which customize draw routine on screen.
+// Created by Anqi Zhang, Yu Xiao, Yuhan Hao, all rights reserved.
+//
+#ifndef VIEWS_H
 #define VIEWS_H
 #include <iostream>
 #include <mutex>
@@ -8,115 +11,157 @@
 
 using namespace utils;
 
-//
-// class View.
-class View {  // interface of any View class
+// Interface for View class family.
+class View {
 public:
-    View(const std::string& title) : title_(title) {}
-    virtual ~View() {}
+    // Passes in the string as title.
+    View(const std::string& title);
+
+    // First virtual function to make sure polymophism.
+    virtual ~View();
 
     // Every view must respond a draw event.
     virtual void Draw(const short& width, const short& height) const = 0;
     
-    // Each view may respond to a scroll event.
-    virtual void ScrollUp(const short& nline_scroll) {}
-    virtual void ScrollDown(const short& nline_scroll) {}
+    // Each view may respond to a scroll up event, no operation of not overrided.
+    virtual void ScrollUp(const short& nline_scroll);
+
+    // Each view may respond to a scroll down event, no operation of not overrided.
+    virtual void ScrollDown(const short& nline_scroll);
 
 protected:
-    virtual void DrawTitle_(const short& width) const {
-        std::cout << utils::windows::left(title_, width, '=') << std::endl;
-    }
+    // Provides a standard way to draw title.
+    // Sample:
+    //   |MyTitle============================|
+    virtual void DrawTitle_(const short& width) const;
 
 private:
+    // Stores the title of this {View}.
     std::string title_;
 };
 
-//
-// class HintView.
+// Defines a routine to draw hint view.
 class HintView : public View {
 public:
+    // Defines the default hint message.
     static const char* kHintDefault;
 
+    // Factory method that allocates a view on heap
+    // Please manage the view memroy deallocation manually.
     static HintView* MakeView(const std::string& title);
 
+    // Getter for hint member variable.
     std::string hint() const;
+
+    // Setter for hint member variable.
     void set_hint(const std::string& hint);
 
+    // Determines the concrete routine to draw hint view.
+    // This funtion is a "Thread-safe Interface".
     virtual void Draw(const short& width, const short& height) const override;
 
 private:
+    // Hides this so that program can only use factory method to create a view.
     explicit HintView(const std::string& title);
     
+    // Concrete method to draw the hint.
     void DrawHint_(const short& width) const;
 
+    // Stores the hint message.
     std::string hint_;
+
+    // Provides the mutual exclusion of hint message manipulation and draw.
     mutable std::mutex m_;
 };
 
-//
-// class PromptView.
+// Defines a routine to draw prompt view.
 class PromptView : public View {
 public:
+    // Defines the default mark shape of prompt.
     static const char* sPromptMark;
 
+    // Factory method that allocates a view on heap
+    // Please manage the view memroy deallocation manually.
     static PromptView* MakeView();
 
+    // Adds a char from user to prompt.
     void AddChar(const char& ch);
+
+    // Returns the user input buffer (before cariage return).
     std::string user_buf() const;
+
+    // Clears user input buffer.
     void ClearUserInput();
 
+    // Determines the concrete routine to draw prompt view.
+    // This funtion is a "Thread-safe Interface".
     void Draw(const short& width, const short& height) const override;
 
 private:
+    // Hides this so that program can only use factory method to create a view. 
     PromptView(const std::string& title);
 
+    // Concrete method to draw the {PromptView}.
     void DrawPrompt_(const short& width) const;
 
+    // Stores the user input which need to echo back to screen.
     std::string user_buf_;
 };
 
-
 #define ID_COL_WIDTH            (4)  // Change this to adjust width of id column.
 #define TABLE_VIEW_PRESERVED    (2)  // One for title and one for columns.
+
+
+// Defines a routine to draw a table view
 //
-// class TableView.
+// This view also support CRUD database-like query.
+//
+// Template are used to costomize the content of a cell, it
+// accepets all {TableViewCell} family objects.
 template<class CellType>
 class TableView : public View {
+    // The type of column attributes.
     typedef std::string KeyType;
+    // The type of value for column.
     typedef std::string ValType;
 public:
     ~TableView() {}
 
-    // Only Proactor call this.
+    // Adds a cell to this table, given a shared pointer
     void AddCell(std::shared_ptr<CellType> cell) {
         std::lock_guard<std::mutex> lk(data_m_);
         cells_.push_back(cell);
         ++cur_cell_idx_;
     }
 
-	void AddCell(CellType* cell) {
-		AddCell(std::shared_ptr<CellType>(cell));
+    // Adds a raw pointer of cell to this table.
+    void AddCell(CellType* cell) {
+        AddCell(std::shared_ptr<CellType>(cell));
     }
 
-	std::shared_ptr<CellType> GetCellAt(const size_t& idx) {
-		std::lock_guard<std::mutex> lk(data_m_);
-		if (idx >= cells_.size()) { return nullptr; }
-		return cells_[idx];
+    // Returns the cell given index in cell.
+    std::shared_ptr<CellType> GetCellAt(const size_t& idx) {
+        std::lock_guard<std::mutex> lk(data_m_);
+        if (idx >= cells_.size()) { return nullptr; }
+        return cells_[idx];
     }
 
-	std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>WhereFunc) {
-		std::lock_guard<std::mutex> lk(data_m_);
-		return Query_(WhereFunc);
+    // Queries the database and returns a vector of cell which matches the where clause.
+    std::vector<std::shared_ptr<CellType>> Query(std::function<bool(const CellType&)>WhereFunc) {
+        std::lock_guard<std::mutex> lk(data_m_);
+        return Query_(WhereFunc);
     }
 
-	size_t Update(std::function<bool(const CellType&)>WhereFunc, std::function<void(CellType&)>UpdateFunc) {
-		std::lock_guard<std::mutex> lk(data_m_);
-		std::vector<std::shared_ptr<CellType>> query_res = Query_(WhereFunc);
-		for (std::shared_ptr<CellType> cell : query_res)
-			UpdateFunc(*cell);
-		return query_res.size();
+    // Updates the selected cells in database defined by Update clause, returns 
+    size_t Update(std::function<bool(const CellType&)>WhereFunc, std::function<void(CellType&)>UpdateFunc) {
+        std::lock_guard<std::mutex> lk(data_m_);
+        std::vector<std::shared_ptr<CellType>> query_res = Query_(WhereFunc);
+        for (std::shared_ptr<CellType> cell : query_res)
+            UpdateFunc(*cell);
+        return query_res.size();
     }
 
+    // Deletes the selected cells in database 
     size_t Delete(std::function<bool(const CellType&)>WhereFunc) {
         std::lock_guard<std::mutex> lk(data_m_);
         std::vector<std::shared_ptr<CellType>> query_res = Query_(WhereFunc);
@@ -125,13 +170,13 @@ public:
         return query_res.size();
     }
 
-	size_t Size() const {
+    // Returns the number of cells stores in the view.
+    size_t Size() const {
         std::lock_guard<std::mutex> lk(data_m_);
         return cells_.size();
     }
 
-    // Proactor will call this
-    // Input thread might all call this to refresh screen.
+    // Defines the routine of drawing this view.
     virtual void Draw(const short& width, const short& height) const override {
         std::lock_guard<std::mutex> lk(data_m_);
         DrawTitle_(width);
@@ -139,44 +184,51 @@ public:
         DrawCells_(width, height - TABLE_VIEW_PRESERVED);
     }
 
+    // Defines the routine for responding a scroll up request.
     virtual void ScrollUp(const short& nline_scroll) override {
         std::lock_guard<std::mutex> lk(data_m_);
         short possible_nscroll = MIN(short(cells_.size()), nline_scroll - TABLE_VIEW_PRESERVED);
         cur_cell_idx_ = MAX(int(cur_cell_idx_ - possible_nscroll), possible_nscroll);
     }
     
+    // Defines the routine for responding a scroll down request.
     virtual void ScrollDown(const short& nline_scroll) override {
         std::lock_guard<std::mutex> lk(data_m_);
         cur_cell_idx_ = MIN(cur_cell_idx_ + nline_scroll - TABLE_VIEW_PRESERVED, cells_.size());
     }
 
+    // Fatory method to 
     static TableView<CellType>* MakeView(const std::string& title) {
         return new TableView<CellType>(title);
     }
 
 private:
-	std::vector<std::shared_ptr<CellType>> Query_(std::function<bool(const CellType&)>FindFunc) {
-		std::vector<std::shared_ptr<CellType>> res;
-		for (std::shared_ptr<CellType> cell : cells_) {
-			if (FindFunc(*cell))  res.push_back(cell);
-		}
-		return res;
-	}
+    // Hide constructor to adapt factory method.
+    // 
+    TableView(const std::string& title) : View(title), cur_cell_idx_(0) {
+        keys_ = std::make_shared<CellType>()->get_keys();
+    }
 
-    // Only Proactor call this.
+    // Acutual "do-work" query function, that retrieves data from database.
+    std::vector<std::shared_ptr<CellType>> Query_(std::function<bool(const CellType&)>FindFunc) {
+        std::vector<std::shared_ptr<CellType>> res;
+        for (std::shared_ptr<CellType> cell : cells_)
+            if (FindFunc(*cell))  res.push_back(cell);
+        return res;
+    }
+
+    // Acutal "do-work" delete cell function, that delete the cell from database.
     void DeleteCell_(std::shared_ptr<CellType> cell) {
         auto res = std::find(cells_.begin(), cells_.end(), cell);
         if (res == cells_.end()) { return; }  // not cell found.
         cells_.erase(res);
         --cur_cell_idx_;
     }
-
-    TableView(const std::string& title) :
-        View(title), cur_cell_idx_(0)
-    {
-        keys_ = std::make_shared<CellType>()->get_keys();
-    }
-
+    
+    // Draw the column name as the first row, adapt the width
+    // and keys automatically.
+    // Sample:
+    //    ID  Col1  Col2  Col3 ... ColN
     void DrawColumnName_(const short& width) const {
         std::cout << windows::left("ID", ID_COL_WIDTH, ' ');
         const short rest_w = width - ID_COL_WIDTH;
@@ -189,6 +241,8 @@ private:
         delete empty_cell;
     }
 
+    // Draw other cells as the the rest rows, it draws the latest N numbers
+    // of cells.
     void DrawCells_(const short& width, const size_t& num_cells) const {
         size_t greater = MAX(int(cur_cell_idx_ - num_cells), 0);  // Display the latest cells.
         for (size_t i = greater; i < cur_cell_idx_; ++i) {
@@ -197,80 +251,32 @@ private:
         }
     }
 
+    // Defines the routine to draw single cell based on cell's weight and if the value
+    // name is too long, a truncation will perform.
     void DrawCell_(const size_t& idx, const short& width) const {
-        std::cout << windows::left(std::to_string(idx), ID_COL_WIDTH, ' ');
+        std::cout << windows::left(std::to_string(idx), ID_COL_WIDTH, ' ');  // left align
         const short rest_w = width - ID_COL_WIDTH;
         int col_idx = 0;
         std::for_each(keys_.begin(), keys_.end(), [&](const KeyType& key) {
-            short cell_w = short(rest_w * cells_[idx]->get_weight(keys_[col_idx++]));
+            short cell_w = short(rest_w * cells_[idx]->get_weight(keys_[col_idx++]));  // determine the width by cell weight.
             std::cout << windows::truncate(windows::left(cells_[idx]->get_value(key), cell_w, ' '), cell_w);
         });
     }
 
-    std::string title_;
+    // Stores the all keys of the cell.
     std::vector<KeyType> keys_;
+
+    // Stores the added cells.
     std::vector<std::shared_ptr<CellType>> cells_;
+    
+    // Provides multual exclusion for accessing cell data.
     mutable std::mutex data_m_;
+
+    // Traces the current last cell that can show on screen.
     size_t cur_cell_idx_;
 };
 
-//
-// Cells Class
-//
-// class TableViewCell
-class TableViewCell {
-public:
-    virtual ~TableViewCell() {}
-    virtual std::vector<std::string> get_keys() = 0;
-    virtual std::string get_value(const std::string& key) = 0;
-    virtual double get_weight(const std::string&key) = 0;
-};
 
-//
-// class PlayTableViewCell.
-class PlayTableViewCell : public TableViewCell {
-public:
-	enum StatusType {
-		kAvailable, kUnavailable, kInProgress
-	};
-
-    PlayTableViewCell();
-
-    PlayTableViewCell(const int& director_id, const int& play_id, const std::string& name, StatusType status);
-
-    void set_director_id(const int& director_id);
-	void set_play_id(const int& play_id);
-    void set_name(const std::string& name);
-    void set_status(const StatusType status);
-	int director_id() const;
-	int play_id() const;
-	std::string name() const;
-	StatusType status() const;
-
-    virtual std::vector<std::string> get_keys() override;
-    virtual std::string get_value(const std::string& key) override;
-    virtual double get_weight(const std::string& key) override;
-private:
-	int director_id_;
-	int play_id_;
-    std::string name_;
-    StatusType status_;
-};
-
-//
-// class DebugTableViewCell
-class DebugTableViewCell : public TableViewCell {
-public:
-    DebugTableViewCell();
-    DebugTableViewCell(const std::string& message);
-
-    virtual std::vector<std::string> get_keys() override;
-    virtual std::string get_value(const std::string& key) override;
-    virtual double get_weight(const std::string& key) override;
-
-private:
-    std::string message_;
-};
 
 #endif
 

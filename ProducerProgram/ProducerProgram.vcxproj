@@ -91,6 +91,7 @@
     <ClInclude Include="StdInputHandler.h" />
     <ClInclude Include="Producer.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TableViewCells.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="ThreadSafeQueue.h" />
     <ClInclude Include="Utils.h" />
@@ -109,6 +110,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TableViewCells.cpp" />
     <ClCompile Include="ViewRenderer.cpp" />
     <ClCompile Include="Views.cpp" />
   </ItemGroup>
