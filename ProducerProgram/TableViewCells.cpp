@@ -1,8 +1,10 @@
-﻿#include "stdafx.h"
+﻿// TableViewCell.cpp -- This files defines Table View Cell class family.
+// Created by Yu Xiao, Anqi Zhang, Yuhan Hao
+//
+#include "stdafx.h"
 #include "TableViewCells.h"
 
-//
-// make keys for cell factory method.
+// factory method Macro for making keys for cell 
 #ifndef MAKE_KEYS
 #define MAKE_KEYS_RETURN(...) \
     do { \
@@ -10,6 +12,20 @@
     return std::vector<std::string>(std::begin(keys), std::end(keys)); \
         } while(0)
 #endif
+
+// Macro for Play cells.
+#define PLAY_DIRECTOR_ID     "Director_Id"
+#define PLAY_NAME            "Name"
+#define PLAY_STATUS          "Status"
+#define WEIGHT_DIRECTOR_ID   0.2
+#define WEIGTH_NAME          0.6
+#define WEIGHT_STATUS        0.2
+const char* kStatusStrArr[] = { "available", "unavailable", "in progress" };
+
+// Macro for Debug cells.
+#define DEBUG_MESSAGE        "Message"
+#define WEIGTH_MESSAGE       1.0
+#define WEIGHT_DEFAULT       0.0
 
 PlayTableViewCell::PlayTableViewCell() : director_id_(), play_id_(), name_(), status_(kAvailable) {}
 
@@ -50,28 +66,21 @@ PlayTableViewCell::StatusType PlayTableViewCell::status() const {
 }
 
 std::vector<std::string> PlayTableViewCell::get_keys() {
-    MAKE_KEYS_RETURN("Director_Id", "Name", "Status");
+    MAKE_KEYS_RETURN(PLAY_DIRECTOR_ID, PLAY_NAME, PLAY_STATUS);
 }
 
 std::string PlayTableViewCell::get_value(const std::string& key) {
-    if (key == "Director_Id") return std::to_string(director_id_);
-    if (key == "Name")     return name_;
-    if (key == "Status") {
-        switch (status_) {
-        case kAvailable:	return "available";
-        case kUnavailable:	return "unavailable";
-        case kInProgress:	return "in progress";
-        default:			return std::string();
-        }
-    }
+    if (key == PLAY_DIRECTOR_ID)  return std::to_string(director_id_);
+    if (key == PLAY_NAME)         return name_;
+    if (key == PLAY_STATUS)       return kStatusStrArr[status_];
     return std::string();
 }
 
 double PlayTableViewCell::get_weight(const std::string& key) {
-    if (key == "Director_Id") return 0.2;
-    if (key == "Name")        return 0.6;
-    if (key == "Status")      return 0.2;
-    return 0.0;
+    if (key == PLAY_DIRECTOR_ID) return WEIGHT_DIRECTOR_ID;
+    if (key == PLAY_NAME)        return WEIGTH_NAME;
+    if (key == PLAY_STATUS)      return WEIGHT_STATUS;
+    return WEIGHT_DEFAULT;
 }
 
 DebugTableViewCell::DebugTableViewCell() {}
@@ -79,16 +88,16 @@ DebugTableViewCell::DebugTableViewCell() {}
 DebugTableViewCell::DebugTableViewCell(const std::string& message) : message_(message) {}
 
 std::vector<std::string> DebugTableViewCell::get_keys() {
-    MAKE_KEYS_RETURN("Message");
+    MAKE_KEYS_RETURN(DEBUG_MESSAGE);
 }
 
 std::string DebugTableViewCell::get_value(const std::string& key) {
-    if (key == "Message") return message_;
+    if (key == DEBUG_MESSAGE) return message_;
     return std::string();
 }
 
 double DebugTableViewCell::get_weight(const std::string& key) {
-    if (key == "Message") return 1.0;
-    return 0.0;
+    if (key == DEBUG_MESSAGE) return WEIGTH_MESSAGE;
+    return WEIGHT_DEFAULT;
 }
 
