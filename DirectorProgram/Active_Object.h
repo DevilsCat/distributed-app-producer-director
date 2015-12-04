@@ -1,6 +1,6 @@
 // ActiveObject.h -- Declares and implements an Active Object which support general purpose of running task in background.
 // Also this class are also allows task interruption.
-// Created by Yuhan Hao, Anqi Zhang, YuXiao
+// Created by Yuhan Hao, Anqi Zhang, Yu Xiao
 //
 #ifndef ACTIVE_OBJECT_H
 #define ACTIVE_OBJECT_H
@@ -60,6 +60,10 @@ public:
         }
     }
 
+	//
+	//IsActive()
+	//returns a result of if the object is active
+	//
     bool IsActive() const {
         std::lock_guard<std::mutex> lk(mut);
         return active_f_;

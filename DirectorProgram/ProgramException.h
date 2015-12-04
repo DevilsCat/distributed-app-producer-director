@@ -15,8 +15,10 @@ public:
         THREAD_BEEN_INTERRUPTED = -4
     };
 
+	//initialize with the description and the exception type
     ProgramException(const std::string& what, const ExceptionType type);
 
+	//get getExceptionCode
     int GetExceptionCode();
 
     virtual const char* what() const override;

@@ -130,7 +130,6 @@
     <ClCompile Include="Play.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="ProgramException.cpp" />
-    <ClCompile Include="RdWrSockSvcHandler.cpp" />
     <ClCompile Include="Scanners.cpp" />
     <ClCompile Include="ScriptParser.cpp" />
     <ClCompile Include="SockMsgHandler.cpp" />

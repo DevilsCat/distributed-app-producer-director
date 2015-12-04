@@ -1,4 +1,7 @@
-﻿#include "stdafx.h"
+﻿// ASTNodes.cpp -- This file defines AST nodes class family for script and play parsing tree.
+// Created by Yu Xiao, Anqi Zhang, Yuhan Hao, all rights reserved.
+//
+#include "stdafx.h"
 #include "ASTNodes.h"
 #include "Visitors.h"
 

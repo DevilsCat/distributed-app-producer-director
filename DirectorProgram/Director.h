@@ -15,24 +15,47 @@
 #include <vector>
 #include <memory>
 
+//
+//StateCode:
+//StateCode is a enum class that represent the action of the state
+//
 enum StateCode { kEntry, kIdle, kStart, kProgress, kStop, kQuit };
+
+//
+//InputCode:
+//InputCode is a enum class that represents what is the current state.
+//
 enum InputCode { inTimeout, inStart, inStop, inQuit };
 
 class Director : 
-        public ACE_Event_Handler, 
-        public GenericFiniteStateMachine<StateCode, InputCode> {
+    public ACE_Event_Handler, 
+    public GenericFiniteStateMachine<StateCode, InputCode> {
     friend class DirectorSkimVisitor;
     friend class DirectorCueVisitor;
-public:
-    Director(std::vector<std::string> scripts_filename, unsigned minimum_players);
 
-    ~Director();
+public:
+	//
+	//Constructor of class Director
+	//take script files name to parse and get the number of minimun threads 
+    //
+	Director(std::vector<std::string> scripts_filename, unsigned minimum_players);
+	
+	//
+	// Deconstructor
+    //
+	~Director();
 
     //
+	// Stop()
     // Director stops current play that performs in background
     //
     void Stop();
 
+	//
+	// Start()
+	// Director starts play.
+	// Director activates all the players and cue the indexed one. 
+	//
     void Start(unsigned idx);
 
     //
@@ -43,14 +66,20 @@ public:
     //
 	void Cue(unsigned play_idx);
 
+	//Override the handle_timeout() method 
     virtual int handle_timeout(const ACE_Time_Value& current_time, const void* act) override;
 
+	//Override the handle_close() method
     virtual int handle_close(ACE_HANDLE handle, ACE_Reactor_Mask close_mask) override;
 
+	//set the index of the requested play
     void set_request_play_idx(unsigned idx);
 
 protected:
+
+	//set up the state machine including states and transition rules.
     virtual void on_machine_setup() override;
+
 private:
     //
     // Select()
@@ -87,8 +116,10 @@ private:
     unsigned request_play_idx_;
     unsigned current_play_idx_;
 
+	//futures of all players
     std::vector<std::future<bool>> player_futures_;
 
+	//flags that represents if player has done
     std::vector<std::shared_ptr<std::atomic<bool>>> player_done_flags_;
 };
 

@@ -1,4 +1,9 @@
-﻿#ifndef SOCK_MSG_HANDLER_H
+﻿//Socket Message Handler
+//this class is designed to handle the transition protocal(message)
+//
+
+
+#ifndef SOCK_MSG_HANDLER_H
 #define SOCK_MSG_HANDLER_H
 #include <mutex>
 #include <vector>
