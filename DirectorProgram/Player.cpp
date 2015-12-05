@@ -8,6 +8,9 @@
 #include <fstream>
 #include "ProgramException.h"
 
+// Change this to change the play acting speed (milliseconds).
+#define PLAYER_ACT_INTERVAL     50
+
 const std::string Player::sName("NAME");
 const std::string Player::sFileName("FILE");
 const std::string Player::sFrag("FRAG");
@@ -43,7 +46,7 @@ void Player::Act(const std::string& name, const unsigned& frag_number) {
 
 	std::map<play_t::number_t, play_t::dialog_t>::iterator it = play_map_.begin();
 	for (; it != play_map_.end(); ++it) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(20));  // make program running slowly for debugging.
+        std::this_thread::sleep_for(std::chrono::milliseconds(PLAYER_ACT_INTERVAL));  // make program running slowly for debugging.
 		p_->Recite(it, frag_number);
 	}
 

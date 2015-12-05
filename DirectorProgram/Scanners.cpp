@@ -3,7 +3,9 @@
 //
 #include "stdafx.h"
 #include "Scanners.h"
-#include "utils.h"
+
+#define PART_REGMATCH_NUM   3
+#define PART_CHAR_NAME_POS       1
 
 Scanner::Scanner(std::ifstream& ifs, std::string path) :
     path_(path), ifs_(ifs)
@@ -68,7 +70,7 @@ bool ScriptScanner::operator>> (std::shared_ptr<NodeAST>& container_ptr) {
 
 // PartScanner
 PartScanner::PartScanner(std::ifstream& ifs, std::string& path) :
-Scanner(ifs, path), CONFIG_RE("^(.+) (.+\\.txt)$")
+    Scanner(ifs, path), CONFIG_RE("^(.+) (.+\\.txt)$")
 {
     if (ifs_.is_open() && !ifs_.eof()) {
         *this >> ptr_;
@@ -89,8 +91,8 @@ bool PartScanner::operator>>(std::shared_ptr<NodeAST>& container_ptr) {
     // Match the line
     std::smatch match;
 
-    if (std::regex_search(line, match, CONFIG_RE) && match.size() == 3) {
-        std::string character_name = match.str(1);
+    if (regex_search(line, match, CONFIG_RE) && match.size() == PART_REGMATCH_NUM) {
+        std::string character_name = match.str(PART_CHAR_NAME_POS);
         container_ptr = std::make_shared<PartAST>(character_name, std::string(path_ + match.str(2)));
     }
     else {

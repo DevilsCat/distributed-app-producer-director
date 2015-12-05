@@ -52,7 +52,7 @@ public:
 	//InvokeSockReadRequest()
 	//Read a message from director.
 	//
-    void InvokeSockReadRequest(const unsigned& nbytes = 1024);
+    void InvokeSockReadRequest(const unsigned& nbytes = BUFSIZ);
 	//
 	//UpdateTableView()
 	//Update the play menu if new dircetor connects to producer or play status is changed.

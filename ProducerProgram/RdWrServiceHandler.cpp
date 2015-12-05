@@ -8,6 +8,10 @@
 #include "SockMsgHandler.h"
 #include "Producer.h"
 
+#define PLAY_LIST_OFFSET     2
+#define PLAY_STATUS_OFFSET   1
+#define PLAY_ONPROGRESS_IDX  2
+
 RdWrServiceHandler::RdWrServiceHandler(): producer_(*Producer::instance()) {}
 
 RdWrServiceHandler::RdWrServiceHandler(Producer& producer) : producer_(producer) {}
@@ -93,10 +97,10 @@ void RdWrServiceHandler::InvokeSockReadRequest(const unsigned& nbytes) {
 void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
     std::vector<std::string> MsgToken = tokenize(msg);
     if (SockMsgHandler::instance()->Validate(SockMsgHandler::FeedBackMsgType::kPlaylist, MsgToken)) {	//add new play table view cell
-        for (size_t i = 2; i < MsgToken.size(); i++) {
+        for (size_t i = PLAY_LIST_OFFSET; i < MsgToken.size(); i++) {
             producer_.table_view_->AddCell(new PlayTableViewCell(
                 producer_.GetHandlerIndex(this),
-                i - 2,
+                i - PLAY_LIST_OFFSET,
                 MsgToken[i], 
                 PlayTableViewCell::kAvailable)
             );
@@ -107,10 +111,10 @@ void RdWrServiceHandler::UpdateTableView(const std::string& msg) {
         producer_.table_view_->Update (
             [this](const PlayTableViewCell& cell) { return size_t(cell.director_id()) == producer_.GetHandlerIndex(this); },
             [this, &MsgToken](PlayTableViewCell& cell) {
-                if (MsgToken[1] == "available") {
+                if (MsgToken[PLAY_STATUS_OFFSET] == "available") {
                     cell.set_status(PlayTableViewCell::kAvailable);
                 } else {
-                    int inprog_idx = to_number(MsgToken[2]);
+                    int inprog_idx = to_number(MsgToken[PLAY_ONPROGRESS_IDX]);
                     cell.play_id() == inprog_idx ?
                         cell.set_status(PlayTableViewCell::kInProgress) : 
                         cell.set_status(PlayTableViewCell::kUnavailable);
