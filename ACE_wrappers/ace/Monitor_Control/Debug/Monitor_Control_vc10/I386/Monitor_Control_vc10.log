@@ -1,0 +1,51 @@
+﻿Build started 11/15/2015 12:50:45 PM.
+     1>Project "C:\ACE\ACE-6.2.1\ACE_wrappers\ace\Monitor_Control\Monitor_Control_vc10.vcxproj" on node 7 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\.. /ZI /nologo /W3 /WX- /Od /Oy- /D MONITOR_CONTROL_BUILD_DLL /D _DEBUG /D WIN32 /D _WINDOWS /D _CRT_NONSTDC_NO_WARNINGS /D _CRT_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE /D "MPC_LIB_MODIFIER=\"d\"" /D _WINDLL /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"Debug\Monitor_Control_vc10\I386\\" /Fd"Debug\Monitor_Control_vc10\I386\vc120.pdb" /Gd /TP /wd4355 /analyze- /errorReport:prompt Auto_Update_Starter.cpp BSD_Network_Interface_Monitor.cpp Bytes_Received_Monitor.cpp Bytes_Sent_Monitor.cpp Constraint_Interpreter.cpp Constraint_Visitor.cpp CPU_Load_Monitor.cpp FreeBSD_Network_Interface_Monitor.cpp Linux_Network_Interface_Monitor.cpp Memory_Usage_Monitor.cpp Monitor_Group.cpp Monitor_Query.cpp Null_Network_Interface_Monitor.cpp Num_Threads_Monitor.cpp Packets_Received_Monitor.cpp Packets_Sent_Monitor.cpp Solaris_Network_Interface_Monitor.cpp Windows_Monitor.cpp Windows_Multi_Instance_Monitor.cpp
+         Auto_Update_Starter.cpp
+         BSD_Network_Interface_Monitor.cpp
+         Bytes_Received_Monitor.cpp
+         Bytes_Sent_Monitor.cpp
+         Constraint_Interpreter.cpp
+         Constraint_Visitor.cpp
+         CPU_Load_Monitor.cpp
+         FreeBSD_Network_Interface_Monitor.cpp
+         Linux_Network_Interface_Monitor.cpp
+         Memory_Usage_Monitor.cpp
+         Monitor_Group.cpp
+         Monitor_Query.cpp
+         Null_Network_Interface_Monitor.cpp
+         Num_Threads_Monitor.cpp
+         Packets_Received_Monitor.cpp
+         Packets_Sent_Monitor.cpp
+         Solaris_Network_Interface_Monitor.cpp
+         Windows_Monitor.cpp
+         Windows_Multi_Instance_Monitor.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\..\lib\ACE_Monitor_Controld.dll" /INCREMENTAL /NOLOGO /LIBPATH:. /LIBPATH:..\..\lib ACEd.lib ACE_ETCLd.lib ACE_ETCL_Parserd.lib iphlpapi.lib pdh.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\..\lib\ACE_Monitor_Controld.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\..\lib\ACE_Monitor_Controld.lib" /MACHINE:X86 /DLL Debug\Monitor_Control_vc10\I386\Auto_Update_Starter.obj
+         Debug\Monitor_Control_vc10\I386\BSD_Network_Interface_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Bytes_Received_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Bytes_Sent_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Constraint_Interpreter.obj
+         Debug\Monitor_Control_vc10\I386\Constraint_Visitor.obj
+         Debug\Monitor_Control_vc10\I386\CPU_Load_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\FreeBSD_Network_Interface_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Linux_Network_Interface_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Memory_Usage_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Monitor_Group.obj
+         Debug\Monitor_Control_vc10\I386\Monitor_Query.obj
+         Debug\Monitor_Control_vc10\I386\Null_Network_Interface_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Num_Threads_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Packets_Received_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Packets_Sent_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Solaris_Network_Interface_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Windows_Monitor.obj
+         Debug\Monitor_Control_vc10\I386\Windows_Multi_Instance_Monitor.obj
+            Creating library ..\..\lib\ACE_Monitor_Controld.lib and object ..\..\lib\ACE_Monitor_Controld.exp
+         Monitor_Control_vc10.vcxproj -> C:\ACE\ACE-6.2.1\ACE_wrappers\ace\Monitor_Control\..\..\lib\ACE_Monitor_Controld.dll
+     1>Done Building Project "C:\ACE\ACE-6.2.1\ACE_wrappers\ace\Monitor_Control\Monitor_Control_vc10.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:19.96

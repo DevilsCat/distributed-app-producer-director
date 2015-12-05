@@ -1,0 +1,17 @@
+﻿Build started 11/15/2015 12:50:33 PM.
+     1>Project "C:\ACE\ACE-6.2.1\ACE_wrappers\ace\ETCL\ACE_ETCL_vc10.vcxproj" on node 3 (Build target(s)).
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\CL.exe /c /I..\.. /ZI /nologo /W3 /WX- /Od /Oy- /D ACE_ETCL_BUILD_DLL /D _DEBUG /D WIN32 /D _WINDOWS /D _CRT_NONSTDC_NO_WARNINGS /D _CRT_SECURE_NO_WARNINGS /D _CRT_SECURE_NO_DEPRECATE /D _CRT_NONSTDC_NO_DEPRECATE /D "MPC_LIB_MODIFIER=\"d\"" /D _WINDLL /Gm- /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /GR /Fo"Debug\ACE_ETCL_vc10\I386\\" /Fd"Debug\ACE_ETCL_vc10\I386\vc120.pdb" /Gd /TP /wd4355 /analyze- /errorReport:prompt ETCL_Constraint.cpp ETCL_Constraint_Visitor.cpp
+         ETCL_Constraint.cpp
+         ETCL_Constraint_Visitor.cpp
+         Generating Code...
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 12.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"..\..\lib\ACE_ETCLd.dll" /INCREMENTAL /NOLOGO /LIBPATH:. /LIBPATH:..\..\lib ACEd.lib iphlpapi.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"..\..\lib\ACE_ETCLd.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"..\..\lib\ACE_ETCLd.lib" /MACHINE:X86 /DLL Debug\ACE_ETCL_vc10\I386\ETCL_Constraint.obj
+         Debug\ACE_ETCL_vc10\I386\ETCL_Constraint_Visitor.obj
+            Creating library ..\..\lib\ACE_ETCLd.lib and object ..\..\lib\ACE_ETCLd.exp
+         ACE_ETCL_vc10.vcxproj -> C:\ACE\ACE-6.2.1\ACE_wrappers\ace\ETCL\..\..\lib\ACE_ETCLd.dll
+     1>Done Building Project "C:\ACE\ACE-6.2.1\ACE_wrappers\ace\ETCL\ACE_ETCL_vc10.vcxproj" (Build target(s)).
+
+Build succeeded.
+
+Time Elapsed 00:00:05.48
