@@ -13,15 +13,15 @@ class InterruptibleThread {
     typedef bool* FlagType;
 public:
 
-	//Constructor of interruptibleThread
-	//initialize an internal thread and set the flag.
+    //Constructor of interruptibleThread
+    //initialize an internal thread and set the flag.
     template<typename FuncType>
     InterruptibleThread(FuncType f) {
         std::promise<FlagType> p;
         internalThread = std::thread([&]{
             p.set_value(&ThreadInterruptFlag);
 			
-			//try and catch if there is an exception
+            //try and catch if there is an exception
             try {
                 f();
             } catch (ProgramException& e) {
@@ -31,19 +31,19 @@ public:
         interruptFlag = p.get_future().get();
     }
 
-	//safe deconstructor
+    //safe deconstructor
     ~InterruptibleThread() {
         if (internalThread.joinable()) {
             internalThread.join();
         }
     }
 
-	//detach
+    //detach
     void detach() {
         internalThread.detach();
     }
 
-	//a open interface to interrupt the thread.
+    //a open interface to interrupt the thread.
     void interrupt() {
         if (interruptFlag) {
             *interruptFlag = true;
