@@ -27,54 +27,54 @@ public:
     virtual ~Player();
 
     //
-	// Public constructor
-	// Only keeps track of a reference to the Play in which it is performing
-	//
-	Player();
+    // Public constructor
+    // Only keeps track of a reference to the Play in which it is performing
+    //
+    Player();
 
     //
     // SetPlay()
     //
     void SetPlay(Play* p);
 
-	//
-	// Read()
-	// Reads role lines from a given file stream.
-	//
-	void Read(std::ifstream &in);
-
-	//
-	// Act()
-	// Repeatedly pull from the object's input queue and process each item it is given.
     //
-	void Act(const std::string& name, const unsigned& frag_number);
+    // Read()
+    // Reads role lines from a given file stream.
+    //
+    void Read(std::ifstream &in);
 
-	//
-	// Enter()
-	// Interface for sending Role task to worker thread. Returns the future for given task.
+    //
+    // Act()
+    // Repeatedly pull from the object's input queue and process each item it is given.
+    //
+    void Act(const std::string& name, const unsigned& frag_number);
+
+    //
+    // Enter()
+    // Interface for sending Role task to worker thread. Returns the future for given task.
     // Director should via this method assign role to each thread.
-	//
-	std::shared_ptr<std::atomic<bool>> Enter(const play_t::name_t& name, const std::string& file_name, unsigned frag_number);
+    //
+    std::shared_ptr<std::atomic<bool>> Enter(const play_t::name_t& name, const std::string& file_name, unsigned frag_number);
 
-	//
+    //
     // Service()
     // Implements concrete Service that need to run in the background thread.
     // Indeed this performs Act or Exit.
     //
-	virtual void Service(std::shared_ptr<Message<bool>>) override;
+    virtual void Service(std::shared_ptr<Message<bool>>) override;
 
-	//
-	// Exit()
-	// Sends a termination Message to the background thread and wait for it exits. Interrupted current
+    //
+    // Exit()
+    // Sends a termination Message to the background thread and wait for it exits. Interrupted current
     // Service if force flag is true, otherwise, exit after the message queue received this Message.
-	//
-	void Exit();
+    //
+    void Exit();
 
-	//
-	// empty()
-	// Return true if nothing is inside the dialog map.
-	//
-	bool empty() const;
+    //
+    // empty()
+    // Return true if nothing is inside the dialog map.
+    //
+    bool empty() const;
 
 private:
     //
