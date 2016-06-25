@@ -119,24 +119,7 @@ GenericFiniteStateMachine<StateCode, InputCode>::RetCode Director::OnProgressSta
         else
             ++it;
     }
-    //std::vector<std::future<bool>>::iterator it = player_futures_.begin();
-    //try {
-    //    while(it != player_futures_.end()) {
-    //        auto status = it->wait_for(std::chrono::milliseconds(kWaitTimeMilliseconds));
-    //        if (status == std::future_status::ready) { // one task ready
-    //            it->get();
-    //            it = player_futures_.erase(it);
-    //        } else {
-    //            ++it;
-    //        }
-    //    }
-    //} catch (ProgramException& e) {
-    //    DEBUG_PRINTF("%s", e.what());
-    //    return kOk;
-    //}
-    //
-    //if (player_futures_.empty())
-    //    return kOk;
+
     if (player_done_flags_.empty())
         return kOk;
     if (input == inStop && request_play_idx_ == current_play_idx_)  // stop exactly current play.
