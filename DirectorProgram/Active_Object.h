@@ -60,10 +60,10 @@ public:
         }
     }
 
-	//
-	//IsActive()
-	//returns a result of if the object is active
-	//
+    //
+    //IsActive()
+    //returns a result of if the object is active
+    //
     bool IsActive() const {
         std::lock_guard<std::mutex> lk(mut);
         return active_f_;
@@ -102,7 +102,6 @@ private:
     * value in the active object to which it is pointing (unless there is a cycle of pointers among objects, one of them
     * is at the end of the chain and eventually prints out the values).
     */
-    // 10/27/2015: Updated by YuXiao
     //  Added a std::exception_ptr to store the first
     //  exception, and propogate to Main Thread to handle.
     void RunService() {
