@@ -1,4 +1,4 @@
-##Multiple Play Simulation
+##Multiple Plays Simulation (Producer & Director)
 ###CSE 532 Lab3 "That ends this strange eventful history"
 
 ####Introduction
